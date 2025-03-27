@@ -1,8 +1,8 @@
-use std::sync::{LazyLock, Mutex, MutexGuard};
+use std::{ffi::c_void, ptr::null, sync::{LazyLock, Mutex, MutexGuard}};
 
 use anyhow::{ Context, Ok, Result, };
 
-use crate::{models::{events::Event, misc::{Avatar, TurnInfo}, packets::{EventPacket, Packet}}, server};
+use crate::{models::{events::Event, misc::{Avatar, TurnInfo}, packets::{EventPacket, Packet}}, server, sr::{helpers::fixpoint_to_raw, types::rpg::gamecore::TurnBasedGameMode}};
 
 pub enum BattleState {
     Preparing,
@@ -26,6 +26,7 @@ pub struct BattleContext {
 }
 
 static BATTLE_CONTEXT: LazyLock<Mutex<BattleContext>> = LazyLock::new(|| Mutex::new(BattleContext::default()));
+static mut TURN_BASED_GAME_MODE_REF: Option<*const TurnBasedGameMode> = None;
 
 impl BattleContext {
     fn get_instance() -> MutexGuard<'static, Self> {
@@ -39,7 +40,7 @@ impl BattleContext {
 
     fn initialize_battle_context(battle_context: &mut MutexGuard<'static, Self>, lineup: Vec<Avatar>) {
         battle_context.current_turn_info = TurnInfo::default();
-        battle_context.current_turn_info.avatars_damage = vec![0; lineup.len()];
+        battle_context.current_turn_info.avatars_damage = vec![0f32; lineup.len()];
         battle_context.current_turn_info.avatars_damage_chunks = vec![Vec::new(); lineup.len()];
         battle_context.turn_history = Vec::new();
         battle_context.turn_count = 0;
@@ -51,6 +52,12 @@ impl BattleContext {
         let mut battle_context = Self::get_instance();
         let packet: Packet;
         match event {
+            Event::BattleBegin(e) => {
+                unsafe { TURN_BASED_GAME_MODE_REF = Some(e.turn_based_game_mode) };
+
+                let packet_body = EventPacket::BattleBegin {  };
+                packet = Packet::from_event_packet(packet_body)?;
+            },
             Event::SetBattleLineup(e) => {
                 battle_context.state = BattleState::Started;
                 Self::initialize_battle_context(&mut battle_context, e.avatars);
@@ -80,27 +87,38 @@ impl BattleContext {
                 packet = Packet::from_event_packet(packet_body)?;
             }
             Event::TurnEnd => {
+                let action_value = unsafe {
+                    match TURN_BASED_GAME_MODE_REF {
+                        Some(x) => {
+                            fixpoint_to_raw(&(*x).ElapsedActionDelay__BackingField) * 10f32
+                        },
+                        None => panic!("There was no reference to RPG.GameCore.TurnBasedGameMode"),
+                    }
+                };
+
+                battle_context.current_turn_info.action_value = action_value;
                 let mut turn_info = battle_context.current_turn_info.clone();
 
                 // Calculate net damages
                 let avatars_damage = turn_info.avatars_damage_chunks
                     .iter()
                     .map(|avatar_dmg_string| avatar_dmg_string.iter().sum())
-                    .collect::<Vec<u32>>();
+                    .collect::<Vec<f32>>();
                 turn_info.total_damage = avatars_damage.iter().sum();
                 turn_info.avatars_damage = avatars_damage;
                 battle_context.turn_history.push(turn_info.clone());
 
                 let packet_body = EventPacket::TurnEnd {
+                    action_value,
                     avatars: battle_context.lineup.clone(),
                     avatars_damage: turn_info.avatars_damage,
-                    total_damage: turn_info.total_damage
+                    total_damage: turn_info.total_damage,
                 };
                 packet = Packet::from_event_packet(packet_body)?;
-
+                println!("AV: {:.2}", action_value);
                 // Restart turn info
                 battle_context.current_turn_info = TurnInfo::default();
-                battle_context.current_turn_info.avatars_damage = vec![0; battle_context.lineup.len()];
+                battle_context.current_turn_info.avatars_damage = vec![0f32; battle_context.lineup.len()];
                 battle_context.current_turn_info.avatars_damage_chunks = vec![Vec::new(); battle_context.lineup.len()];
                 battle_context.turn_count += 1;
             }
@@ -125,6 +143,7 @@ impl BattleContext {
                     turn_count: battle_context.turn_count,
                     total_damage
                 };
+                unsafe { TURN_BASED_GAME_MODE_REF = None };
                 packet = Packet::from_event_packet(packet_body)?;
             }
         }

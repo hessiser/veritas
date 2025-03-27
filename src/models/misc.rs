@@ -11,7 +11,9 @@ pub struct Avatar {
 
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 pub struct TurnInfo {
-    pub avatars_damage_chunks: Vec<Vec<u32>>,
-    pub avatars_damage: Vec<u32>,
-    pub total_damage: u32, // pub turn_owner: Avatar
+    pub action_value: f32,
+    pub avatars_damage_chunks: Vec<Vec<f32>>,
+    pub avatars_damage: Vec<f32>,
+    pub total_damage: f32,
+    // pub turn_owner: Avatar
 }

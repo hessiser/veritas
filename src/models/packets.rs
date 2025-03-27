@@ -72,9 +72,10 @@ macro_rules! event_packet {
 }
 
 event_packet!(
+    BattleBegin {}
     SetBattleLineup { avatars: Vec<Avatar> }
-    OnDamage { attacker: Avatar, damage: u32 }
-    TurnEnd { avatars: Vec<Avatar>, avatars_damage: Vec<u32>, total_damage: u32 }
+    OnDamage { attacker: Avatar, damage: f32 }
+    TurnEnd { action_value: f32, avatars: Vec<Avatar>, avatars_damage: Vec<f32>, total_damage: f32 }
     OnKill { attacker: Avatar }
-    BattleEnd { avatars: Vec<Avatar>, turn_history: Vec<TurnInfo>, turn_count: usize, total_damage: u32 }
+    BattleEnd { avatars: Vec<Avatar>, turn_history: Vec<TurnInfo>, turn_count: usize, total_damage: f32 }
 );

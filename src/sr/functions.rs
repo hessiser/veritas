@@ -19,7 +19,6 @@ pub mod rpg {
         use std::mem;
         use crate::{sr::types::rpg::gamecore::{EntityManager, GameEntity}, GAMEASSEMBLY_HANDLE};
 
-
         pub static AbilityStatic_GetActualOwner: LazyLock<fn(*const GameEntity) -> *const GameEntity> =
             lazy_initialize_address!(*GAMEASSEMBLY_HANDLE + 0x919c730);
 

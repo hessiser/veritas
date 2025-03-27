@@ -1,9 +1,9 @@
-use serde::{Deserialize, Serialize};
+use crate::sr::types::rpg::gamecore::TurnBasedGameMode;
 
 use super::misc::Avatar;
 
-#[derive(Debug, Deserialize, Serialize)]
 pub enum Event {
+    BattleBegin(BattleBeginEvent),
     SetBattleLineup(SetBattleLineupEvent),
     OnDamage(OnDamageEvent),
     TurnEnd,
@@ -11,18 +11,19 @@ pub enum Event {
     BattleEnd,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+pub struct BattleBeginEvent {
+    pub turn_based_game_mode: *const TurnBasedGameMode,
+}
+
 pub struct SetBattleLineupEvent {
     pub avatars: Vec<Avatar>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
 pub struct OnDamageEvent {
     pub attacker: Avatar,
-    pub damage: u32,
+    pub damage: f32,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
 pub struct OnKillEvent {
     pub attacker: Avatar,
 }

@@ -1,9 +1,5 @@
 use std::ffi::c_void;
-
-use rpg::gamecore::{
-    FixPoint,
-    GameEntity,
-};
+use rpg::gamecore::{FixPoint, GameEntity};
 
 use super::il2cpp_types::{
     Il2CppArray,
@@ -374,10 +370,10 @@ pub mod rpg {
     pub mod gamecore {
         use std::ffi::c_void;
 
-        use crate::sr::il2cpp_types::{
+        use crate::sr::{il2cpp_types::{
             Il2CppArray,
             Il2CppObject,
-        };
+        }, types::HBIAGLPHICO};
 
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
@@ -561,6 +557,157 @@ pub mod rpg {
             pub _EntityType: EntityType,                           // 0x108
             pub _GroupID: u32,                                     // 0x10c
             pub _TickDelayFrameCount: u32,                         // 0x110
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct TurnBasedGameMode {
+            pub il2cpp_object: Il2CppObject,
+            pub _CurrentSkillCharacter: *const c_void,	// 0x10
+            pub _performParam: *const c_void,	// 0x18
+            pub StageBattleEventMgr__BackingField: *const c_void,	// 0x20
+            pub _ActionDelayChangeStamp: [u8; 0x18],	// 0x28
+            pub _allowQuitStates: *const Il2CppArray<Il2CppObject>,	// 0x40
+            pub BattleChangeAvatarManager__BackingField: *const c_void,	// 0x48
+            pub _SkillAddBuffPerformList: *const Il2CppArray<Il2CppObject>,	// 0x50
+            pub _EventProcessor: *const c_void,	// 0x58
+            pub LastKillSkill__BackingField: *const c_void,	// 0x60
+            pub _EntityCustomUnselectableDatas: *const Il2CppArray<Il2CppObject>,	// 0x68
+            pub _ModifierPerformCamerContext: *const c_void,	// 0x70
+            pub _UnselectableEntities: *const Il2CppArray<GameEntity>,	// 0x78
+            pub _AllTeamCharacters: *const Il2CppArray<GameEntity>,	// 0x80
+            pub _CachedDynamicSkillTargetSelection: *const GameEntity,	// 0x88
+            pub _LimboRevivableEntities: *const c_void,	// 0x90
+            pub _EvolveBuildGearMgr: *const c_void,	// 0x98
+            pub _OverrieWaveMonsterPerformDatas: *const Il2CppArray<Il2CppObject>,	// 0xa0
+            pub _LevelLockedFeatureSet: *const c_void,	// 0xa8
+            pub TurnActionDelayCostChangeSource__BackingField: *const GameEntity,	// 0xb0
+            pub OwnerBattleInstanceRef__BackingField: *const c_void,	// 0xb8
+            pub _LimboEntities: *const Il2CppArray<HBIAGLPHICO>,	// 0xc0
+            pub _TurnStateFSM: *const c_void,	// 0xc8
+            pub _AllOffTeamCharacters: *const Il2CppArray<GameEntity>,	// 0xd0
+            pub _LimboEntitiesWaitAbilityFinish: *const Il2CppArray<HBIAGLPHICO>,	// 0xd8
+            pub _ActionDelayLinkMgr: *const c_void,	// 0xe0
+            pub _WaitingAbilityList: *const Il2CppArray<Il2CppObject>,	// 0xe8
+            pub TimeGameStart: *const c_void,	// 0xf0
+            pub BattleCounter: *const c_void,	// 0xf8
+            pub SkillUsageLog__BackingField: *const c_void,	// 0x100
+            pub _VersusBarMgr: *const c_void,	// 0x108
+            pub LastSummonMonsterList: *const Il2CppArray<GameEntity>,	// 0x110
+            pub PerformDelayExecuteList: *const Il2CppArray<Il2CppObject>,	// 0x118
+            pub _SomatoModifierPerforms: *const Il2CppArray<Il2CppObject>,	// 0x120
+            pub _ActionEntityList: *const Il2CppArray<GameEntity>,	// 0x128
+            pub AssistantAvatarEntity__BackingField: *const GameEntity,	// 0x130
+            pub GridFightMananger__BackingField: *const c_void,	// 0x138
+            pub LastKillCaster__BackingField: *const GameEntity,	// 0x140
+            pub BattleEventInitedData__BackingField: *const c_void,	// 0x148
+            pub _SwordTrainingMgr: *const c_void,	// 0x150
+            pub _CurModifierPerformSeq: *const c_void,	// 0x158
+            pub _EntityModifierPerforms: *const c_void,	// 0x160
+            pub CurMainMonster__BackingField: *const GameEntity,	// 0x168
+            pub _LastBreakMonster: *const GameEntity,	// 0x170
+            pub _CurrentTurnActionEntity: *const GameEntity,	// 0x178
+            pub CurrentWaveMainMonsterIDPool__BackingField: u32,	// 0x180
+            pub _ActionEntityListSnapshot: *const Il2CppArray<GameEntity>,	// 0x188
+            pub _AidDetail: *const c_void,	// 0x190
+            pub _CurrentActionDelayModifyGroup: *const Il2CppArray<GameEntity>,	// 0x198
+            pub LastZombie__BackingField: *const GameEntity,	// 0x1a0
+            pub PrepareAbility__BackingField: *const c_void,	// 0x1a8
+            pub _AvatarChangeParam: *const c_void,	// 0x1b0
+            pub ThisTurnAnimEvents: *const c_void,	// 0x1b8
+            pub LastTurnSnapshot: *const c_void,	// 0x1c0
+            pub _RogueInBattleData: *const c_void,	// 0x1c8
+            pub _ReplayData: *const c_void,	// 0x1d0
+            pub _InsertAbilityList: *const Il2CppArray<Il2CppObject>,	// 0x1d8
+            pub _CurrentTurnTargetEntity: *const GameEntity,	// 0x1e0
+            pub DamageQueue__BackingField: *const c_void,	// 0x1e8
+            pub MonsterWaveTextInfo: *const c_void,	// 0x1f0
+            pub CurrentMVPEntity__BackingField: *const GameEntity,	// 0x1f8
+            pub ActionBarMgr__BackingField: *const c_void,	// 0x200
+            pub _LinkTeammateList: *const Il2CppArray<GameEntity>,	// 0x208
+            pub LastKillTargetList__BackingField: *const Il2CppArray<GameEntity>,	// 0x210
+            pub CurrentTurnOwnerEntity__BackingField: *const GameEntity,	// 0x218
+            pub _LimboEntitiesSkipSettlement: *const Il2CppArray<HBIAGLPHICO>,	// 0x220
+            pub _ActionDelayOrderTrigger: *const c_void,	// 0x228
+            pub _InsertUltraSkillParamsQueue: *const Il2CppArray<Il2CppObject>,	// 0x230
+            pub _PhaseModifierList: *const Il2CppArray<Il2CppObject>,	// 0x238
+            pub _CommonSkillPoolNames: *const c_void,	// 0x240
+            pub _RelationGroupMgr: *const c_void,	// 0x248
+            pub _AttackingEntityList: *const c_void,	// 0x250
+            pub _TurnCounter: u32,	// 0x258
+            pub _DarkTeamTurnCount: u32,	// 0x25c
+            pub WaveMonsterMaxCount__BackingField: i32,	// 0x260
+            pub MuteLastKillTriggered: bool,	// 0x264
+            pub AddOpCountOnInsertUltraWaitOrder: bool,	// 0x265
+            pub _RequireMakeLimboEntitiesDie: bool,	// 0x266
+            pub _AutoBattle: bool,	// 0x267
+            pub BattleResultState__BackingField: *const c_void,	// 0x268
+            pub ChallengeTurnLimitType__BackingField: [u8; 0x4],	// 0x270
+            pub LastKillFinish__BackingField: bool,	// 0x274
+            pub IsManualExitBattle: bool,	// 0x275
+            pub TurnOwnerPrepareAbilityUsed__BackingField: bool,	// 0x276
+            pub ApplyUIOperateOnSkillDisableChange: bool,	// 0x277
+            pub _ModifierPerformTimeScale: f32,	// 0x278
+            pub ChallengeTurnLimit__BackingField: u32,	// 0x27c
+            pub _HitPerformMinTimer: f32,	// 0x280
+            pub ElapsedActionDelay__BackingField: FixPoint,	// 0x288
+            pub CurrentInsertSkillSkipActionFlag: bool,	// 0x290
+            pub BattleResultAsWin: bool,	// 0x291
+            pub CertainlyLoseInAdvance__BackingField: bool,	// 0x292
+            pub _SkillExecutionEventState: [u8; 0x4],	// 0x294
+            pub CertainlyWinInAdvance__BackingField: bool,	// 0x298
+            pub PrepareAbilityFinish__BackingField: bool,	// 0x299
+            pub _LastReplayAutoBattle: bool,	// 0x29a
+            pub ApplyUIOperateOnDisableActionFlagChange: bool,	// 0x29b
+            pub _NextModifierIndex: i32,	// 0x29c
+            pub WinFlag: bool,	// 0x2a0
+            pub IsManualRetryExitBattle: bool,	// 0x2a1
+            pub LocalWinFlag__BackingField: [u8; 0x2],	// 0x2a2
+            pub ForbidAI: bool,	// 0x2a4
+            pub _ModifierEndingPerformRemainedTime: f32,	// 0x2a8
+            pub CurrentWaveStageID__BackingField: u32,	// 0x2ac
+            pub CurrentModeState__BackingField: [u8; 0x4],	// 0x2b0
+            pub _DeathVersion: u32,	// 0x2b4
+            pub ShowCutinUIState__BackingField: [u8; 0x4],	// 0x2b8
+            pub PauseState__BackingField: [u8; 0x4],	// 0x2bc
+            pub _ChallengeTurnAcc: u32,	// 0x2c0
+            pub _CachedDynamicSkillInput: [u8; 0x4],	// 0x2c4
+            pub _LightTeamTurnCount: u32,	// 0x2c8
+            pub TurnActionDelayCostRatio__BackingField: FixPoint,	// 0x2d0
+            pub CurrentWaveIndexInStage__BackingField: u32,	// 0x2d8
+            pub _NextAbilityIndex: i32,	// 0x2dc
+            pub TurnOwnerActionPhaseEnd__BackingField: bool,	// 0x2e0
+            pub ClearUltraSkillEffect: bool,	// 0x2e1
+            pub _IsUseLinkSkill: bool,	// 0x2e2
+            pub SkipDeathHandle__BackingField: bool,	// 0x2e3
+            pub _HoldFrameForCapture: u32,	// 0x2e4
+            pub _PrevTickModeState: [u8; 0x4],	// 0x2e8
+            pub RealTimeCounter__BackingField: f32,	// 0x2ec
+            pub _ModifierPerformTimeTotal: f32,	// 0x2f0
+            pub _ActionEntityListInited: bool,	// 0x2f4
+            pub IsActionOrder1UsedTBSkill__BackingField: bool,	// 0x2f5
+            pub _IsReplayBeingSaved: bool,	// 0x2f6
+            pub _GamePauseFlag: bool,	// 0x2f7
+            pub StanceCountDownSPChangeValue__BackingField: f32,	// 0x2f8
+            pub UseSkillOneMoreDefaultSkill: [u8; 0x4],	// 0x2fc
+            pub _OperationCounter: u32,	// 0x300
+            pub TurnEndKeep: bool,	// 0x304
+            pub IsTeamFormationExpansion__BackingField: bool,	// 0x305
+            pub _IsCreatingNewWave: bool,	// 0x306
+            pub _IsModifierPerformCameraSet: bool,	// 0x307
+            pub _ModifierPerformTimerTotal: f32,	// 0x308
+            pub _DamageCounter: u32,	// 0x30c
+            pub ThisTurnAnimEventCount: i32,	// 0x310
+            pub BattleFinishReason: [u8; 0x4],	// 0x314
+            pub PendingMonsterToWave__BackingField: bool,	// 0x318
+            pub SkipCameraDitherByLastKill: bool,	// 0x319
+            pub _HoldFrameForCaptureFlag: bool,	// 0x31a
+            pub IsUseSkillOneMore: bool,	// 0x31b
+            pub _OverrideAILocked: bool,	// 0x31c
+            pub AutoInsertUltraSkill: bool,	// 0x31d
+            pub IsLastKillTriggered: bool,	// 0x31e
+            pub _CurrentTurnActionEntitySkipActionFlag: bool,	// 0x31f
+            pub _WaveMonsterCurrentCount: i32,	// 0x320
+            pub _CurrentTurnTeam: TeamType	// 0x324
         }
     }
 }

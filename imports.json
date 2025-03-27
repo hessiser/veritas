@@ -1,0 +1,32 @@
+{
+    "imported_functions": [
+        "RPG.Client.UIGameEntityUtils.GetAvatarID",
+        "RPG.Client.AvatarModule.GetAvatar",
+        "RPG.Client.AvatarData.get_AvatarName",
+        "RPG.GameCore.AbilityStatic.GetActualOwner",
+        "RPG.GameCore.EntityManager._GetEntitySummoner",
+        "RPG.GameCore.GamePlayStatic.GetEntityManager",
+    ],
+    "hooked_functions": [
+        "DMFMLMJKKHB.OMPLOLLELLK",
+        "RPG.GameCore.TurnBasedGameMode._GameModeEnd",
+        "RPG.Client.BattleAssetPreload.SetBattleLineupData",
+        "RPG.GameCore.TurnBasedGameMode._MakeLimboEntityDie",
+        "RPG.GameCore.TurnBasedAbilityComponent.ProcessOnLevelTurnActionEndEvent"
+    ],
+    "types": [
+        "RPG.GameCore.FixPoint",
+        "RPG.GameCore.LineUpCharacter",
+        "RPG.GameCore.BattleLineupData",
+        "RPG.GameCore.GameEntity",
+        "RPG.Client.AvatarData",
+        "RPG.Client.ModuleManager",
+        "RPG.GameCore.EntityType",
+        "RPG.GameCore.TeamType",
+        "NOPBAAAGGLA",
+        "HBIAGLPHICO",
+        "RPG.Client.AvatarServantData",
+        "RPG.GameCore.EntityManager",
+        "RPG.GameCore.TurnBasedGameMode"
+    ]
+}
