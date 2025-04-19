@@ -1,16 +1,13 @@
 use anyhow::Result;
-use retour::static_detour;
 use std::{
-    cell::OnceCell,
     ffi::c_void,
     mem::{self},
     ptr::null_mut,
-    sync::Once,
 };
 use windows::{
-    core::{w, Interface, HRESULT},
+    core::{w, Interface},
     Win32::{
-        Foundation::{HMODULE, HWND, LPARAM, LRESULT, WPARAM},
+        Foundation::HMODULE,
         Graphics::{
             Direct3D::{D3D_DRIVER_TYPE_HARDWARE, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0},
             Direct3D11::{
@@ -19,27 +16,25 @@ use windows::{
             },
             Dxgi::{
                 Common::{
-                    DXGI_FORMAT, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_MODE_DESC,
+                    DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_MODE_DESC,
                     DXGI_MODE_SCALING_UNSPECIFIED, DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
                     DXGI_RATIONAL, DXGI_SAMPLE_DESC,
                 },
-                IDXGISwapChain, IDXGISwapChain_Vtbl, DXGI_PRESENT, DXGI_SWAP_CHAIN_DESC,
+                IDXGISwapChain, DXGI_SWAP_CHAIN_DESC,
                 DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH, DXGI_SWAP_EFFECT_DISCARD,
                 DXGI_USAGE_RENDER_TARGET_OUTPUT,
             },
         },
-        UI::{
-            Input::KeyboardAndMouse::VK_MENU,
+        UI::
             WindowsAndMessaging::{
-                CallWindowProcW, CreateWindowExW, DefWindowProcW, DestroyWindow, RegisterClassExW,
-                SetWindowLongPtrW, UnregisterClassW, CS_HREDRAW, CS_VREDRAW, GWLP_WNDPROC,
-                WINDOW_EX_STYLE, WM_KEYDOWN, WNDCLASSEXW, WNDPROC, WS_OVERLAPPEDWINDOW,
-            },
-        },
+                CreateWindowExW, DefWindowProcW, DestroyWindow, RegisterClassExW,
+                UnregisterClassW, CS_HREDRAW, CS_VREDRAW, WINDOW_EX_STYLE, WNDCLASSEXW, WS_OVERLAPPEDWINDOW,
+            }
+        ,
     },
 };
 
-use crate::ui::app::{self, App};
+use crate::ui::app::App;
 
 // rdbo Kiero
 // https://github.com/eugen15/directx-present-hook

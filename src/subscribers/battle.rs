@@ -78,7 +78,15 @@ fn on_damage(
         match (*attacker)._Team {
             TeamType::TeamLight => {
                 let damage = fixpoint_to_raw(&(*nopbaaaggla).JFKEEOMKMLI);
-                let attack_owner = AbilityStatic_GetActualOwner(attacker);
+                let attack_owner = {
+                    let attack_owner = AbilityStatic_GetActualOwner(attacker);
+                    if attack_owner.is_null() {
+                        attacker
+                    }
+                    else {
+                        attack_owner
+                    }
+                };
 
                 match (*attack_owner)._EntityType {
                     EntityType::Avatar => {
@@ -145,7 +153,16 @@ fn on_use_skill(
     log::debug!(function_name!());
     unsafe {
         let entity = ((*instance)._parent_object)._OwnerRef;
-        let skill_owner = AbilityStatic_GetActualOwner(entity);
+        let skill_owner = {
+            let skill_owner = AbilityStatic_GetActualOwner(entity);
+            if skill_owner.is_null() {
+                entity
+            }
+            else {
+                skill_owner
+            }
+        };
+
         let mut event: Option<Result<Event>> = None;
         match (*skill_owner)._Team {
             TeamType::TeamLight => {
@@ -270,7 +287,15 @@ fn on_combo(instance: *const MMNDIEBMDNL) {
         let turn_based_ability_component = (*instance).FIMNOPAAFEP;
         let skill_character_component = (*instance).HECCDOHIAFD;
         let entity = (*skill_character_component)._parent_object._OwnerRef;
-        let skill_owner = AbilityStatic_GetActualOwner(entity);
+        let skill_owner = {
+            let skill_owner = AbilityStatic_GetActualOwner(entity);
+            if skill_owner.is_null() {
+                entity
+            }
+            else {
+                skill_owner
+            }
+        };
 
         let mut event: Option<Result<Event>> = None;
         match (*skill_owner)._Team {
