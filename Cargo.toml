@@ -21,7 +21,7 @@ serde_json = "1.0.140"
 anyhow = "1.0.97"
 log = "0.4"
 egui = "0.31.1"
-egui_plot = "0.31.0"
+egui_plot = "0.32.1"
 edio11 = { git = "https://github.com/hessiser/edio11-rs.git", rev = "8127440" }
 
 egui_logger = "0.6.3"
