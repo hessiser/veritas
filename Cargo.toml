@@ -33,7 +33,7 @@ egui_colors = { version = "0.8.0", features = ["serde"] }
 log = "0.4"
 slog = { version = "2.7.0", features = ["max_level_trace", "release_max_level_trace"] }
 slog-term = "2.9.1"
-egui_logger = "0.6.3"
+egui_logger = "0.7.0"
 
 # Server
 axum = { version = "0.8.4" }
