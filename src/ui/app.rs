@@ -54,7 +54,7 @@ pub struct Settings {
     pub streamer_mode: bool,
     pub streamer_msg_size_pt: f32,
     pub streamer_msg: String,
-    pub fps: i32,
+    // pub fps: i32,
     pub colorix: Colorix,
 }
 
@@ -252,23 +252,23 @@ impl Overlay for App {
                                                     );
                                                 };
 
-                                                if ui
-                                                    .add(
-                                                        Slider::new(
-                                                            &mut self.settings.fps,
-                                                            10..=120,
-                                                        )
-                                                        .text(t!("FPS")),
-                                                    )
-                                                    .changed()
-                                                {
-                                                    self.config.set_fps(self.settings.fps);
-                                                    unsafe {
-                                                        Application_set_targetFrameRate(
-                                                            self.settings.fps,
-                                                        )
-                                                    };
-                                                }
+                                                // if ui
+                                                //     .add(
+                                                //         Slider::new(
+                                                //             &mut self.settings.fps,
+                                                //             10..=120,
+                                                //         )
+                                                //         .text(t!("FPS")),
+                                                //     )
+                                                //     .changed()
+                                                // {
+                                                //     self.config.set_fps(self.settings.fps);
+                                                //     unsafe {
+                                                //         Application_set_targetFrameRate(
+                                                //             self.settings.fps,
+                                                //         )
+                                                //     };
+                                                // }
 
                                                 if ui
                                                     .add(
@@ -456,8 +456,6 @@ impl Overlay for App {
                             {
                                 self.state.show_menu = !self.state.show_menu;
 
-                                // Add here because the game changes the FPS once the enter screen shows
-                                unsafe { Application_set_targetFrameRate(*self.config.get_fps()) };
 
                                 return Some(WindowProcessOptions {
                                     // Simulate alt to get cursor
@@ -530,7 +528,7 @@ impl App {
                 streamer_mode: *config.get_streamer_mode(),
                 streamer_msg_size_pt: *config.get_streamer_msg_size_pt(),
                 streamer_msg: config.get_streamer_msg().to_owned(),
-                fps: *config.get_fps(),
+                // fps: *config.get_fps(),
                 colorix: Colorix::global(&ctx, *config.get_theme()),
             },
             config,

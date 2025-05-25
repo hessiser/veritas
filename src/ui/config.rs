@@ -39,7 +39,7 @@ macro_rules! config {
 
 config!(
     locale: String,
-    fps: i32,
+    // fps: i32,
     widget_opacity: f32,
     streamer_mode: bool,
     streamer_msg: String,
@@ -52,7 +52,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             locale: rust_i18n::locale().to_string(),
-            fps: 60,
+            // fps: 60,
             widget_opacity: 0.15,
             streamer_mode: true,
             streamer_msg: String::new(),
