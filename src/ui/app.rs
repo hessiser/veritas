@@ -21,7 +21,6 @@ use windows::Win32::{
 };
 
 use crate::LOCALES;
-use crate::kreide::functions::unityengine::Application_set_targetFrameRate;
 
 use super::config::Config;
 use super::themes;

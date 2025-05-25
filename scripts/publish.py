@@ -32,11 +32,11 @@ def update_cargo_toml(update: str):
             if update == "MAJOR_PATCH":
                 patch.major += 1
                 patch.minor = 0
-                patch.revision = 0
+                patch.revision = 1
                 metadata["hotfix"] = "0.1"
             elif update == "MINOR_PATCH":
                 patch.minor += 1
-                patch.revision = 0
+                patch.revision = 1
                 metadata["hotfix"] = "0.1"
             elif update == "REVISION_PATCH":
                 patch.revision += 1
@@ -118,14 +118,13 @@ def main():
     build_with_cargo()
 
     metadata = read_cargo_toml()
-    region = metadata.get('region', 'unknown')
+    region = metadata.get('region')
     is_nightly = is_nightly_branch()
-    print(is_nightly)
-    is_beta = metadata.get('is_beta', False)
-    patch = metadata.get('patch', '0.0.0')
-    hotfix = metadata.get('hotfix', '0.0')
+    is_beta = metadata.get('is_beta')
+    patch = metadata.get('patch')
+    hotfix = metadata.get('hotfix')
 
-    commit_and_tag(patch, region, is_beta, hotfix, is_nightly)
+    # commit_and_tag(patch, region, is_beta, hotfix, is_nightly)
 
 if __name__ == "__main__":
     main()
