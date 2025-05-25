@@ -124,7 +124,7 @@ def main():
     patch = metadata.get('patch')
     hotfix = metadata.get('hotfix')
 
-    # commit_and_tag(patch, region, is_beta, hotfix, is_nightly)
+    commit_and_tag(patch, region, is_beta, hotfix, is_nightly)
 
 if __name__ == "__main__":
     main()
