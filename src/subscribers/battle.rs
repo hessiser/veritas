@@ -20,30 +20,6 @@ use function_name::named;
 use retour::static_detour;
 use std::ffi::c_void;
 
-static_detour! {
-    static ON_DAMAGE_Detour: fn(
-        *const c_void,
-        *const c_void,
-        *const NOPBAAAGGLA,
-        *const TurnBasedAbilityComponent,
-        *const TurnBasedAbilityComponent,
-        *const GameEntity,
-        *const GameEntity,
-        *const GameEntity,
-        bool,
-        *const c_void
-    ) -> bool;
-    static ON_COMBO_Detour: fn(*const MMNDIEBMDNL);
-    static ON_USE_SKILL_Detour: fn(*const SkillCharacterComponent, i32, *const c_void, bool, i32);
-    static ON_SET_LINEUP_Detour: fn(*const BattleAssetPreload, bool, *const c_void);
-    static ON_BATTLE_BEGIN_Detour: fn(*const TurnBasedGameMode);
-    static ON_BATTLE_END_Detour: fn(*const TurnBasedGameMode);
-    static ON_TURN_BEGIN_Detour: fn(*const TurnBasedGameMode);
-    static ON_TURN_END_Detour: fn(*const c_void, i32) -> *const c_void;
-    static ON_UPDATE_WAVE_Detour: fn (*const TurnBasedGameMode);
-    static ON_UPDATE_CYCLE_Detour: fn (*const TurnBasedGameMode) -> u32;
-}
-
 #[named]
 unsafe fn get_elapsed_av(game_mode: *const TurnBasedGameMode) -> f64 {
     log::debug!(function_name!());
@@ -163,7 +139,7 @@ fn on_use_skill(
     a3: *const c_void,
     a4: bool,
     skill_extra_use_param: i32,
-) {
+) -> bool {
     log::debug!(function_name!());
     unsafe {
         let entity = ((*instance)._parent_object)._OwnerRef;
@@ -288,7 +264,7 @@ fn on_use_skill(
         }
     }
 
-    ON_USE_SKILL_Detour.call(instance, skill_index, a3, a4, skill_extra_use_param);
+    ON_USE_SKILL_Detour.call(instance, skill_index, a3, a4, skill_extra_use_param)
 }
 
 // Insert skills are out of turn automatic skills
@@ -481,13 +457,13 @@ fn on_set_lineup(instance: *const BattleAssetPreload, a1: bool, a2: *const c_voi
         };
         BattleContext::handle_event(event);
     }
-    ON_SET_LINEUP_Detour.call(instance, a1, a2);
+    ON_SET_LINEUP_Detour.call(instance, a1, a2)
 }
 
 #[named]
 fn on_battle_begin(instance: *const TurnBasedGameMode) {
     log::debug!(function_name!());
-    ON_BATTLE_BEGIN_Detour.call(instance);
+    let res = ON_BATTLE_BEGIN_Detour.call(instance);
     unsafe {
         BattleContext::handle_event(Ok(Event::OnBattleBegin(OnBattleBeginEvent {
             max_waves: (*instance).WaveMonsterMaxCount__BackingField as _,
@@ -495,20 +471,22 @@ fn on_battle_begin(instance: *const TurnBasedGameMode) {
             stage_id: (*instance).CurrentWaveStageID__BackingField
         })));    
     }
+    res
 }
 
 #[named]
 fn on_battle_end(instance: *const TurnBasedGameMode) {
     log::debug!(function_name!());
-    ON_BATTLE_END_Detour.call(instance);
+    let res = ON_BATTLE_END_Detour.call(instance);
     BattleContext::handle_event(Ok(Event::OnBattleEnd));
+    res
 }
 
 #[named]
 fn on_turn_begin(instance: *const TurnBasedGameMode) {
     log::debug!(function_name!());
     // Update AV first
-    ON_TURN_BEGIN_Detour.call(instance);
+    let res = ON_TURN_BEGIN_Detour.call(instance);
 
     unsafe {
         let turn_owner = (*instance)._CurrentTurnActionEntity;
@@ -537,11 +515,11 @@ fn on_turn_begin(instance: *const TurnBasedGameMode) {
             }
         }
     }
-
+    res
 }
 
 #[named]
-fn on_turn_end(instance: *const c_void, a1: i32) -> *const c_void {
+fn on_turn_end(instance: *const TurnBasedAbilityComponent, a1: i32) {
     log::debug!(function_name!());
     // Can match player v enemy turn w/
     // RPG.GameCore.TurnBasedGameMode.GetCurrentTurnTeam
@@ -550,12 +528,13 @@ fn on_turn_end(instance: *const c_void, a1: i32) -> *const c_void {
 }
 
 pub fn on_update_wave(instance: *const TurnBasedGameMode) {
-    ON_UPDATE_WAVE_Detour.call(instance);
+    let res = ON_UPDATE_WAVE_Detour.call(instance);
     unsafe {
         BattleContext::handle_event(Ok(Event::OnUpdateWave(OnUpdateWaveEvent {
             wave: (*instance)._WaveMonsterCurrentCount as _,
         })));
     }
+    res
 }
 pub fn on_update_cycle(instance: *const TurnBasedGameMode) -> u32 {
     let cycle = ON_UPDATE_CYCLE_Detour.call(instance);
@@ -564,6 +543,26 @@ pub fn on_update_cycle(instance: *const TurnBasedGameMode) -> u32 {
     })));
     cycle
 }
+
+static_detour! {
+	static ON_DAMAGE_Detour: fn(*const c_void, *const c_void, *const NOPBAAAGGLA, *const TurnBasedAbilityComponent, *const TurnBasedAbilityComponent, *const GameEntity, *const GameEntity, *const GameEntity, bool, *const c_void) -> bool;
+	static ON_COMBO_Detour: fn(*const MMNDIEBMDNL);
+	static ON_USE_SKILL_Detour: fn(*const SkillCharacterComponent, i32, *const c_void, bool, i32) -> bool;
+	static ON_SET_LINEUP_Detour: fn(*const BattleAssetPreload, bool, *const c_void);
+	static ON_BATTLE_BEGIN_Detour: fn(*const TurnBasedGameMode);
+	static ON_BATTLE_END_Detour: fn(*const TurnBasedGameMode);
+	static ON_TURN_BEGIN_Detour: fn(*const TurnBasedGameMode);
+	static ON_TURN_END_Detour: fn(*const TurnBasedAbilityComponent, i32);
+	static ON_UPDATE_WAVE_Detour: fn(*const TurnBasedGameMode);
+	static ON_UPDATE_CYCLE_Detour: fn(*const TurnBasedGameMode) -> u32;
+	static ON_DIRECT_CHANGE_HP_Detour: fn(*const TurnBasedAbilityComponent, i32, FixPoint, *const c_void);
+	static ON_DIRECT_DAMAGE_HP_Detour: fn(*const TurnBasedAbilityComponent, FixPoint, i32, *const c_void, FixPoint, c_void);
+	static ON_STAT_CHANGE_Detour: fn(*const TurnBasedAbilityComponent, i32, i32, FixPoint, *const c_void);
+	static ON_ENTITY_DEFEATED_Detour: fn(*const TurnBasedAbilityComponent, *const GameEntity);
+	static ON_UPDATE_TEAM_FORMATION_Detour: fn(*const TeamFormationComponent);
+	static ON_INITIALIZE_ENEMY_Detour: fn(*const MonsterDataComponent, *const TurnBasedAbilityComponent);
+}
+
 pub fn subscribe() -> Result<()> {
     unsafe {
         subscribe_function!(
