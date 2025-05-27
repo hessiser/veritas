@@ -1071,91 +1071,85 @@ static_detour! {
 	static ON_UPDATE_TEAM_FORMATION_Detour: fn(*const TeamFormationComponent);
 	static ON_INITIALIZE_ENEMY_Detour: fn(*const MonsterDataComponent, *const TurnBasedAbilityComponent);
 }
-
 pub fn subscribe() -> Result<()> {
     unsafe {
         subscribe_function!(
             ON_DAMAGE_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x748e5f0,
+            *GAMEASSEMBLY_HANDLE + 0x7490630,
             on_damage
         );
-        subscribe_function!(ON_COMBO_Detour, *GAMEASSEMBLY_HANDLE + 0xc52d0b0, on_combo);
+        subscribe_function!(ON_COMBO_Detour, *GAMEASSEMBLY_HANDLE + 0xc5627b0, on_combo);
         subscribe_function!(
             ON_USE_SKILL_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7051f60,
+            *GAMEASSEMBLY_HANDLE + 0x7076490,
             on_use_skill
         );
         subscribe_function!(
             ON_SET_LINEUP_Detour,
-            *GAMEASSEMBLY_HANDLE + 0xcb4e000,
+            *GAMEASSEMBLY_HANDLE + 0xcb82710,
             on_set_lineup
         );
         subscribe_function!(
             ON_BATTLE_BEGIN_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7120490,
+            *GAMEASSEMBLY_HANDLE + 0x7145c80,
             on_battle_begin
         );
         subscribe_function!(
             ON_BATTLE_END_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7120670,
+            *GAMEASSEMBLY_HANDLE + 0x7145e60,
             on_battle_end
         );
         subscribe_function!(
             ON_TURN_BEGIN_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7119730,
+            *GAMEASSEMBLY_HANDLE + 0x713ef50,
             on_turn_begin
         );
         subscribe_function!(
             ON_TURN_END_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x70ff5e0,
+            *GAMEASSEMBLY_HANDLE + 0x71258b0,
             on_turn_end
         );
         subscribe_function!(
             ON_UPDATE_WAVE_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x711f6d0,
+            *GAMEASSEMBLY_HANDLE + 0x7144fd0,
             on_update_wave
         );
         subscribe_function!(
             ON_UPDATE_CYCLE_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x71282e0,
+            *GAMEASSEMBLY_HANDLE + 0x714d950,
             on_update_cycle
         );
         subscribe_function!(
             ON_DIRECT_CHANGE_HP_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x70a6700,
+            *GAMEASSEMBLY_HANDLE + 0x7116390,
             on_direct_change_hp
         );
         subscribe_function!(
             ON_DIRECT_DAMAGE_HP_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x70a5c70,
+            *GAMEASSEMBLY_HANDLE + 0x7115730,
             on_direct_damage_hp
         );
         subscribe_function!(
             ON_STAT_CHANGE_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x705aed0,
+            *GAMEASSEMBLY_HANDLE + 0x7108790,
             on_stat_change
         );
         subscribe_function!(
             ON_ENTITY_DEFEATED_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7104df0,
+            *GAMEASSEMBLY_HANDLE + 0x712a9a0,
             on_entity_defeated
         );
         subscribe_function!(
             ON_UPDATE_TEAM_FORMATION_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7082820,
+            *GAMEASSEMBLY_HANDLE + 0x70a56f0,
             on_update_team_formation
         );
         subscribe_function!(
             ON_INITIALIZE_ENEMY_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x70161f0,
+            *GAMEASSEMBLY_HANDLE + 0x703abb0,
             on_initialize_enemy
         );
+
         Ok(())
     }
 }
-
-// Interesting hierarchy
-// GameEntity -> _OwnerWorldRef -> BattleInstanceRef
-
-// Hmm is this good for hovering HP bar?
-// 	public UnityEngine.Transform TryGetSelectPointFromHitBoxGroup(RPG.GameCore.GameEntity) { }
