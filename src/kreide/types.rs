@@ -5,6 +5,29 @@ use crate::kreide::native_types::*;
 use std::ffi::c_void;
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
+pub struct OLHMAHMMBNN {
+    pub JBHFMCDFPPL: *const c_void,                    // 0x0
+    pub FKHHOBBFMEH: *const NativeString,              // 0x8
+    pub BAICECGKLBG: *const c_void,                    // 0x10
+    pub OAAMONICNLE: *const NativeArray<NativeObject>, // 0x18
+    pub MOIPJLBAODO: i32,                              // 0x20
+    pub NMJEMHAMIHD: i32,                              // 0x24
+    pub AHNHNPOCNDJ: bool,                             // 0x28
+    pub OBNPIDPHFDE: bool,                             // 0x29
+    pub EKFIDPFOILC: bool,                             // 0x2a
+    pub NMKBJGEONOJ: bool,                             // 0x2b
+    pub EDIDAHIELAG: *const c_void,                    // 0x30
+    pub OKHBBILFBND: [u8; 0x2],                        // 0x38
+    pub LDJAAEOOOLC: [u8; 0x2],                        // 0x3a
+    pub MHFEBJINMBP: bool,                             // 0x3c
+    pub AJENNABILJC: bool,                             // 0x3d
+    pub GJIMBAPCJLF: bool,                             // 0x3e
+    pub ODNBNHFLMCD: *const c_void,                    // 0x40
+    pub FGJEHAKCLNL: *const c_void,                    // 0x48
+    pub KGKBLOJMDPH: bool,                             // 0x50
+}
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
 pub struct NOPBAAAGGLA {
     pub native_object: NativeObject,
     pub HKFGOHGKOGK: *const c_void,                    // 0x10
@@ -158,29 +181,6 @@ pub struct MMNDIEBMDNL {
     pub OOIFIGDBNBO: i32,                            // 0x88
     pub NMJEMHAMIHD: i32,                            // 0x8c
     pub DADCNHAIOMI: i32,                            // 0x90
-}
-#[repr(C)]
-#[derive(Debug, Clone, Copy)]
-pub struct OLHMAHMMBNN {
-    pub JBHFMCDFPPL: *const c_void,                    // 0x0
-    pub FKHHOBBFMEH: *const NativeString,              // 0x8
-    pub BAICECGKLBG: *const c_void,                    // 0x10
-    pub OAAMONICNLE: *const NativeArray<NativeObject>, // 0x18
-    pub MOIPJLBAODO: i32,                              // 0x20
-    pub NMJEMHAMIHD: i32,                              // 0x24
-    pub AHNHNPOCNDJ: bool,                             // 0x28
-    pub OBNPIDPHFDE: bool,                             // 0x29
-    pub EKFIDPFOILC: bool,                             // 0x2a
-    pub NMKBJGEONOJ: bool,                             // 0x2b
-    pub EDIDAHIELAG: *const c_void,                    // 0x30
-    pub OKHBBILFBND: [u8; 0x2],                        // 0x38
-    pub LDJAAEOOOLC: [u8; 0x2],                        // 0x3a
-    pub MHFEBJINMBP: bool,                             // 0x3c
-    pub AJENNABILJC: bool,                             // 0x3d
-    pub GJIMBAPCJLF: bool,                             // 0x3e
-    pub ODNBNHFLMCD: *const c_void,                    // 0x40
-    pub FGJEHAKCLNL: *const c_void,                    // 0x48
-    pub KGKBLOJMDPH: bool,                             // 0x50
 }
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
@@ -491,6 +491,597 @@ pub mod rpg {
         use std::ffi::c_void;
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
+        pub struct SkillData {
+            pub native_object: NativeObject,
+            pub OverrideAnimState: *const NativeString, // 0x10
+            pub OverrideTargetInfo: *const c_void,      // 0x18
+            pub VisibleCondTask: *const c_void,         // 0x20
+            pub OverrideCameraConfig: *const c_void,    // 0x28
+            pub ParentSkillData: *const SkillData,      // 0x30
+            pub _Slot: *const c_void,                   // 0x38
+            pub DefaultTargetInfo: *const c_void,       // 0x40
+            pub SkillTypeOverride: *const c_void,       // 0x48
+            pub UsableConditionDatas: *const NativeList<NativeObject>, // 0x50
+            pub PreshowConditions: *const NativeArray<NativeObject>, // 0x58
+            pub SkillTriggerKey: *const NativeString,   // 0x60
+            pub CustomReadyConfigConditions: *const NativeArray<NativeObject>, // 0x68
+            pub Config: *const c_void,                  // 0x70
+            pub AllChildSkillDatas: *const NativeList<SkillData>, // 0x78
+            pub _SkillProperties: *const NativeArray<NativeObject>, // 0x80
+            pub OverrideCameraConfigAdded: *const c_void, // 0x88
+            pub RowData: *const c_void,                 // 0x90
+            pub SkillCom: *const SkillCharacterComponent, // 0x98
+            pub InsertCondTask: *const c_void,          // 0xa0
+            pub CommonActiveSkillID: u32,               // 0xa8
+            pub DefaultCoolDown: i32,                   // 0xac
+            pub CurrentCoolDown: i32,                   // 0xb0
+            pub SkillConfigID: u32,                     // 0xb4
+            pub ChildIndex: i32,                        // 0xb8
+            pub LeftCastTimes: i32,                     // 0xbc
+            pub AttackDamageTypePreshowAttach: i32,     // 0xc0
+            pub SkillIndex: i32,                        // 0xc4
+            pub MaxCastTimes: i32,                      // 0xc8
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct MonsterDataComponent {
+            pub _parent_object: CharacterDataComponent,      // 0x0
+            pub EnergyBarState: *const c_void,               // 0xe0
+            pub _DefaultPhaseConfig: *const c_void,          // 0xe8
+            pub _CreateParams: *const c_void,                // 0xf0
+            pub _MonsterRowData: *const MonsterRowData,      // 0xf8
+            pub _MultiActionCounter: *const c_void,          // 0x100
+            pub _CustomDataRef: *const c_void,               // 0x108
+            pub _PhaseMaxStanceStackIndex: i32,              // 0x110
+            pub IsMuteLastKill__BackingField: bool,          // 0x114
+            pub _CurrentPhaseHPRecovered: bool,              // 0x115
+            pub _DefaultMaxStance: FixPoint,                 // 0x118
+            pub _CurrentPhase: u32,                          // 0x120
+            pub MonsterIndexInWave: i32,                     // 0x124
+            pub _DefaultMaxHP: FixPoint,                     // 0x128
+            pub OverrideRankScore__BackingField: [u8; 0x10], // 0x130
+            pub MonsterWave: i32,                            // 0x140
+            pub _PhaseMaxHPStackIndex: i32,                  // 0x144
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct SkillCharacterComponent {
+            pub _parent_object: GameComponentBase, // 0x0
+            pub CurrentAimAtTargetList: *const NativeList<GameEntity>, // 0x18
+            pub CurrentAimAtMainTargetList: *const NativeList<GameEntity>, // 0x20
+            pub SkillPointEntity__BackingField: *const GameEntity, // 0x28
+            pub _SkillDataList: *const NativeList<SkillData>, // 0x30
+            pub _TBAbilityRef: *const TurnBasedAbilityComponent, // 0x38
+            pub CurrentSkillTargetCharacterId: *const c_void, // 0x40
+            pub AutoUseUltraParams: *const c_void, // 0x48
+            pub _recordAbilityInfo: [u8; 0x30],    // 0x50
+            pub CurrentSkillTargetDamageHP: *const c_void, // 0x80
+            pub CurrentSkillSubTargetList__BackingField: *const NativeList<GameEntity>, // 0x88
+            pub _SkillTargetRedirectEntries: *const NativeList<NativeObject>, // 0x90
+            pub OnSkillSetup: *const NativeList<NativeObject>, // 0x98
+            pub SkillActualAttacker__BackingField: *const GameEntity, // 0xa0
+            pub _SkillTypeDisableCountArr: *const NativeArray<i32>, // 0xa8
+            pub CurrentSkillTargetList__BackingField: *const NativeList<GameEntity>, // 0xb0
+            pub _SkillTypeDisableSlots: *const c_void, // 0xb8
+            pub _JsonConfigRef: *const CharacterConfig, // 0xc0
+            pub _CharacterDataRef: *const CharacterDataComponent, // 0xc8
+            pub _SkillTypeOverrideProperty: *const NativeArray<NativeObject>, // 0xd0
+            pub _SkillSlots: *const NativeArray<NativeObject>, // 0xd8
+            pub CurrentAimAtSubTargetList: *const NativeList<GameEntity>, // 0xe0
+            pub TaskContext__BackingField: *const c_void, // 0xe8
+            pub _hasRecordSkill: bool,             // 0xf0
+            pub _hasOpInSkill: bool,               // 0xf1
+            pub _AutoStandbyOnCurSkillFinish: bool, // 0xf2
+            pub PassiveUsed__BackingField: bool,   // 0xf3
+            pub SelfWaitActiveSkillIndex: i32,     // 0xf4
+            pub _SelfSkillPerformState: i32,       // 0xf8
+            pub _RedirectTargetIDIncr: i32,        // 0xfc
+            pub _TargetPerformTimeCounter: f32,    // 0x100
+            pub _CurrentSkillIndex: i32,           // 0x104
+            pub CharmAction: bool,                 // 0x108
+            pub IsNoBpCost__BackingField: bool,    // 0x109
+            pub _isPassive: bool,                  // 0x10a
+            pub IsNoSpCost__BackingField: bool,    // 0x10b
+            pub _OpIndexInSkill: i32,              // 0x10c
+            pub _RecordSkillExtraUseParam: i32,    // 0x110
+            pub _actionSkillIndex: i32,            // 0x114
+            pub CurrentSkillKillAllOrBoss: bool,   // 0x118
+            pub CurrentSkillHasTriggerEffect: bool, // 0x119
+            pub CurrentSkillBreakStance: bool,     // 0x11a
+            pub CurrentSkillKilledCount: i32,      // 0x11c
+            pub _CurrentSkillExtraUseParam: i32,   // 0x120
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct TurnBasedAbilityComponent {
+            pub _parent_object: GameComponentBase,          // 0x0
+            pub CustomDataRef__BackingField: *const c_void, // 0x18
+            pub RegardAsAttackTypeMap: *const NativeList<NativeObject>, // 0x20
+            pub _AbilityProperties: *const NativeArray<NativeObject>, // 0x28
+            pub _KillerEntity: *const GameEntity,           // 0x30
+            pub _SyncPropertySource: *const TurnBasedAbilityComponent, // 0x38
+            pub _StatusProbabilityDict: *const c_void,      // 0x40
+            pub LockActionDelayChange: *const c_void,       // 0x48
+            pub OverflowStanceDamageAttacker__BackingField: *const GameEntity, // 0x50
+            pub _ExtraStanceInfo: *const c_void,            // 0x58
+            pub _DamageStoreList: *const NativeList<NativeObject>, // 0x60
+            pub _ExtraMaxLayerConfig: *const NativeList<NativeObject>, // 0x68
+            pub _StancePreshowConfigs: *const NativeList<NativeObject>, // 0x70
+            pub CharmDamageAttackProperty: *const c_void,   // 0x78
+            pub _LockShieldCounter: *const c_void,          // 0x80
+            pub _DepartedParams: *const NativeList<NativeObject>, // 0x88
+            pub _EnableNegativeHPSourceList: *const NativeList<NativeObject>, // 0x90
+            pub _BuffLockStepSources: *const NativeList<NativeObject>, // 0x98
+            pub ProjectileTargetAttachPoint: *const NativeString, // 0xa0
+            pub _CharacterChangeParam: *const c_void,       // 0xa8
+            pub _ModifierEventSourceMuteCounter: *const c_void, // 0xb0
+            pub CharmDamageTarget: *const GameEntity,       // 0xb8
+            pub AbilityComponentRef__BackingField: *const c_void, // 0xc0
+            pub _TransformRef: *const c_void,               // 0xc8
+            pub CharmSkillName: *const NativeString,        // 0xd0
+            pub _DelayModifyActionDelayQueue: *const c_void, // 0xd8
+            pub _DamagedEntityListInAttack: *const NativeList<GameEntity>, // 0xe0
+            pub AddModifierBindValueMapping: *const c_void, // 0xe8
+            pub Weakness: *const c_void,                    // 0xf0
+            pub OnAbilityPropertyChanged: *const NativeList<NativeObject>, // 0xf8
+            pub _DefaultStanceInfo: *const c_void,          // 0x100
+            pub _CharacterChangeSource: *const GameEntity,  // 0x108
+            pub _AttackDamageLog: *const NativeList<NativeObject>, // 0x110
+            pub RegardAsSkillTypeMap: *const NativeList<NativeObject>, // 0x118
+            pub AdditionalAbilityParamList: *const NativeArray<NativeObject>, // 0x120
+            pub _ModifierDelayParamList: *const c_void,     // 0x128
+            pub _LockHPList: *const NativeList<NativeObject>, // 0x130
+            pub _StatusChanceResistanceDict: *const c_void, // 0x138
+            pub DisableActionStateByTask__BackingField: *const c_void, // 0x140
+            pub _AbilityToSkillMapping: *const c_void,      // 0x148
+            pub KillerSkill__BackingField: *const c_void,   // 0x150
+            pub DamageDefender: *const GameEntity,          // 0x158
+            pub _DamagedAllEntityIDListInAttack: *const c_void, // 0x160
+            pub _AbilityPropertiesInitSnapshot: *const NativeArray<FixPoint>, // 0x168
+            pub _SyncPropertyMask: *const c_void,           // 0x170
+            pub _JsonConfigRef: *const CharacterConfig,     // 0x178
+            pub _ModifierRecordList: *const c_void,         // 0x180
+            pub _MuteBehaviorFlags: *const c_void,          // 0x188
+            pub ResistModifierBehaviorFlags__BackingField: *const NativeList<NativeObject>, // 0x190
+            pub _DamageAttacker: *const GameEntity,         // 0x198
+            pub _DmgChunk: *const c_void,                   // 0x1a0
+            pub ModifierOverrideMapping: *const c_void,     // 0x1a8
+            pub _DotModifierEventProcessors: *const NativeList<NativeObject>, // 0x1b0
+            pub _OnHitEffectOverride: *const NativeList<NativeObject>, // 0x1b8
+            pub _OnHitEffectMultipleOverride: *const NativeList<NativeObject>, // 0x1c0
+            pub _ModifierEventProcessors: *const NativeArray<NativeObject>, // 0x1c8
+            pub _CharacterDataRef: *const CharacterDataComponent, // 0x1d0
+            pub _SelfExtrAbilityList: *const NativeList<NativeString>, // 0x1d8
+            pub _RedStanceInfoList: *const NativeList<NativeObject>, // 0x1e0
+            pub LastStanceBreakEntity__BackingField: *const GameEntity, // 0x1e8
+            pub _RedStanceInfo: *const c_void,              // 0x1f0
+            pub DamageSplitData: *const NativeList<NativeObject>, // 0x1f8
+            pub _EnergyPointEntries: *const NativeList<NativeObject>, // 0x200
+            pub _DebuffLockStepSources: *const NativeList<NativeObject>, // 0x208
+            pub _BuffLockStep: i32,                         // 0x210
+            pub _ModifierUIOperationIncr: i32,              // 0x214
+            pub InheritSPRatio: FixPoint,                   // 0x218
+            pub OverflowStanceDamage__BackingField: FixPoint, // 0x220
+            pub ActionDelayChanged__BackingField: [u8; 0x2], // 0x228
+            pub UseSpecialSP__BackingField: bool,           // 0x22a
+            pub LockSelfActionDelay: bool,                  // 0x22b
+            pub bIsInCharmAction: bool,                     // 0x22c
+            pub BattleTag__BackingField: *const c_void,     // 0x230
+            pub ActionDelayDistance__BackingField: FixPoint, // 0x238
+            pub _HighestPriorityOnHitEffect: i32,           // 0x240
+            pub LastStanceDamageType__BackingField: i32,    // 0x244
+            pub IsSnapshot__BackingField: bool,             // 0x248
+            pub MuteTriggerDeath__BackingField: bool,       // 0x249
+            pub _IsProcessingModifierDelayParam: bool,      // 0x24a
+            pub HasRevived: bool,                           // 0x24b
+            pub TriggerBreakExtendLogic: bool,              // 0x24c
+            pub IsTriggeredBlockDamage: bool,               // 0x24d
+            pub ForceKillFlag__BackingField: bool,          // 0x24e
+            pub _BreakExtendEventUnsettled: bool,           // 0x24f
+            pub _CurrentAttackPhase: i32,                   // 0x250
+            pub VisualFlagValue__BackingField: i32,         // 0x254
+            pub LastBreakStanceDamageType__BackingField: i32, // 0x258
+            pub CurrentAttackType__BackingField: AttackType, // 0x25c
+            pub StanceState__BackingField: i32,             // 0x260
+            pub PropertyChangeFlag__BackingField: bool,     // 0x264
+            pub _IsBehaviorFlagVisualDirty: bool,           // 0x265
+            pub IsSharedDamageDataTarget: bool,             // 0x266
+            pub IsTriggeringStanceCountDown__BackingField: bool, // 0x267
+            pub CharmDamageCount: i32,                      // 0x268
+            pub StanceType: i32,                            // 0x26c
+            pub SpeedVisualFlagValue__BackingField: i32,    // 0x270
+            pub _DeathVersion: u32,                         // 0x274
+            pub ForbidVisualFlagValue__BackingField: i32,   // 0x278
+            pub PropertyEnumBoundary__BackingField: AbilityProperty, // 0x27c
+            pub CharmDisableBPAdd: bool,                    // 0x280
+            pub IsInAttack: bool,                           // 0x281
+            pub IsForceActionable__BackingField: bool,      // 0x282
+            pub BlockModifySp__BackingField: bool,          // 0x283
+            pub _ResetStanceVersion: u32,                   // 0x284
+            pub _ModifierDelayAddCount: i32,                // 0x288
+            pub DeathSource__BackingField: i32,             // 0x28c
+            pub CharmDisableSPAdd: bool,                    // 0x290
+            pub MuteAllTriggerDeath__BackingField: bool,    // 0x291
+            pub InsertAbilityCount: i32,                    // 0x294
+            pub _DebuffLockStep: i32,                       // 0x298
+            pub ProjectileHitCount: i32,                    // 0x29c
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct EntityManager {
+            pub native_object: NativeObject,
+            pub _SnapshotEntityMap: *const c_void, // 0x10
+            pub PlayerGORoot__BackingField: *const c_void, // 0x18
+            pub _OwnerWorldRef: *const GameWorld,  // 0x20
+            pub _AllEntityDictionary: *const c_void, // 0x28
+            pub DataViewUISelectFadeInFollowEntities__BackingField: *const c_void, // 0x30
+            pub DataViewUISelectFadeInEntity__BackingField: *const GameEntity, // 0x38
+            pub _ServerEntityIDToEntityDict: *const c_void, // 0x40
+            pub _UniqueNamedEntityDictionary: *const c_void, // 0x48
+            pub GroupGORoot__BackingField: *const c_void, // 0x50
+            pub DataViewUILeaveSummonerOfUncreatedServant__BackingField: *const GameEntity, // 0x58
+            pub _PauseEntityTimeSlowIndexDic: *const NativeArray<NativeObject>, // 0x60
+            pub _ProcessEntityTeamChangeDelg: *const c_void, // 0x68
+            pub _AllTeamEntityList: *const NativeList<GameEntity>, // 0x70
+            pub DataViewUISelectFadeOutEntity__BackingField: *const GameEntity, // 0x78
+            pub _AllTeamEntity: *const NativeArray<GameEntity>, // 0x80
+            pub DataViewUISelectSummonerOfUncreatedServant__BackingField: *const GameEntity, // 0x88
+            pub LevelEntity__BackingField: *const GameEntity, // 0x90
+            pub _EntityUniqueNameDict: *const NativeList<NativeObject>, // 0x98
+            pub EntityGORoot__BackingField: *const c_void, // 0xa0
+            pub LittleGameGORoot__BackingField: *const c_void, // 0xa8
+            pub DataViewUISelectFadeOutSummonerEntity__BackingField: *const GameEntity, // 0xb0
+            pub _GroupEntityIDToEntityDict: *const c_void, // 0xb8
+            pub PerformanceGORoot__BackingField: *const c_void, // 0xc0
+            pub _UseUniqueSnapshot: bool,          // 0xc8
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct CharacterDataComponent {
+            pub _parent_object: GameComponentBase, // 0x0
+            pub Summoner: *const GameEntity,       // 0x18
+            pub _DynamicScaleAdaptConfigs: *const NativeArray<NativeObject>, // 0x20
+            pub _DummpyEntityList: *const NativeList<NativeObject>, // 0x28
+            pub _DynamicScaleAdaptEffectPathRule: *const c_void, // 0x30
+            pub _CharacterUICustomValueDict: *const c_void, // 0x38
+            pub _OverrideCharacterConfigParam: [u8; 0x48], // 0x40
+            pub HideDisplayInfoSkillNames: *const c_void, // 0x88
+            pub JsonConfig__BackingField: *const CharacterConfig, // 0x90
+            pub _RowData: *const c_void,           // 0x98
+            pub _DynamicScaleAdaptTypes: *const NativeArray<NativeObject>, // 0xa0
+            pub LocalOffsetAsMoveTarget__BackingField: [u8; 0xc], // 0xa8
+            pub LineupIndex: i32,                  // 0xb4
+            pub GridFightTag__BackingField: i32,   // 0xb8
+            pub LastActTurnCount__BackingField: u32, // 0xbc
+            pub SpawnTurnCount: u32,               // 0xc0
+            pub CharacterID__BackingField: u32,    // 0xc4
+            pub _SaveModelWhenDeadOverride: [u8; 0x2], // 0xc8
+            pub ShowSummonerUI__BackingField: bool, // 0xca
+            pub IsVisibleInViewMode__BackingField: bool, // 0xcb
+            pub ShowSummonedUI__BackingField: bool, // 0xcc
+            pub CreateReason: i32,                 // 0xd0
+            pub EnhancedState: i32,                // 0xd4
+            pub TriggerLimbo: bool,                // 0xd8
+            pub IsBodyPart: bool,                  // 0xd9
+            pub DisableRootYawMapping__BackingField: bool, // 0xda
+            pub DisableHeadLookAtActionEntityOverride: [u8; 0x0], // 0xdb
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct TurnBasedGameMode {
+            pub native_object: NativeObject,
+            pub _LastBreakMonster: *const GameEntity, // 0x10
+            pub _ActionEntityList: *const NativeList<GameEntity>, // 0x18
+            pub _EntityModifierPerforms: *const c_void, // 0x20
+            pub _CurrentSkillCharacter: *const SkillCharacterComponent, // 0x28
+            pub _SomatoModifierPerforms: *const NativeList<NativeObject>, // 0x30
+            pub _ActionEntityListSnapshot: *const NativeList<GameEntity>, // 0x38
+            pub _OverrieWaveMonsterPerformDatas: *const NativeList<NativeObject>, // 0x40
+            pub _LinkTeammateList: *const NativeList<GameEntity>, // 0x48
+            pub _LimboEntities: *const NativeList<NativeObject>, // 0x50
+            pub _UnselectableParams: *const NativeList<NativeObject>, // 0x58
+            pub StageBattleEventMgr__BackingField: *const c_void, // 0x60
+            pub _ActionDelayLinkMgr: *const c_void,   // 0x68
+            pub PerformDelayExecuteList: *const NativeList<NativeObject>, // 0x70
+            pub _RogueInBattleData: *const c_void,    // 0x78
+            pub _CurrentTurnTargetEntity: *const GameEntity, // 0x80
+            pub _CurrentActionDelayModifyGroup: *const NativeList<GameEntity>, // 0x88
+            pub _VersusBarMgr: *const c_void,         // 0x90
+            pub AssistantAvatarEntity__BackingField: *const GameEntity, // 0x98
+            pub _ActionDelayRedirectManager: *const c_void, // 0xa0
+            pub _InsertAbilityList: *const NativeList<MMNDIEBMDNL>, // 0xa8
+            pub PrepareAbility__BackingField: *const c_void, // 0xb0
+            pub BattleEventInitedData__BackingField: *const c_void, // 0xb8
+            pub _LevelLockedFeatureSet: *const c_void, // 0xc0
+            pub _InsertUltraSkillParamsQueue: *const NativeList<NativeObject>, // 0xc8
+            pub TurnActionDelayCostChangeSource__BackingField: *const GameEntity, // 0xd0
+            pub TimeGameStart: *const c_void,         // 0xd8
+            pub LastSummonMonsterList: *const NativeList<GameEntity>, // 0xe0
+            pub _LimboEntitiesWaitAbilityFinish: *const NativeList<NativeObject>, // 0xe8
+            pub _allowQuitStates: *const NativeList<NativeObject>, // 0xf0
+            pub _LimboEntitiesSkipSettlement: *const NativeList<NativeObject>, // 0xf8
+            pub _CommonSkillPoolNames: *const c_void, // 0x100
+            pub GridFightMananger__BackingField: *const c_void, // 0x108
+            pub _CurrentTurnActionEntity: *const GameEntity, // 0x110
+            pub _EntityCustomUnselectableDatas: *const NativeList<NativeObject>, // 0x118
+            pub _SwordTrainingMgr: *const c_void,     // 0x120
+            pub _ModifierPerformCamerContext: *const c_void, // 0x128
+            pub _performParam: *const c_void,         // 0x130
+            pub BattleCounter: *const c_void,         // 0x138
+            pub _CurModifierPerformSeq: *const c_void, // 0x140
+            pub ThisTurnAnimEvents: *const c_void,    // 0x148
+            pub _EventProcessor: *const c_void,       // 0x150
+            pub _MainMonster: *const GameEntity,      // 0x158
+            pub _SkillAddBuffPerformList: *const NativeList<NativeObject>, // 0x160
+            pub _ReplayData: *const c_void,           // 0x168
+            pub CurrentMVPEntity__BackingField: *const GameEntity, // 0x170
+            pub _CachedDynamicSkillTargetSelection: *const GameEntity, // 0x178
+            pub _AttackingEntityList: *const c_void,  // 0x180
+            pub DamageQueue__BackingField: *const c_void, // 0x188
+            pub LastKillCaster__BackingField: *const GameEntity, // 0x190
+            pub _EvolveBuildGearMgr: *const c_void,   // 0x198
+            pub _TurnStateFSM: *const c_void,         // 0x1a0
+            pub LastTurnSnapshot: *const c_void,      // 0x1a8
+            pub CurrentTurnOwnerEntity__BackingField: *const GameEntity, // 0x1b0
+            pub _WaitingAbilityList: *const NativeList<NativeObject>, // 0x1b8
+            pub _AllOffTeamCharacters: *const NativeList<GameEntity>, // 0x1c0
+            pub _PhaseModifierList: *const NativeList<NativeObject>, // 0x1c8
+            pub _ActionDelayOrderTrigger: *const c_void, // 0x1d0
+            pub BattleChangeAvatarManager__BackingField: *const c_void, // 0x1d8
+            pub _FateBattleManager: *const c_void,    // 0x1e0
+            pub BattleAIPublicKnowledge__BackingField: *const c_void, // 0x1e8
+            pub LastKillSkill__BackingField: *const c_void, // 0x1f0
+            pub ActionBarMgr__BackingField: *const c_void, // 0x1f8
+            pub CurrentWaveMainMonsterIDPool__BackingField: *const NativeArray<u32>, // 0x200
+            pub OwnerBattleInstanceRef__BackingField: *const BattleInstance, // 0x208
+            pub _ActionDelayChangeStamp: [u8; 0x18],  // 0x210
+            pub _AllTeamCharacters: *const NativeList<GameEntity>, // 0x228
+            pub _LimboRevivableEntities: *const NativeList<NativeObject>, // 0x230
+            pub _RelationGroupMgr: *const c_void,     // 0x238
+            pub LastKillTargetList__BackingField: *const NativeList<GameEntity>, // 0x240
+            pub SkillUsageLog__BackingField: *const c_void, // 0x248
+            pub _AidDetail: *const c_void,            // 0x250
+            pub _AvatarChangeParam: *const c_void,    // 0x258
+            pub LastZombie__BackingField: *const GameEntity, // 0x260
+            pub _ImmediateActionEntities: *const c_void, // 0x268
+            pub MonsterWaveTextInfo: *const c_void,   // 0x270
+            pub PrepareAbilityFinish__BackingField: bool, // 0x278
+            pub IsManualExitBattle: bool,             // 0x279
+            pub LastKillFinish__BackingField: bool,   // 0x27a
+            pub _IsReplayBeingSaved: bool,            // 0x27b
+            pub BattleResultAsWin: bool,              // 0x27c
+            pub CertainlyLoseInAdvance__BackingField: bool, // 0x27d
+            pub TurnOwnerPrepareAbilityUsed__BackingField: bool, // 0x27e
+            pub SkipDeathHandle__BackingField: bool,  // 0x27f
+            pub ThisTurnAnimEventCount: i32,          // 0x280
+            pub _ModifierPerformTimeTotal: f32,       // 0x284
+            pub TurnActionDelayCostRatio__BackingField: FixPoint, // 0x288
+            pub PropagateBeingAttackTeam__BackingField: TeamType, // 0x290
+            pub _SkillExecutionEventState: i32,       // 0x294
+            pub ChallengeTurnLimitType__BackingField: i32, // 0x298
+            pub _CurrentTurnTeam: TeamType,           // 0x29c
+            pub BattleFinishReason: i32,              // 0x2a0
+            pub StanceCountDownSPChangeValue__BackingField: f32, // 0x2a4
+            pub _WaveMonsterCurrentCount: i32,        // 0x2a8
+            pub _LightTeamTurnCount: u32,             // 0x2ac
+            pub WaveMonsterMaxCount__BackingField: i32, // 0x2b0
+            pub _ChallengeTurnAcc: u32,               // 0x2b4
+            pub AddOpCountOnInsertUltraWaitOrder: bool, // 0x2b8
+            pub IsTeamFormationExpansion__BackingField: bool, // 0x2b9
+            pub _IsUseLinkSkill: bool,                // 0x2ba
+            pub IsUseSkillOneMore: bool,              // 0x2bb
+            pub _ModifierEndingPerformRemainedTime: f32, // 0x2bc
+            pub CurrentModeState__BackingField: i32,  // 0x2c0
+            pub _HoldFrameForCapture: u32,            // 0x2c4
+            pub RealTimeCounter__BackingField: f32,   // 0x2c8
+            pub _HoldFrameForCaptureFlag: bool,       // 0x2cc
+            pub LockTeamZOffset__BackingField: bool,  // 0x2cd
+            pub LocalWinFlag__BackingField: [u8; 0x2], // 0x2ce
+            pub IsManualRetryExitBattle: bool,        // 0x2d0
+            pub ApplyUIOperateOnDisableActionFlagChange: bool, // 0x2d1
+            pub MuteLastKillTriggered: bool,          // 0x2d2
+            pub _GamePauseFlag: bool,                 // 0x2d3
+            pub _OverrideAILocked: bool,              // 0x2d4
+            pub _OperationCounter: u32,               // 0x2d8
+            pub CurrentTurnActionEntityContinuousActionCount__BackingField: u32, // 0x2dc
+            pub _RecordOperationByLG: [u8; 0x8],      // 0x2e0
+            pub _DeathVersion: u32,                   // 0x2e8
+            pub _ModifierPerformTimeScale: f32,       // 0x2ec
+            pub ForbidAI: bool,                       // 0x2f0
+            pub _LastReplayAutoBattle: bool,          // 0x2f1
+            pub _AutoBattle: bool,                    // 0x2f2
+            pub ClearUltraSkillEffect: bool,          // 0x2f3
+            pub PendingMonsterToWave__BackingField: bool, // 0x2f4
+            pub _CurrentTurnActionEntitySkipActionFlag: bool, // 0x2f5
+            pub WinFlag: bool,                        // 0x2f6
+            pub TurnOwnerActionPhaseEnd__BackingField: bool, // 0x2f7
+            pub BattleResultState__BackingField: [u8; 0x8], // 0x2f8
+            pub _RecordParamByLG: u32,                // 0x300
+            pub PauseState__BackingField: i32,        // 0x304
+            pub ApplyUIOperateOnSkillDisableChange: bool, // 0x308
+            pub IsLastKillTriggered: bool,            // 0x309
+            pub CurrentInsertSkillSkipActionFlag: bool, // 0x30a
+            pub _ActionEntityListInited: bool,        // 0x30b
+            pub _NextAbilityIndex: i32,               // 0x30c
+            pub ClearUltraSkillQueue__BackingField: bool, // 0x310
+            pub _IsModifierPerformCameraSet: bool,    // 0x311
+            pub _DarkTeamTurnCount: u32,              // 0x314
+            pub CurrentWaveIndexInStage__BackingField: u32, // 0x318
+            pub CurrentWaveStageID__BackingField: u32, // 0x31c
+            pub _CachedDynamicSkillInput: i32,        // 0x320
+            pub _HitPerformMinTimer: f32,             // 0x324
+            pub _ModifierPerformTimerTotal: f32,      // 0x328
+            pub _PrevTickModeState: i32,              // 0x32c
+            pub _TurnCounter: u32,                    // 0x330
+            pub _RequireMakeLimboEntitiesDie: bool,   // 0x334
+            pub SkipTurnOwnerActionFlag__BackingField: bool, // 0x335
+            pub CertainlyWinInAdvance__BackingField: bool, // 0x336
+            pub TurnEndKeep: bool,                    // 0x337
+            pub _DamageCounter: u32,                  // 0x338
+            pub ShowCutinUIState__BackingField: i32,  // 0x33c
+            pub ElapsedActionDelay__BackingField: FixPoint, // 0x340
+            pub UseSkillOneMoreDefaultSkill: i32,     // 0x348
+            pub ChallengeTurnLimit__BackingField: u32, // 0x34c
+            pub AutoInsertUltraSkill: bool,           // 0x350
+            pub IsActionOrder1UsedTBSkill__BackingField: bool, // 0x351
+            pub SkipCameraDitherByLastKill: bool,     // 0x352
+            pub _IsCreatingNewWave: bool,             // 0x353
+            pub _NextModifierIndex: i32,              // 0x354
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct LineUpCharacter {
+            pub native_object: NativeObject,
+            pub ChangedSkillTreePointList: *const NativeArray<NativeObject>, // 0x10
+            pub SkillTreePointList: *const NativeArray<NativeObject>,        // 0x18
+            pub BattleGridAvatarData: *const c_void,                         // 0x20
+            pub BattleEquipmentList: *const NativeArray<NativeObject>,       // 0x28
+            pub SpiritPassiveList: *const NativeArray<u32>,                  // 0x30
+            pub BattleRelicItemModule: *const c_void,                        // 0x38
+            pub CharacterRank: u32,                                          // 0x40
+            pub Index: u32,                                                  // 0x44
+            pub CharacterLevel: u32,                                         // 0x48
+            pub SpiritLineupType: i32,                                       // 0x4c
+            pub WorldLevel: u32,                                             // 0x50
+            pub CharacterSP_Numerator: FixPoint,                             // 0x58
+            pub AssistUid: u32,                                              // 0x60
+            pub TotalPower: u32,                                             // 0x64
+            pub CharacterSP_Denominator: FixPoint,                           // 0x68
+            pub EnhancedID: u32,                                             // 0x70
+            pub CharacterPromotion: u32,                                     // 0x74
+            pub CharacterAvatarType: i32,                                    // 0x78
+            pub SpecialAvatarID: u32,                                        // 0x7c
+            pub CharacterHPRatio: FixPoint,                                  // 0x80
+            pub CharacterID: u32,                                            // 0x88
+            pub CharacterRowIndex: u32,                                      // 0x8c
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct TeamFormationComponent {
+            pub _parent_object: GameComponentBase, // 0x0
+            pub WaveOfMonsterRuntimeID__BackingField: *const NativeList<u32>, // 0x18
+            pub _Random: *const c_void,            // 0x20
+            pub _CurrentLightTeamFightFormationConfig: *const c_void, // 0x28
+            pub _LastRefreshLocationTemplateConfigName: *const NativeString, // 0x30
+            pub _CurrentDarkTeamFightFormationConfig: *const c_void, // 0x38
+            pub _multiRowTargetSelector: *const c_void, // 0x40
+            pub _AllTeammateCopy: *const NativeList<GameEntity>, // 0x48
+            pub _GridFormationConfig: *const c_void, // 0x50
+            pub _CurrentUseTemplateConfigName: *const NativeString, // 0x58
+            pub _FormationDatasNormal: *const NativeList<EDJEDBLFIKE>, // 0x60
+            pub _FormationInCameraSpace: *const NativeList<GameEntity>, // 0x68
+            pub _CustomUpdateFormationDatas: *const NativeList<EDJEDBLFIKE>, // 0x70
+            pub _AllTeammate: *const NativeList<GameEntity>, // 0x78
+            pub _DefaultLocationExtCfgs2: *const NativeArray<NativeObject>, // 0x80
+            pub _TeamFormationDatas: *const NativeList<EDJEDBLFIKE>, // 0x88
+            pub _RecordFormationIndices: *const c_void, // 0x90
+            pub _CurrentCustomFormationName: *const NativeString, // 0x98
+            pub _TeamRefreshLocationContext: *const c_void, // 0xa0
+            pub _DefaultFormationCenter: *const EDJEDBLFIKE, // 0xa8
+            pub _DefaultLocationExtCfgs: *const NativeArray<NativeObject>, // 0xb0
+            pub _UseCustomFormationMembers: *const c_void, // 0xb8
+            pub _FormationSnapshots: *const c_void, // 0xc0
+            pub LocationRootWorldPos__BackingField: [u8; 0xc], // 0xc8
+            pub _IsGridFightTeamFormation: bool,   // 0xd4
+            pub _HasCustomTeamFormation: bool,     // 0xd5
+            pub _AutoBalanceDefaultFormation: bool, // 0xd6
+            pub _IsTeammateDirty: bool,            // 0xd7
+            pub _Team: TeamType,                   // 0xd8
+            pub _TeamDistanceCache: f32,           // 0xdc
+            pub _RemoveVersionCounter: u32,        // 0xe0
+            pub _MaxLocationCount: i32,            // 0xe4
+            pub _TeamZOffset: f32,                 // 0xe8
+            pub _CustomFormationCenter: [u8; 0xc], // 0xec
+            pub _dataViewRestoreData: [u8; 0xc],   // 0xf8
+            pub _FormationForceWidthMin: f32,      // 0x104
+            pub _ServantFormationState: i32,       // 0x108
+            pub _LastDieTeammatePos: [u8; 0x8],    // 0x10c
+            pub ComfortZoneWidthOverride__BackingField: f32, // 0x114
+            pub FormationCenterWorldPosFromBoundBox__BackingField: [u8; 0xc], // 0x118
+            pub _gridUnitWidth: f32,               // 0x124
+            pub FormationCenterWorldPos__BackingField: [u8; 0xc], // 0x128
+            pub AliveEntitiesFormationCenterWorldPos__BackingField: [u8; 0xc], // 0x134
+            pub FormationWidth__BackingField: f32, // 0x140
+            pub _CurrentFormationType: i32,        // 0x144
+            pub _CustomFormationCenterFromBoundBox: [u8; 0xc], // 0x148
+            pub _CustomFormationCenterDirty: bool, // 0x154
+            pub _IsInited: bool,                   // 0x155
+            pub _IsLocationDirty: bool,            // 0x156
+            pub TeamFaceDir__BackingField: f32,    // 0x158
+            pub LockFormationRefresh__BackingField: bool, // 0x15c
+            pub _InverseFlag: bool,                // 0x15d
+            pub _TeamActiveRowAliveStateFilter: [u8; 0x2], // 0x15e
+            pub _FormationForceWidthMax: f32,      // 0x160
+            pub TeamRotation__BackingField: [u8; 0x10], // 0x164
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct FixPoint {
+            pub m_rawValue: i64, // 0x0
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct GameWorld {
+            pub native_object: NativeObject,
+            pub BattleModeRef__BackingField: *const c_void, // 0x10
+            pub EntityBeforeDyingCallback: *const c_void,   // 0x18
+            pub _LevelAreaManager: *const c_void,           // 0x20
+            pub _Modules: *const NativeList<NativeObject>,  // 0x28
+            pub BattleInstanceRef__BackingField: *const BattleInstance, // 0x30
+            pub _EnterDyingEntityList: *const NativeList<GameEntity>, // 0x38
+            pub TimeScaleStack__BackingField: *const c_void, // 0x40
+            pub _EntityManager: *const EntityManager,       // 0x48
+            pub _NeedTickModules: *const NativeList<NativeObject>, // 0x50
+            pub _DeferDeleteEntityList: *const NativeList<GameEntity>, // 0x58
+            pub _EventManager: *const c_void,               // 0x60
+            pub _EntityTickList: *const c_void,             // 0x68
+            pub DamageDataStack__BackingField: *const c_void, // 0x70
+            pub EntityWillDestroyCallback: *const c_void,   // 0x78
+            pub _GlobalTimeScaleDatas: *const NativeList<NativeObject>, // 0x80
+            pub _EntityList: *const NativeList<GameEntity>, // 0x88
+            pub _TickedEntityListPerFrame: *const NativeList<GameEntity>, // 0x90
+            pub _DyingEntityList: *const NativeList<NativeObject>, // 0x98
+            pub MonoEffectManagerRef: *const c_void,        // 0xa0
+            pub NewEntityCallback: *const c_void,           // 0xa8
+            pub LogicRandom: *const c_void,                 // 0xb0
+            pub EntityDiedCallback: *const c_void,          // 0xb8
+            pub _NeedLateUpdateModules: *const NativeList<NativeObject>, // 0xc0
+            pub _PrefabGameObjectMap: *const c_void,        // 0xc8
+            pub _GPTimelineHierarchyManager: *const c_void, // 0xd0
+            pub EntityReviveCallback: *const c_void,        // 0xd8
+            pub ParamRegister__BackingField: *const c_void, // 0xe0
+            pub UnscaledDeltaTime__BackingField: f32,       // 0xe8
+            pub _IDFactory: u32,                            // 0xec
+            pub _IsPause: bool,                             // 0xf0
+            pub IsBattleGameWorld__BackingField: bool,      // 0xf1
+            pub _IsDisposing: bool,                         // 0xf2
+            pub _IsInTick: bool,                            // 0xf3
+            pub _IDFactory_ClientOnly: u32,                 // 0xf4
+            pub _BalanceTickDurationTime: f32,              // 0xf8
+            pub _BalanceTickDurationBucket: i32,            // 0xfc
+            pub _IDFactory_Battle: u32,                     // 0x100
+            pub _NextTickDeferDeleteCount: i32,             // 0x104
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct ServantSkillRowData {
+            pub native_object: NativeObject,
+            pub _Row: *const c_void,              // 0x10
+            pub _OverrideData: [u8; 0xf0],        // 0x18
+            pub _Config: *const c_void,           // 0x108
+            pub _DefaultOverrideData: [u8; 0xe8], // 0x110
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct BattleEventSkillRowData {
+            pub native_object: NativeObject,
+            pub _Row: *const c_void,              // 0x10
+            pub _DefaultOverrideData: [u8; 0xf0], // 0x18
+            pub _Config: *const c_void,           // 0x108
+            pub _OverrideData: [u8; 0xe8],        // 0x110
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
         pub struct CharacterConfig {
             pub _parent_object: NativeObject,                          // 0x0
             pub SomatoType: i32,                                       // 0x10
@@ -563,13 +1154,45 @@ pub mod rpg {
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy, PartialEq)]
-        pub enum TeamType {
-            TeamUnknow = 0,
-            TeamLight = 1,
-            TeamDark = 2,
-            TeamNeutral = 3,
-            TeamNPC = 4,
-            Count = 5,
+        pub enum EntityType {
+            None = 0,
+            Avatar = 1,
+            Monster = 2,
+            LocalPlayer = 3,
+            NPC = 4,
+            NPCMonster = 5,
+            StoryCharacter = 6,
+            Prop = 7,
+            Mission = 8,
+            LevelEntity = 9,
+            Neutral = 10,
+            AtmoNpc = 11,
+            BattleEvent = 12,
+            TutorialEntity = 13,
+            Team = 14,
+            Partner = 15,
+            LevelGraph = 16,
+            Snapshot = 17,
+            TeamFormation = 18,
+            Model = 19,
+            UICamera = 20,
+            District = 21,
+            GlobalShield = 22,
+            CustomData = 23,
+            Simple = 24,
+            PuzzleGameObjectProp = 25,
+            PerformanceLevelGraph = 26,
+            Group = 27,
+            ChessCharacter = 28,
+            ChessTerrain = 29,
+            SummonUnit = 30,
+            LittleGameInstance = 31,
+            Servant = 32,
+            PreviewShow = 33,
+            LittleGameContainer = 34,
+            LittleGameViewProxy = 35,
+            GridFightBackend = 36,
+            DummyEntity = 37,
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy, PartialEq)]
@@ -773,22 +1396,22 @@ pub mod rpg {
             Count = 196,
         }
         #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct BattleEventDataComponent {
-            pub _parent_object: CharacterDataComponent,          // 0x0
-            pub _TBAbilityRef: *const TurnBasedAbilityComponent, // 0xe0
-            pub BattleEventConfig__BackingField: *const c_void,  // 0xe8
-            pub _EnergyBarState: *const c_void,                  // 0xf0
-            pub SourceCaster__BackingField: *const GameEntity,   // 0xf8
-            pub _BattleEventRowData: *const c_void,              // 0x100
-            pub CreateParams__BackingField: *const c_void,       // 0x108
-            pub WarningChallengeTurnLeft: u32,                   // 0x110
-            pub BattleEventTotalDamageType: TeamType,            // 0x114
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct FixPoint {
-            pub m_rawValue: i64, // 0x0
+        #[derive(Debug, Clone, Copy, PartialEq)]
+        pub enum AttackType {
+            Unknown = 0,
+            Normal = 1,
+            BPSkill = 2,
+            Ultra = 3,
+            QTE = 4,
+            DOT = 5,
+            Pursued = 6,
+            Maze = 7,
+            MazeNormal = 8,
+            Insert = 9,
+            ElementDamage = 10,
+            Level = 11,
+            Servant = 12,
+            TrueDamage = 13,
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
@@ -820,259 +1443,47 @@ pub mod rpg {
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
-        pub struct SkillData {
+        pub struct MonsterRowData {
             pub native_object: NativeObject,
-            pub OverrideAnimState: *const NativeString, // 0x10
-            pub OverrideTargetInfo: *const c_void,      // 0x18
-            pub VisibleCondTask: *const c_void,         // 0x20
-            pub OverrideCameraConfig: *const c_void,    // 0x28
-            pub ParentSkillData: *const SkillData,      // 0x30
-            pub _Slot: *const c_void,                   // 0x38
-            pub DefaultTargetInfo: *const c_void,       // 0x40
-            pub SkillTypeOverride: *const c_void,       // 0x48
-            pub UsableConditionDatas: *const NativeList<NativeObject>, // 0x50
-            pub PreshowConditions: *const NativeArray<NativeObject>, // 0x58
-            pub SkillTriggerKey: *const NativeString,   // 0x60
-            pub CustomReadyConfigConditions: *const NativeArray<NativeObject>, // 0x68
-            pub Config: *const c_void,                  // 0x70
-            pub AllChildSkillDatas: *const NativeList<SkillData>, // 0x78
-            pub _SkillProperties: *const NativeArray<NativeObject>, // 0x80
-            pub OverrideCameraConfigAdded: *const c_void, // 0x88
-            pub RowData: *const c_void,                 // 0x90
-            pub SkillCom: *const SkillCharacterComponent, // 0x98
-            pub InsertCondTask: *const c_void,          // 0xa0
-            pub CommonActiveSkillID: u32,               // 0xa8
-            pub DefaultCoolDown: i32,                   // 0xac
-            pub CurrentCoolDown: i32,                   // 0xb0
-            pub SkillConfigID: u32,                     // 0xb4
-            pub ChildIndex: i32,                        // 0xb8
-            pub LeftCastTimes: i32,                     // 0xbc
-            pub AttackDamageTypePreshowAttach: i32,     // 0xc0
-            pub SkillIndex: i32,                        // 0xc4
-            pub MaxCastTimes: i32,                      // 0xc8
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct TurnBasedGameMode {
-            pub native_object: NativeObject,
-            pub _LastBreakMonster: *const GameEntity, // 0x10
-            pub _ActionEntityList: *const NativeList<GameEntity>, // 0x18
-            pub _EntityModifierPerforms: *const c_void, // 0x20
-            pub _CurrentSkillCharacter: *const SkillCharacterComponent, // 0x28
-            pub _SomatoModifierPerforms: *const NativeList<NativeObject>, // 0x30
-            pub _ActionEntityListSnapshot: *const NativeList<GameEntity>, // 0x38
-            pub _OverrieWaveMonsterPerformDatas: *const NativeList<NativeObject>, // 0x40
-            pub _LinkTeammateList: *const NativeList<GameEntity>, // 0x48
-            pub _LimboEntities: *const NativeList<NativeObject>, // 0x50
-            pub _UnselectableParams: *const NativeList<NativeObject>, // 0x58
-            pub StageBattleEventMgr__BackingField: *const c_void, // 0x60
-            pub _ActionDelayLinkMgr: *const c_void,   // 0x68
-            pub PerformDelayExecuteList: *const NativeList<NativeObject>, // 0x70
-            pub _RogueInBattleData: *const c_void,    // 0x78
-            pub _CurrentTurnTargetEntity: *const GameEntity, // 0x80
-            pub _CurrentActionDelayModifyGroup: *const NativeList<GameEntity>, // 0x88
-            pub _VersusBarMgr: *const c_void,         // 0x90
-            pub AssistantAvatarEntity__BackingField: *const GameEntity, // 0x98
-            pub _ActionDelayRedirectManager: *const c_void, // 0xa0
-            pub _InsertAbilityList: *const NativeList<MMNDIEBMDNL>, // 0xa8
-            pub PrepareAbility__BackingField: *const c_void, // 0xb0
-            pub BattleEventInitedData__BackingField: *const c_void, // 0xb8
-            pub _LevelLockedFeatureSet: *const c_void, // 0xc0
-            pub _InsertUltraSkillParamsQueue: *const NativeList<NativeObject>, // 0xc8
-            pub TurnActionDelayCostChangeSource__BackingField: *const GameEntity, // 0xd0
-            pub TimeGameStart: *const c_void,         // 0xd8
-            pub LastSummonMonsterList: *const NativeList<GameEntity>, // 0xe0
-            pub _LimboEntitiesWaitAbilityFinish: *const NativeList<NativeObject>, // 0xe8
-            pub _allowQuitStates: *const NativeList<NativeObject>, // 0xf0
-            pub _LimboEntitiesSkipSettlement: *const NativeList<NativeObject>, // 0xf8
-            pub _CommonSkillPoolNames: *const c_void, // 0x100
-            pub GridFightMananger__BackingField: *const c_void, // 0x108
-            pub _CurrentTurnActionEntity: *const GameEntity, // 0x110
-            pub _EntityCustomUnselectableDatas: *const NativeList<NativeObject>, // 0x118
-            pub _SwordTrainingMgr: *const c_void,     // 0x120
-            pub _ModifierPerformCamerContext: *const c_void, // 0x128
-            pub _performParam: *const c_void,         // 0x130
-            pub BattleCounter: *const c_void,         // 0x138
-            pub _CurModifierPerformSeq: *const c_void, // 0x140
-            pub ThisTurnAnimEvents: *const c_void,    // 0x148
-            pub _EventProcessor: *const c_void,       // 0x150
-            pub _MainMonster: *const GameEntity,      // 0x158
-            pub _SkillAddBuffPerformList: *const NativeList<NativeObject>, // 0x160
-            pub _ReplayData: *const c_void,           // 0x168
-            pub CurrentMVPEntity__BackingField: *const GameEntity, // 0x170
-            pub _CachedDynamicSkillTargetSelection: *const GameEntity, // 0x178
-            pub _AttackingEntityList: *const c_void,  // 0x180
-            pub DamageQueue__BackingField: *const c_void, // 0x188
-            pub LastKillCaster__BackingField: *const GameEntity, // 0x190
-            pub _EvolveBuildGearMgr: *const c_void,   // 0x198
-            pub _TurnStateFSM: *const c_void,         // 0x1a0
-            pub LastTurnSnapshot: *const c_void,      // 0x1a8
-            pub CurrentTurnOwnerEntity__BackingField: *const GameEntity, // 0x1b0
-            pub _WaitingAbilityList: *const NativeList<NativeObject>, // 0x1b8
-            pub _AllOffTeamCharacters: *const NativeList<GameEntity>, // 0x1c0
-            pub _PhaseModifierList: *const NativeList<NativeObject>, // 0x1c8
-            pub _ActionDelayOrderTrigger: *const c_void, // 0x1d0
-            pub BattleChangeAvatarManager__BackingField: *const c_void, // 0x1d8
-            pub _FateBattleManager: *const c_void,    // 0x1e0
-            pub BattleAIPublicKnowledge__BackingField: *const c_void, // 0x1e8
-            pub LastKillSkill__BackingField: *const c_void, // 0x1f0
-            pub ActionBarMgr__BackingField: *const c_void, // 0x1f8
-            pub CurrentWaveMainMonsterIDPool__BackingField: *const NativeArray<u32>, // 0x200
-            pub OwnerBattleInstanceRef__BackingField: *const BattleInstance, // 0x208
-            pub _ActionDelayChangeStamp: [u8; 0x18],  // 0x210
-            pub _AllTeamCharacters: *const NativeList<GameEntity>, // 0x228
-            pub _LimboRevivableEntities: *const NativeList<NativeObject>, // 0x230
-            pub _RelationGroupMgr: *const c_void,     // 0x238
-            pub LastKillTargetList__BackingField: *const NativeList<GameEntity>, // 0x240
-            pub SkillUsageLog__BackingField: *const c_void, // 0x248
-            pub _AidDetail: *const c_void,            // 0x250
-            pub _AvatarChangeParam: *const c_void,    // 0x258
-            pub LastZombie__BackingField: *const GameEntity, // 0x260
-            pub _ImmediateActionEntities: *const c_void, // 0x268
-            pub MonsterWaveTextInfo: *const c_void,   // 0x270
-            pub PrepareAbilityFinish__BackingField: bool, // 0x278
-            pub IsManualExitBattle: bool,             // 0x279
-            pub LastKillFinish__BackingField: bool,   // 0x27a
-            pub _IsReplayBeingSaved: bool,            // 0x27b
-            pub BattleResultAsWin: bool,              // 0x27c
-            pub CertainlyLoseInAdvance__BackingField: bool, // 0x27d
-            pub TurnOwnerPrepareAbilityUsed__BackingField: bool, // 0x27e
-            pub SkipDeathHandle__BackingField: bool,  // 0x27f
-            pub ThisTurnAnimEventCount: i32,          // 0x280
-            pub _ModifierPerformTimeTotal: f32,       // 0x284
-            pub TurnActionDelayCostRatio__BackingField: FixPoint, // 0x288
-            pub PropagateBeingAttackTeam__BackingField: TeamType, // 0x290
-            pub _SkillExecutionEventState: i32,       // 0x294
-            pub ChallengeTurnLimitType__BackingField: i32, // 0x298
-            pub _CurrentTurnTeam: TeamType,           // 0x29c
-            pub BattleFinishReason: i32,              // 0x2a0
-            pub StanceCountDownSPChangeValue__BackingField: f32, // 0x2a4
-            pub _WaveMonsterCurrentCount: i32,        // 0x2a8
-            pub _LightTeamTurnCount: u32,             // 0x2ac
-            pub WaveMonsterMaxCount__BackingField: i32, // 0x2b0
-            pub _ChallengeTurnAcc: u32,               // 0x2b4
-            pub AddOpCountOnInsertUltraWaitOrder: bool, // 0x2b8
-            pub IsTeamFormationExpansion__BackingField: bool, // 0x2b9
-            pub _IsUseLinkSkill: bool,                // 0x2ba
-            pub IsUseSkillOneMore: bool,              // 0x2bb
-            pub _ModifierEndingPerformRemainedTime: f32, // 0x2bc
-            pub CurrentModeState__BackingField: i32,  // 0x2c0
-            pub _HoldFrameForCapture: u32,            // 0x2c4
-            pub RealTimeCounter__BackingField: f32,   // 0x2c8
-            pub _HoldFrameForCaptureFlag: bool,       // 0x2cc
-            pub LockTeamZOffset__BackingField: bool,  // 0x2cd
-            pub LocalWinFlag__BackingField: [u8; 0x2], // 0x2ce
-            pub IsManualRetryExitBattle: bool,        // 0x2d0
-            pub ApplyUIOperateOnDisableActionFlagChange: bool, // 0x2d1
-            pub MuteLastKillTriggered: bool,          // 0x2d2
-            pub _GamePauseFlag: bool,                 // 0x2d3
-            pub _OverrideAILocked: bool,              // 0x2d4
-            pub _OperationCounter: u32,               // 0x2d8
-            pub CurrentTurnActionEntityContinuousActionCount__BackingField: u32, // 0x2dc
-            pub _RecordOperationByLG: [u8; 0x8],      // 0x2e0
-            pub _DeathVersion: u32,                   // 0x2e8
-            pub _ModifierPerformTimeScale: f32,       // 0x2ec
-            pub ForbidAI: bool,                       // 0x2f0
-            pub _LastReplayAutoBattle: bool,          // 0x2f1
-            pub _AutoBattle: bool,                    // 0x2f2
-            pub ClearUltraSkillEffect: bool,          // 0x2f3
-            pub PendingMonsterToWave__BackingField: bool, // 0x2f4
-            pub _CurrentTurnActionEntitySkipActionFlag: bool, // 0x2f5
-            pub WinFlag: bool,                        // 0x2f6
-            pub TurnOwnerActionPhaseEnd__BackingField: bool, // 0x2f7
-            pub BattleResultState__BackingField: [u8; 0x8], // 0x2f8
-            pub _RecordParamByLG: u32,                // 0x300
-            pub PauseState__BackingField: i32,        // 0x304
-            pub ApplyUIOperateOnSkillDisableChange: bool, // 0x308
-            pub IsLastKillTriggered: bool,            // 0x309
-            pub CurrentInsertSkillSkipActionFlag: bool, // 0x30a
-            pub _ActionEntityListInited: bool,        // 0x30b
-            pub _NextAbilityIndex: i32,               // 0x30c
-            pub ClearUltraSkillQueue__BackingField: bool, // 0x310
-            pub _IsModifierPerformCameraSet: bool,    // 0x311
-            pub _DarkTeamTurnCount: u32,              // 0x314
-            pub CurrentWaveIndexInStage__BackingField: u32, // 0x318
-            pub CurrentWaveStageID__BackingField: u32, // 0x31c
-            pub _CachedDynamicSkillInput: i32,        // 0x320
-            pub _HitPerformMinTimer: f32,             // 0x324
-            pub _ModifierPerformTimerTotal: f32,      // 0x328
-            pub _PrevTickModeState: i32,              // 0x32c
-            pub _TurnCounter: u32,                    // 0x330
-            pub _RequireMakeLimboEntitiesDie: bool,   // 0x334
-            pub SkipTurnOwnerActionFlag__BackingField: bool, // 0x335
-            pub CertainlyWinInAdvance__BackingField: bool, // 0x336
-            pub TurnEndKeep: bool,                    // 0x337
-            pub _DamageCounter: u32,                  // 0x338
-            pub ShowCutinUIState__BackingField: i32,  // 0x33c
-            pub ElapsedActionDelay__BackingField: FixPoint, // 0x340
-            pub UseSkillOneMoreDefaultSkill: i32,     // 0x348
-            pub ChallengeTurnLimit__BackingField: u32, // 0x34c
-            pub AutoInsertUltraSkill: bool,           // 0x350
-            pub IsActionOrder1UsedTBSkill__BackingField: bool, // 0x351
-            pub SkipCameraDitherByLastKill: bool,     // 0x352
-            pub _IsCreatingNewWave: bool,             // 0x353
-            pub _NextModifierIndex: i32,              // 0x354
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct GameWorld {
-            pub native_object: NativeObject,
-            pub BattleModeRef__BackingField: *const c_void, // 0x10
-            pub EntityBeforeDyingCallback: *const c_void,   // 0x18
-            pub _LevelAreaManager: *const c_void,           // 0x20
-            pub _Modules: *const NativeList<NativeObject>,  // 0x28
-            pub BattleInstanceRef__BackingField: *const BattleInstance, // 0x30
-            pub _EnterDyingEntityList: *const NativeList<GameEntity>, // 0x38
-            pub TimeScaleStack__BackingField: *const c_void, // 0x40
-            pub _EntityManager: *const EntityManager,       // 0x48
-            pub _NeedTickModules: *const NativeList<NativeObject>, // 0x50
-            pub _DeferDeleteEntityList: *const NativeList<GameEntity>, // 0x58
-            pub _EventManager: *const c_void,               // 0x60
-            pub _EntityTickList: *const c_void,             // 0x68
-            pub DamageDataStack__BackingField: *const c_void, // 0x70
-            pub EntityWillDestroyCallback: *const c_void,   // 0x78
-            pub _GlobalTimeScaleDatas: *const NativeList<NativeObject>, // 0x80
-            pub _EntityList: *const NativeList<GameEntity>, // 0x88
-            pub _TickedEntityListPerFrame: *const NativeList<GameEntity>, // 0x90
-            pub _DyingEntityList: *const NativeList<NativeObject>, // 0x98
-            pub MonoEffectManagerRef: *const c_void,        // 0xa0
-            pub NewEntityCallback: *const c_void,           // 0xa8
-            pub LogicRandom: *const c_void,                 // 0xb0
-            pub EntityDiedCallback: *const c_void,          // 0xb8
-            pub _NeedLateUpdateModules: *const NativeList<NativeObject>, // 0xc0
-            pub _PrefabGameObjectMap: *const c_void,        // 0xc8
-            pub _GPTimelineHierarchyManager: *const c_void, // 0xd0
-            pub EntityReviveCallback: *const c_void,        // 0xd8
-            pub ParamRegister__BackingField: *const c_void, // 0xe0
-            pub UnscaledDeltaTime__BackingField: f32,       // 0xe8
-            pub _IDFactory: u32,                            // 0xec
-            pub _IsPause: bool,                             // 0xf0
-            pub IsBattleGameWorld__BackingField: bool,      // 0xf1
-            pub _IsDisposing: bool,                         // 0xf2
-            pub _IsInTick: bool,                            // 0xf3
-            pub _IDFactory_ClientOnly: u32,                 // 0xf4
-            pub _BalanceTickDurationTime: f32,              // 0xf8
-            pub _BalanceTickDurationBucket: i32,            // 0xfc
-            pub _IDFactory_Battle: u32,                     // 0x100
-            pub _NextTickDeferDeleteCount: i32,             // 0x104
+            pub _BaseMonsterRow: *const MonsterRow, // 0x10
+            pub _OverrideDisplay: [u8; 0x50],       // 0x18
+            pub _TemplateRow: *const c_void,        // 0x68
+            pub _OverrideStanceWeakList: *const NativeArray<NativeObject>, // 0x70
+            pub _EliteGroupRow: *const c_void,      // 0x78
+            pub _EliteGroup2Row: *const c_void,     // 0x80
+            pub _Row: *const MonsterRow,            // 0x88
+            pub _SkillRowDatas: *const NativeList<NativeObject>, // 0x90
+            pub _HardLevelRow: *const c_void,       // 0x98
+            pub _OverrideStrategies: *const NativeArray<TextID>, // 0xa0
+            pub _modelPath: *const NativeString,    // 0xa8
+            pub _Json: *const CharacterConfig,      // 0xb0
+            pub _MaxHP: FixPoint,                   // 0xb8
+            pub _InitStance: [u8; 0x10],            // 0xc0
+            pub _MaxStance: [u8; 0x10],             // 0xd0
+            pub _InitHP: FixPoint,                  // 0xe0
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy, PartialEq)]
-        pub enum AttackType {
-            Unknown = 0,
-            Normal = 1,
-            BPSkill = 2,
-            Ultra = 3,
-            QTE = 4,
-            DOT = 5,
-            Pursued = 6,
-            Maze = 7,
-            MazeNormal = 8,
-            Insert = 9,
-            ElementDamage = 10,
-            Level = 11,
-            Servant = 12,
-            TrueDamage = 13,
+        pub enum TeamType {
+            TeamUnknow = 0,
+            TeamLight = 1,
+            TeamDark = 2,
+            TeamNeutral = 3,
+            TeamNPC = 4,
+            Count = 5,
+        }
+        #[repr(C)]
+        #[derive(Debug, Clone, Copy)]
+        pub struct AbilityConfig {
+            pub _parent_object: NativeObject,                       // 0x0
+            pub Name: *const NativeString,                          // 0x10
+            pub TargetInfo: *const c_void,                          // 0x18
+            pub OnAdd: *const NativeArray<NativeObject>,            // 0x20
+            pub OnRemove: *const NativeArray<NativeObject>,         // 0x28
+            pub OnStart: *const NativeArray<NativeObject>,          // 0x30
+            pub DynamicValues: *const c_void,                       // 0x38
+            pub TaskListTemplate: *const NativeArray<NativeObject>, // 0x40
+            pub _TaskListTemplatesMap: *const c_void,               // 0x48
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
@@ -1130,102 +1541,16 @@ pub mod rpg {
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
-        pub struct BattleEventSkillRowData {
-            pub native_object: NativeObject,
-            pub _Row: *const c_void,              // 0x10
-            pub _DefaultOverrideData: [u8; 0xf0], // 0x18
-            pub _Config: *const c_void,           // 0x108
-            pub _OverrideData: [u8; 0xe8],        // 0x110
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct EntityManager {
-            pub native_object: NativeObject,
-            pub _SnapshotEntityMap: *const c_void, // 0x10
-            pub PlayerGORoot__BackingField: *const c_void, // 0x18
-            pub _OwnerWorldRef: *const GameWorld,  // 0x20
-            pub _AllEntityDictionary: *const c_void, // 0x28
-            pub DataViewUISelectFadeInFollowEntities__BackingField: *const c_void, // 0x30
-            pub DataViewUISelectFadeInEntity__BackingField: *const GameEntity, // 0x38
-            pub _ServerEntityIDToEntityDict: *const c_void, // 0x40
-            pub _UniqueNamedEntityDictionary: *const c_void, // 0x48
-            pub GroupGORoot__BackingField: *const c_void, // 0x50
-            pub DataViewUILeaveSummonerOfUncreatedServant__BackingField: *const GameEntity, // 0x58
-            pub _PauseEntityTimeSlowIndexDic: *const NativeArray<NativeObject>, // 0x60
-            pub _ProcessEntityTeamChangeDelg: *const c_void, // 0x68
-            pub _AllTeamEntityList: *const NativeList<GameEntity>, // 0x70
-            pub DataViewUISelectFadeOutEntity__BackingField: *const GameEntity, // 0x78
-            pub _AllTeamEntity: *const NativeArray<GameEntity>, // 0x80
-            pub DataViewUISelectSummonerOfUncreatedServant__BackingField: *const GameEntity, // 0x88
-            pub LevelEntity__BackingField: *const GameEntity, // 0x90
-            pub _EntityUniqueNameDict: *const NativeList<NativeObject>, // 0x98
-            pub EntityGORoot__BackingField: *const c_void, // 0xa0
-            pub LittleGameGORoot__BackingField: *const c_void, // 0xa8
-            pub DataViewUISelectFadeOutSummonerEntity__BackingField: *const GameEntity, // 0xb0
-            pub _GroupEntityIDToEntityDict: *const c_void, // 0xb8
-            pub PerformanceGORoot__BackingField: *const c_void, // 0xc0
-            pub _UseUniqueSnapshot: bool,          // 0xc8
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct LineUpCharacter {
-            pub native_object: NativeObject,
-            pub ChangedSkillTreePointList: *const NativeArray<NativeObject>, // 0x10
-            pub SkillTreePointList: *const NativeArray<NativeObject>,        // 0x18
-            pub BattleGridAvatarData: *const c_void,                         // 0x20
-            pub BattleEquipmentList: *const NativeArray<NativeObject>,       // 0x28
-            pub SpiritPassiveList: *const NativeArray<u32>,                  // 0x30
-            pub BattleRelicItemModule: *const c_void,                        // 0x38
-            pub CharacterRank: u32,                                          // 0x40
-            pub Index: u32,                                                  // 0x44
-            pub CharacterLevel: u32,                                         // 0x48
-            pub SpiritLineupType: i32,                                       // 0x4c
-            pub WorldLevel: u32,                                             // 0x50
-            pub CharacterSP_Numerator: FixPoint,                             // 0x58
-            pub AssistUid: u32,                                              // 0x60
-            pub TotalPower: u32,                                             // 0x64
-            pub CharacterSP_Denominator: FixPoint,                           // 0x68
-            pub EnhancedID: u32,                                             // 0x70
-            pub CharacterPromotion: u32,                                     // 0x74
-            pub CharacterAvatarType: i32,                                    // 0x78
-            pub SpecialAvatarID: u32,                                        // 0x7c
-            pub CharacterHPRatio: FixPoint,                                  // 0x80
-            pub CharacterID: u32,                                            // 0x88
-            pub CharacterRowIndex: u32,                                      // 0x8c
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct AbilityConfig {
-            pub _parent_object: NativeObject,                       // 0x0
-            pub Name: *const NativeString,                          // 0x10
-            pub TargetInfo: *const c_void,                          // 0x18
-            pub OnAdd: *const NativeArray<NativeObject>,            // 0x20
-            pub OnRemove: *const NativeArray<NativeObject>,         // 0x28
-            pub OnStart: *const NativeArray<NativeObject>,          // 0x30
-            pub DynamicValues: *const c_void,                       // 0x38
-            pub TaskListTemplate: *const NativeArray<NativeObject>, // 0x40
-            pub _TaskListTemplatesMap: *const c_void,               // 0x48
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct MonsterDataComponent {
-            pub _parent_object: CharacterDataComponent,      // 0x0
-            pub EnergyBarState: *const c_void,               // 0xe0
-            pub _DefaultPhaseConfig: *const c_void,          // 0xe8
-            pub _CreateParams: *const c_void,                // 0xf0
-            pub _MonsterRowData: *const MonsterRowData,      // 0xf8
-            pub _MultiActionCounter: *const c_void,          // 0x100
-            pub _CustomDataRef: *const c_void,               // 0x108
-            pub _PhaseMaxStanceStackIndex: i32,              // 0x110
-            pub IsMuteLastKill__BackingField: bool,          // 0x114
-            pub _CurrentPhaseHPRecovered: bool,              // 0x115
-            pub _DefaultMaxStance: FixPoint,                 // 0x118
-            pub _CurrentPhase: u32,                          // 0x120
-            pub MonsterIndexInWave: i32,                     // 0x124
-            pub _DefaultMaxHP: FixPoint,                     // 0x128
-            pub OverrideRankScore__BackingField: [u8; 0x10], // 0x130
-            pub MonsterWave: i32,                            // 0x140
-            pub _PhaseMaxHPStackIndex: i32,                  // 0x144
+        pub struct BattleEventDataComponent {
+            pub _parent_object: CharacterDataComponent,          // 0x0
+            pub _TBAbilityRef: *const TurnBasedAbilityComponent, // 0xe0
+            pub BattleEventConfig__BackingField: *const c_void,  // 0xe8
+            pub _EnergyBarState: *const c_void,                  // 0xf0
+            pub SourceCaster__BackingField: *const GameEntity,   // 0xf8
+            pub _BattleEventRowData: *const c_void,              // 0x100
+            pub CreateParams__BackingField: *const c_void,       // 0x108
+            pub WarningChallengeTurnLeft: u32,                   // 0x110
+            pub BattleEventTotalDamageType: TeamType,            // 0x114
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
@@ -1246,96 +1571,6 @@ pub mod rpg {
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
-        pub struct SkillCharacterComponent {
-            pub _parent_object: GameComponentBase, // 0x0
-            pub CurrentAimAtTargetList: *const NativeList<GameEntity>, // 0x18
-            pub CurrentAimAtMainTargetList: *const NativeList<GameEntity>, // 0x20
-            pub SkillPointEntity__BackingField: *const GameEntity, // 0x28
-            pub _SkillDataList: *const NativeList<SkillData>, // 0x30
-            pub _TBAbilityRef: *const TurnBasedAbilityComponent, // 0x38
-            pub CurrentSkillTargetCharacterId: *const c_void, // 0x40
-            pub AutoUseUltraParams: *const c_void, // 0x48
-            pub _recordAbilityInfo: [u8; 0x30],    // 0x50
-            pub CurrentSkillTargetDamageHP: *const c_void, // 0x80
-            pub CurrentSkillSubTargetList__BackingField: *const NativeList<GameEntity>, // 0x88
-            pub _SkillTargetRedirectEntries: *const NativeList<NativeObject>, // 0x90
-            pub OnSkillSetup: *const NativeList<NativeObject>, // 0x98
-            pub SkillActualAttacker__BackingField: *const GameEntity, // 0xa0
-            pub _SkillTypeDisableCountArr: *const NativeArray<i32>, // 0xa8
-            pub CurrentSkillTargetList__BackingField: *const NativeList<GameEntity>, // 0xb0
-            pub _SkillTypeDisableSlots: *const c_void, // 0xb8
-            pub _JsonConfigRef: *const CharacterConfig, // 0xc0
-            pub _CharacterDataRef: *const CharacterDataComponent, // 0xc8
-            pub _SkillTypeOverrideProperty: *const NativeArray<NativeObject>, // 0xd0
-            pub _SkillSlots: *const NativeArray<NativeObject>, // 0xd8
-            pub CurrentAimAtSubTargetList: *const NativeList<GameEntity>, // 0xe0
-            pub TaskContext__BackingField: *const c_void, // 0xe8
-            pub _hasRecordSkill: bool,             // 0xf0
-            pub _hasOpInSkill: bool,               // 0xf1
-            pub _AutoStandbyOnCurSkillFinish: bool, // 0xf2
-            pub PassiveUsed__BackingField: bool,   // 0xf3
-            pub SelfWaitActiveSkillIndex: i32,     // 0xf4
-            pub _SelfSkillPerformState: i32,       // 0xf8
-            pub _RedirectTargetIDIncr: i32,        // 0xfc
-            pub _TargetPerformTimeCounter: f32,    // 0x100
-            pub _CurrentSkillIndex: i32,           // 0x104
-            pub CharmAction: bool,                 // 0x108
-            pub IsNoBpCost__BackingField: bool,    // 0x109
-            pub _isPassive: bool,                  // 0x10a
-            pub IsNoSpCost__BackingField: bool,    // 0x10b
-            pub _OpIndexInSkill: i32,              // 0x10c
-            pub _RecordSkillExtraUseParam: i32,    // 0x110
-            pub _actionSkillIndex: i32,            // 0x114
-            pub CurrentSkillKillAllOrBoss: bool,   // 0x118
-            pub CurrentSkillHasTriggerEffect: bool, // 0x119
-            pub CurrentSkillBreakStance: bool,     // 0x11a
-            pub CurrentSkillKilledCount: i32,      // 0x11c
-            pub _CurrentSkillExtraUseParam: i32,   // 0x120
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy, PartialEq)]
-        pub enum EntityType {
-            None = 0,
-            Avatar = 1,
-            Monster = 2,
-            LocalPlayer = 3,
-            NPC = 4,
-            NPCMonster = 5,
-            StoryCharacter = 6,
-            Prop = 7,
-            Mission = 8,
-            LevelEntity = 9,
-            Neutral = 10,
-            AtmoNpc = 11,
-            BattleEvent = 12,
-            TutorialEntity = 13,
-            Team = 14,
-            Partner = 15,
-            LevelGraph = 16,
-            Snapshot = 17,
-            TeamFormation = 18,
-            Model = 19,
-            UICamera = 20,
-            District = 21,
-            GlobalShield = 22,
-            CustomData = 23,
-            Simple = 24,
-            PuzzleGameObjectProp = 25,
-            PerformanceLevelGraph = 26,
-            Group = 27,
-            ChessCharacter = 28,
-            ChessTerrain = 29,
-            SummonUnit = 30,
-            LittleGameInstance = 31,
-            Servant = 32,
-            PreviewShow = 33,
-            LittleGameContainer = 34,
-            LittleGameViewProxy = 35,
-            GridFightBackend = 36,
-            DummyEntity = 37,
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
         pub struct AvatarSkillRowData {
             pub native_object: NativeObject,
             pub _OverrideData: [u8; 0xf0],        // 0x10
@@ -1351,238 +1586,48 @@ pub mod rpg {
         }
         #[repr(C)]
         #[derive(Debug, Clone, Copy)]
-        pub struct TeamFormationComponent {
-            pub _parent_object: GameComponentBase, // 0x0
-            pub WaveOfMonsterRuntimeID__BackingField: *const NativeList<u32>, // 0x18
-            pub _Random: *const c_void,            // 0x20
-            pub _CurrentLightTeamFightFormationConfig: *const c_void, // 0x28
-            pub _LastRefreshLocationTemplateConfigName: *const NativeString, // 0x30
-            pub _CurrentDarkTeamFightFormationConfig: *const c_void, // 0x38
-            pub _multiRowTargetSelector: *const c_void, // 0x40
-            pub _AllTeammateCopy: *const NativeList<GameEntity>, // 0x48
-            pub _GridFormationConfig: *const c_void, // 0x50
-            pub _CurrentUseTemplateConfigName: *const NativeString, // 0x58
-            pub _FormationDatasNormal: *const NativeList<EDJEDBLFIKE>, // 0x60
-            pub _FormationInCameraSpace: *const NativeList<GameEntity>, // 0x68
-            pub _CustomUpdateFormationDatas: *const NativeList<EDJEDBLFIKE>, // 0x70
-            pub _AllTeammate: *const NativeList<GameEntity>, // 0x78
-            pub _DefaultLocationExtCfgs2: *const NativeArray<NativeObject>, // 0x80
-            pub _TeamFormationDatas: *const NativeList<EDJEDBLFIKE>, // 0x88
-            pub _RecordFormationIndices: *const c_void, // 0x90
-            pub _CurrentCustomFormationName: *const NativeString, // 0x98
-            pub _TeamRefreshLocationContext: *const c_void, // 0xa0
-            pub _DefaultFormationCenter: *const EDJEDBLFIKE, // 0xa8
-            pub _DefaultLocationExtCfgs: *const NativeArray<NativeObject>, // 0xb0
-            pub _UseCustomFormationMembers: *const c_void, // 0xb8
-            pub _FormationSnapshots: *const c_void, // 0xc0
-            pub LocationRootWorldPos__BackingField: [u8; 0xc], // 0xc8
-            pub _IsGridFightTeamFormation: bool,   // 0xd4
-            pub _HasCustomTeamFormation: bool,     // 0xd5
-            pub _AutoBalanceDefaultFormation: bool, // 0xd6
-            pub _IsTeammateDirty: bool,            // 0xd7
-            pub _Team: TeamType,                   // 0xd8
-            pub _TeamDistanceCache: f32,           // 0xdc
-            pub _RemoveVersionCounter: u32,        // 0xe0
-            pub _MaxLocationCount: i32,            // 0xe4
-            pub _TeamZOffset: f32,                 // 0xe8
-            pub _CustomFormationCenter: [u8; 0xc], // 0xec
-            pub _dataViewRestoreData: [u8; 0xc],   // 0xf8
-            pub _FormationForceWidthMin: f32,      // 0x104
-            pub _ServantFormationState: i32,       // 0x108
-            pub _LastDieTeammatePos: [u8; 0x8],    // 0x10c
-            pub ComfortZoneWidthOverride__BackingField: f32, // 0x114
-            pub FormationCenterWorldPosFromBoundBox__BackingField: [u8; 0xc], // 0x118
-            pub _gridUnitWidth: f32,               // 0x124
-            pub FormationCenterWorldPos__BackingField: [u8; 0xc], // 0x128
-            pub AliveEntitiesFormationCenterWorldPos__BackingField: [u8; 0xc], // 0x134
-            pub FormationWidth__BackingField: f32, // 0x140
-            pub _CurrentFormationType: i32,        // 0x144
-            pub _CustomFormationCenterFromBoundBox: [u8; 0xc], // 0x148
-            pub _CustomFormationCenterDirty: bool, // 0x154
-            pub _IsInited: bool,                   // 0x155
-            pub _IsLocationDirty: bool,            // 0x156
-            pub TeamFaceDir__BackingField: f32,    // 0x158
-            pub LockFormationRefresh__BackingField: bool, // 0x15c
-            pub _InverseFlag: bool,                // 0x15d
-            pub _TeamActiveRowAliveStateFilter: [u8; 0x2], // 0x15e
-            pub _FormationForceWidthMax: f32,      // 0x160
-            pub TeamRotation__BackingField: [u8; 0x10], // 0x164
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct TurnBasedAbilityComponent {
-            pub _parent_object: GameComponentBase,          // 0x0
-            pub CustomDataRef__BackingField: *const c_void, // 0x18
-            pub RegardAsAttackTypeMap: *const NativeList<NativeObject>, // 0x20
-            pub _AbilityProperties: *const NativeArray<NativeObject>, // 0x28
-            pub _KillerEntity: *const GameEntity,           // 0x30
-            pub _SyncPropertySource: *const TurnBasedAbilityComponent, // 0x38
-            pub _StatusProbabilityDict: *const c_void,      // 0x40
-            pub LockActionDelayChange: *const c_void,       // 0x48
-            pub OverflowStanceDamageAttacker__BackingField: *const GameEntity, // 0x50
-            pub _ExtraStanceInfo: *const c_void,            // 0x58
-            pub _DamageStoreList: *const NativeList<NativeObject>, // 0x60
-            pub _ExtraMaxLayerConfig: *const NativeList<NativeObject>, // 0x68
-            pub _StancePreshowConfigs: *const NativeList<NativeObject>, // 0x70
-            pub CharmDamageAttackProperty: *const c_void,   // 0x78
-            pub _LockShieldCounter: *const c_void,          // 0x80
-            pub _DepartedParams: *const NativeList<NativeObject>, // 0x88
-            pub _EnableNegativeHPSourceList: *const NativeList<NativeObject>, // 0x90
-            pub _BuffLockStepSources: *const NativeList<NativeObject>, // 0x98
-            pub ProjectileTargetAttachPoint: *const NativeString, // 0xa0
-            pub _CharacterChangeParam: *const c_void,       // 0xa8
-            pub _ModifierEventSourceMuteCounter: *const c_void, // 0xb0
-            pub CharmDamageTarget: *const GameEntity,       // 0xb8
-            pub AbilityComponentRef__BackingField: *const c_void, // 0xc0
-            pub _TransformRef: *const c_void,               // 0xc8
-            pub CharmSkillName: *const NativeString,        // 0xd0
-            pub _DelayModifyActionDelayQueue: *const c_void, // 0xd8
-            pub _DamagedEntityListInAttack: *const NativeList<GameEntity>, // 0xe0
-            pub AddModifierBindValueMapping: *const c_void, // 0xe8
-            pub Weakness: *const c_void,                    // 0xf0
-            pub OnAbilityPropertyChanged: *const NativeList<NativeObject>, // 0xf8
-            pub _DefaultStanceInfo: *const c_void,          // 0x100
-            pub _CharacterChangeSource: *const GameEntity,  // 0x108
-            pub _AttackDamageLog: *const NativeList<NativeObject>, // 0x110
-            pub RegardAsSkillTypeMap: *const NativeList<NativeObject>, // 0x118
-            pub AdditionalAbilityParamList: *const NativeArray<NativeObject>, // 0x120
-            pub _ModifierDelayParamList: *const c_void,     // 0x128
-            pub _LockHPList: *const NativeList<NativeObject>, // 0x130
-            pub _StatusChanceResistanceDict: *const c_void, // 0x138
-            pub DisableActionStateByTask__BackingField: *const c_void, // 0x140
-            pub _AbilityToSkillMapping: *const c_void,      // 0x148
-            pub KillerSkill__BackingField: *const c_void,   // 0x150
-            pub DamageDefender: *const GameEntity,          // 0x158
-            pub _DamagedAllEntityIDListInAttack: *const c_void, // 0x160
-            pub _AbilityPropertiesInitSnapshot: *const NativeArray<FixPoint>, // 0x168
-            pub _SyncPropertyMask: *const c_void,           // 0x170
-            pub _JsonConfigRef: *const CharacterConfig,     // 0x178
-            pub _ModifierRecordList: *const c_void,         // 0x180
-            pub _MuteBehaviorFlags: *const c_void,          // 0x188
-            pub ResistModifierBehaviorFlags__BackingField: *const NativeList<NativeObject>, // 0x190
-            pub _DamageAttacker: *const GameEntity,         // 0x198
-            pub _DmgChunk: *const c_void,                   // 0x1a0
-            pub ModifierOverrideMapping: *const c_void,     // 0x1a8
-            pub _DotModifierEventProcessors: *const NativeList<NativeObject>, // 0x1b0
-            pub _OnHitEffectOverride: *const NativeList<NativeObject>, // 0x1b8
-            pub _OnHitEffectMultipleOverride: *const NativeList<NativeObject>, // 0x1c0
-            pub _ModifierEventProcessors: *const NativeArray<NativeObject>, // 0x1c8
-            pub _CharacterDataRef: *const CharacterDataComponent, // 0x1d0
-            pub _SelfExtrAbilityList: *const NativeList<NativeString>, // 0x1d8
-            pub _RedStanceInfoList: *const NativeList<NativeObject>, // 0x1e0
-            pub LastStanceBreakEntity__BackingField: *const GameEntity, // 0x1e8
-            pub _RedStanceInfo: *const c_void,              // 0x1f0
-            pub DamageSplitData: *const NativeList<NativeObject>, // 0x1f8
-            pub _EnergyPointEntries: *const NativeList<NativeObject>, // 0x200
-            pub _DebuffLockStepSources: *const NativeList<NativeObject>, // 0x208
-            pub _BuffLockStep: i32,                         // 0x210
-            pub _ModifierUIOperationIncr: i32,              // 0x214
-            pub InheritSPRatio: FixPoint,                   // 0x218
-            pub OverflowStanceDamage__BackingField: FixPoint, // 0x220
-            pub ActionDelayChanged__BackingField: [u8; 0x2], // 0x228
-            pub UseSpecialSP__BackingField: bool,           // 0x22a
-            pub LockSelfActionDelay: bool,                  // 0x22b
-            pub bIsInCharmAction: bool,                     // 0x22c
-            pub BattleTag__BackingField: *const c_void,     // 0x230
-            pub ActionDelayDistance__BackingField: FixPoint, // 0x238
-            pub _HighestPriorityOnHitEffect: i32,           // 0x240
-            pub LastStanceDamageType__BackingField: i32,    // 0x244
-            pub IsSnapshot__BackingField: bool,             // 0x248
-            pub MuteTriggerDeath__BackingField: bool,       // 0x249
-            pub _IsProcessingModifierDelayParam: bool,      // 0x24a
-            pub HasRevived: bool,                           // 0x24b
-            pub TriggerBreakExtendLogic: bool,              // 0x24c
-            pub IsTriggeredBlockDamage: bool,               // 0x24d
-            pub ForceKillFlag__BackingField: bool,          // 0x24e
-            pub _BreakExtendEventUnsettled: bool,           // 0x24f
-            pub _CurrentAttackPhase: i32,                   // 0x250
-            pub VisualFlagValue__BackingField: i32,         // 0x254
-            pub LastBreakStanceDamageType__BackingField: i32, // 0x258
-            pub CurrentAttackType__BackingField: AttackType, // 0x25c
-            pub StanceState__BackingField: i32,             // 0x260
-            pub PropertyChangeFlag__BackingField: bool,     // 0x264
-            pub _IsBehaviorFlagVisualDirty: bool,           // 0x265
-            pub IsSharedDamageDataTarget: bool,             // 0x266
-            pub IsTriggeringStanceCountDown__BackingField: bool, // 0x267
-            pub CharmDamageCount: i32,                      // 0x268
-            pub StanceType: i32,                            // 0x26c
-            pub SpeedVisualFlagValue__BackingField: i32,    // 0x270
-            pub _DeathVersion: u32,                         // 0x274
-            pub ForbidVisualFlagValue__BackingField: i32,   // 0x278
-            pub PropertyEnumBoundary__BackingField: AbilityProperty, // 0x27c
-            pub CharmDisableBPAdd: bool,                    // 0x280
-            pub IsInAttack: bool,                           // 0x281
-            pub IsForceActionable__BackingField: bool,      // 0x282
-            pub BlockModifySp__BackingField: bool,          // 0x283
-            pub _ResetStanceVersion: u32,                   // 0x284
-            pub _ModifierDelayAddCount: i32,                // 0x288
-            pub DeathSource__BackingField: i32,             // 0x28c
-            pub CharmDisableSPAdd: bool,                    // 0x290
-            pub MuteAllTriggerDeath__BackingField: bool,    // 0x291
-            pub InsertAbilityCount: i32,                    // 0x294
-            pub _DebuffLockStep: i32,                       // 0x298
-            pub ProjectileHitCount: i32,                    // 0x29c
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct CharacterDataComponent {
-            pub _parent_object: GameComponentBase, // 0x0
-            pub Summoner: *const GameEntity,       // 0x18
-            pub _DynamicScaleAdaptConfigs: *const NativeArray<NativeObject>, // 0x20
-            pub _DummpyEntityList: *const NativeList<NativeObject>, // 0x28
-            pub _DynamicScaleAdaptEffectPathRule: *const c_void, // 0x30
-            pub _CharacterUICustomValueDict: *const c_void, // 0x38
-            pub _OverrideCharacterConfigParam: [u8; 0x48], // 0x40
-            pub HideDisplayInfoSkillNames: *const c_void, // 0x88
-            pub JsonConfig__BackingField: *const CharacterConfig, // 0x90
-            pub _RowData: *const c_void,           // 0x98
-            pub _DynamicScaleAdaptTypes: *const NativeArray<NativeObject>, // 0xa0
-            pub LocalOffsetAsMoveTarget__BackingField: [u8; 0xc], // 0xa8
-            pub LineupIndex: i32,                  // 0xb4
-            pub GridFightTag__BackingField: i32,   // 0xb8
-            pub LastActTurnCount__BackingField: u32, // 0xbc
-            pub SpawnTurnCount: u32,               // 0xc0
-            pub CharacterID__BackingField: u32,    // 0xc4
-            pub _SaveModelWhenDeadOverride: [u8; 0x2], // 0xc8
-            pub ShowSummonerUI__BackingField: bool, // 0xca
-            pub IsVisibleInViewMode__BackingField: bool, // 0xcb
-            pub ShowSummonedUI__BackingField: bool, // 0xcc
-            pub CreateReason: i32,                 // 0xd0
-            pub EnhancedState: i32,                // 0xd4
-            pub TriggerLimbo: bool,                // 0xd8
-            pub IsBodyPart: bool,                  // 0xd9
-            pub DisableRootYawMapping__BackingField: bool, // 0xda
-            pub DisableHeadLookAtActionEntityOverride: [u8; 0x8], // 0xdb
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct MonsterRowData {
+        pub struct MonsterRow {
             pub native_object: NativeObject,
-            pub _BaseMonsterRow: *const c_void, // 0x10
-            pub _OverrideDisplay: [u8; 0x50],   // 0x18
-            pub _TemplateRow: *const c_void,    // 0x68
-            pub _OverrideStanceWeakList: *const NativeArray<NativeObject>, // 0x70
-            pub _EliteGroupRow: *const c_void,  // 0x78
-            pub _EliteGroup2Row: *const c_void, // 0x80
-            pub _Row: *const c_void,            // 0x88
-            pub _SkillRowDatas: *const NativeList<NativeObject>, // 0x90
-            pub _HardLevelRow: *const c_void,   // 0x98
-            pub _OverrideStrategies: *const NativeArray<TextID>, // 0xa0
-            pub _modelPath: *const NativeString, // 0xa8
-            pub _Json: *const CharacterConfig,  // 0xb0
-            pub _MaxHP: FixPoint,               // 0xb8
-            pub _InitStance: [u8; 0x10],        // 0xc0
-            pub _MaxStance: [u8; 0x10],         // 0xd0
-            pub _InitHP: FixPoint,              // 0xe0
-        }
-        #[repr(C)]
-        #[derive(Debug, Clone, Copy)]
-        pub struct ServantSkillRowData {
-            pub native_object: NativeObject,
-            pub _Row: *const c_void,              // 0x10
-            pub _OverrideData: [u8; 0xf0],        // 0x18
-            pub _Config: *const c_void,           // 0x108
-            pub _DefaultOverrideData: [u8; 0xe8], // 0x110
+            pub CustomValueTags: *const NativeArray<NativeString>, // 0x10
+            pub DebuffResist: *const NativeArray<NativeObject>,    // 0x18
+            pub DynamicValues: *const NativeArray<NativeObject>,   // 0x20
+            pub SkillList: *const NativeArray<u32>,                // 0x28
+            pub AbilityNameList: *const NativeArray<NativeString>, // 0x30
+            pub OverrideAIPath: *const NativeString,               // 0x38
+            pub _ExpandedDataRowCache: *const c_void,              // 0x40
+            pub MonsterStrategy: *const NativeArray<TextID>,       // 0x48
+            pub OverrideSkillParams: *const NativeArray<NativeObject>, // 0x50
+            pub StanceWeakList: *const NativeArray<NativeObject>,  // 0x58
+            pub SummonIDList: *const NativeArray<u32>,             // 0x60
+            pub OverrideAISkillSequence: *const NativeArray<NativeObject>, // 0x68
+            pub DamageTypeResistance: *const NativeArray<NativeObject>, // 0x70
+            pub CustomValues: *const NativeArray<NativeObject>,    // 0x78
+            pub MonsterIntroduction: TextID,                       // 0x80
+            pub HPModifyRatio: FixPoint,                           // 0x90
+            pub MonsterBattleIntroduction: TextID,                 // 0x98
+            pub _IsCached: bool,                                   // 0xa8
+            pub InheritSummonIDList: bool,                         // 0xa9
+            pub InheritAbilityNameList: bool,                      // 0xaa
+            pub InheritDynamicValues: bool,                        // 0xab
+            pub MonsterID: u32,                                    // 0xac
+            pub Level: u32,                                        // 0xb0
+            pub SpeedModifyRatio: FixPoint,                        // 0xb8
+            pub SpeedModifyValue: FixPoint,                        // 0xc0
+            pub EliteGroup: u32,                                   // 0xc8
+            pub HardLevelGroup: u32,                               // 0xcc
+            pub DefenceModifyRatio: FixPoint,                      // 0xd0
+            pub InheritCustomValueTags: bool,                      // 0xd8
+            pub InheritCustomValues: bool,                         // 0xd9
+            pub StanceCountDelta: i32,                             // 0xdc
+            pub HPModifyValue: FixPoint,                           // 0xe0
+            pub AttackModifyRatio: FixPoint,                       // 0xe8
+            pub StanceModifyRatio: FixPoint,                       // 0xf0
+            pub AttackModifyValue: FixPoint,                       // 0xf8
+            pub MonsterName: TextID,                               // 0x100
+            pub MonsterTemplateID: u32,                            // 0x110
+            pub MonsterType: u32,                                  // 0x114
+            pub StanceModifyValue: FixPoint,                       // 0x118
+            pub DefenceModifyValue: FixPoint,                      // 0x120
         }
     }
 }

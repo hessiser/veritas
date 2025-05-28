@@ -8,7 +8,7 @@ repository = "https://github.com/hessiser/veritas/"
 region = "cn"
 is_beta = true
 patch = "3.3.2"
-hotfix = "0.2"
+hotfix = "0.30000000000000004"
 
 [package.metadata.i18n]
 available-locales = ["en", "fr", "es", "de", "it", "ja", "pt", "nl", "ru", "vi", "zh", "pl"]
