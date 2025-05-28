@@ -562,39 +562,61 @@ static_detour! {
 	static ON_UPDATE_TEAM_FORMATION_Detour: fn(*const TeamFormationComponent);
 	static ON_INITIALIZE_ENEMY_Detour: fn(*const MonsterDataComponent, *const TurnBasedAbilityComponent);
 }
-
 pub fn subscribe() -> Result<()> {
     unsafe {
         subscribe_function!(
-            ON_DAMAGE_Detour, * GAMEASSEMBLY_HANDLE + 0x748a9f0, on_damage
+            ON_DAMAGE_Detour, * GAMEASSEMBLY_HANDLE + 0x748a2d0, on_damage
         );
         subscribe_function!(
-            ON_COMBO_Detour, * GAMEASSEMBLY_HANDLE + 0xc52aac0, on_combo
+            ON_COMBO_Detour, * GAMEASSEMBLY_HANDLE + 0xc563df0, on_combo
         );
         subscribe_function!(
-            ON_USE_SKILL_Detour, * GAMEASSEMBLY_HANDLE + 0x70528d0, on_use_skill
+            ON_USE_SKILL_Detour, * GAMEASSEMBLY_HANDLE + 0x7075d40, on_use_skill
         );
         subscribe_function!(
-            ON_SET_LINEUP_Detour, * GAMEASSEMBLY_HANDLE + 0xcb50040, on_set_lineup
+            ON_SET_LINEUP_Detour, * GAMEASSEMBLY_HANDLE + 0xcb883d0, on_set_lineup
         );
         subscribe_function!(
-            ON_BATTLE_BEGIN_Detour, * GAMEASSEMBLY_HANDLE + 0x7121440, on_battle_begin
+            ON_BATTLE_BEGIN_Detour, * GAMEASSEMBLY_HANDLE + 0x71434c0, on_battle_begin
         );
         subscribe_function!(
-            ON_BATTLE_END_Detour, * GAMEASSEMBLY_HANDLE + 0x7121620, on_battle_end
+            ON_BATTLE_END_Detour, * GAMEASSEMBLY_HANDLE + 0x71436a0, on_battle_end
         );
         subscribe_function!(
-            ON_TURN_BEGIN_Detour, * GAMEASSEMBLY_HANDLE + 0x711a720, on_turn_begin
+            ON_TURN_BEGIN_Detour, * GAMEASSEMBLY_HANDLE + 0x713c7c0, on_turn_begin
         );
         subscribe_function!(
-            ON_TURN_END_Detour, * GAMEASSEMBLY_HANDLE + 0x7100750, on_turn_end
+            ON_TURN_END_Detour, * GAMEASSEMBLY_HANDLE + 0x71235d0, on_turn_end
         );
         subscribe_function!(
-            ON_UPDATE_WAVE_Detour, * GAMEASSEMBLY_HANDLE + 0x71207b0, on_update_wave
+            ON_UPDATE_WAVE_Detour, * GAMEASSEMBLY_HANDLE + 0x7142840, on_update_wave
         );
         subscribe_function!(
-            ON_UPDATE_CYCLE_Detour, * GAMEASSEMBLY_HANDLE + 0x71291a0, on_update_cycle
+            ON_UPDATE_CYCLE_Detour, * GAMEASSEMBLY_HANDLE + 0x714b120, on_update_cycle
         );
+        // subscribe_function!(
+        //     ON_DIRECT_CHANGE_HP_Detour, * GAMEASSEMBLY_HANDLE + 0x71140f0,
+        //     on_direct_change_hp
+        // );
+        // subscribe_function!(
+        //     ON_DIRECT_DAMAGE_HP_Detour, * GAMEASSEMBLY_HANDLE + 0x7113490,
+        //     on_direct_damage_hp
+        // );
+        // subscribe_function!(
+        //     ON_STAT_CHANGE_Detour, * GAMEASSEMBLY_HANDLE + 0x71067c0, on_stat_change
+        // );
+        // subscribe_function!(
+        //     ON_ENTITY_DEFEATED_Detour, * GAMEASSEMBLY_HANDLE + 0x71283f0,
+        //     on_entity_defeated
+        // );
+        // subscribe_function!(
+        //     ON_UPDATE_TEAM_FORMATION_Detour, * GAMEASSEMBLY_HANDLE + 0x70a4650,
+        //     on_update_team_formation
+        // );
+        // subscribe_function!(
+        //     ON_INITIALIZE_ENEMY_Detour, * GAMEASSEMBLY_HANDLE + 0x703a400,
+        //     on_initialize_enemy
+        // );
         Ok(())
     }
 }
