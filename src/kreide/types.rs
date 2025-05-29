@@ -1311,7 +1311,7 @@ pub mod rpg {
             pub _IsOnStage: bool,                // 0xe1
             pub IsLoaded__BackingField: bool,    // 0xe2
             pub _Tickable: bool,                 // 0xe3
-            pub _ForceTickLodLowestReason: [u8; 0x8], // 0xe8
+            pub _ForceTickLodLowestReason: *const u8, // 0xe8
             pub _ShouldLateUpdate: bool,         // 0xf0
             pub KillImmediately: bool,           // 0xf1
             pub IsHero__BackingField: bool,      // 0xf2
