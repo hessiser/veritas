@@ -34,7 +34,7 @@ egui_logger = "0.7.0"
 axum = { version = "0.8.4" }
 axum-server = "0.7.2"
 socketioxide = "0.17.0"
-tokio = { version = "1.45.0", features = ["full"] }
+tokio = { version = "1.45.1", features = ["full"] }
 tower = "0.5.2"
 tower-http = { version = "0.6.3", features = ["cors"] }
 
