@@ -1075,78 +1075,78 @@ pub fn subscribe() -> Result<()> {
     unsafe {
         subscribe_function!(
             ON_DAMAGE_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7490630,
+            *GAMEASSEMBLY_HANDLE + 0x74a4e90,
             on_damage
         );
-        subscribe_function!(ON_COMBO_Detour, *GAMEASSEMBLY_HANDLE + 0xc5627b0, on_combo);
+        subscribe_function!(ON_COMBO_Detour, *GAMEASSEMBLY_HANDLE + 0xc5aa330, on_combo);
         subscribe_function!(
             ON_USE_SKILL_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7076490,
+            *GAMEASSEMBLY_HANDLE + 0x709f210,
             on_use_skill
         );
         subscribe_function!(
             ON_SET_LINEUP_Detour,
-            *GAMEASSEMBLY_HANDLE + 0xcb82710,
+            *GAMEASSEMBLY_HANDLE + 0xcbc7fb0,
             on_set_lineup
         );
         subscribe_function!(
             ON_BATTLE_BEGIN_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7145c80,
+            *GAMEASSEMBLY_HANDLE + 0x716c9e0,
             on_battle_begin
         );
         subscribe_function!(
             ON_BATTLE_END_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7145e60,
+            *GAMEASSEMBLY_HANDLE + 0x716cbc0,
             on_battle_end
         );
         subscribe_function!(
             ON_TURN_BEGIN_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x713ef50,
+            *GAMEASSEMBLY_HANDLE + 0x7165d40,
             on_turn_begin
         );
         subscribe_function!(
             ON_TURN_END_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x71258b0,
+            *GAMEASSEMBLY_HANDLE + 0x714c860,
             on_turn_end
         );
         subscribe_function!(
             ON_UPDATE_WAVE_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7144fd0,
+            *GAMEASSEMBLY_HANDLE + 0x716bd70,
             on_update_wave
         );
         subscribe_function!(
             ON_UPDATE_CYCLE_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x714d950,
+            *GAMEASSEMBLY_HANDLE + 0x7174360,
             on_update_cycle
         );
         subscribe_function!(
             ON_DIRECT_CHANGE_HP_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7116390,
+            *GAMEASSEMBLY_HANDLE + 0x713c800,
             on_direct_change_hp
         );
         subscribe_function!(
             ON_DIRECT_DAMAGE_HP_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7115730,
+            *GAMEASSEMBLY_HANDLE + 0x713bba0,
             on_direct_damage_hp
         );
         subscribe_function!(
             ON_STAT_CHANGE_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x7108790,
+            *GAMEASSEMBLY_HANDLE + 0x7130f80,
             on_stat_change
         );
         subscribe_function!(
             ON_ENTITY_DEFEATED_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x712a9a0,
+            *GAMEASSEMBLY_HANDLE + 0x7151670,
             on_entity_defeated
         );
         subscribe_function!(
             ON_UPDATE_TEAM_FORMATION_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x70a56f0,
+            *GAMEASSEMBLY_HANDLE + 0x711bc90,
             on_update_team_formation
         );
         subscribe_function!(
             ON_INITIALIZE_ENEMY_Detour,
-            *GAMEASSEMBLY_HANDLE + 0x703abb0,
+            *GAMEASSEMBLY_HANDLE + 0x7063e50,
             on_initialize_enemy
         );
 
