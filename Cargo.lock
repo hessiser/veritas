@@ -914,7 +914,7 @@ dependencies = [
  "epaint",
  "nohash-hasher",
  "profiling",
- "ron",
+ "ron 0.10.1",
  "serde",
  "smallvec",
  "unicode-segmentation",
@@ -2905,6 +2905,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "ron"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db09040cc89e461f1a265139777a2bde7f8d8c67c4936f700c63ce3e2904d468"
+dependencies = [
+ "base64",
+ "bitflags 2.9.4",
+ "serde",
+ "serde_derive",
+ "unicode-ident",
+]
+
+[[package]]
 name = "rust-i18n"
 version = "3.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3912,7 +3925,7 @@ dependencies = [
  "reqwest",
  "retour",
  "rfd",
- "ron",
+ "ron 0.11.0",
  "rust-i18n",
  "semver",
  "serde",
