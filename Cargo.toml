@@ -34,7 +34,7 @@ slog = { version = "2.7.0", features = ["max_level_trace", "release_max_level_tr
 slog-term = "2.9.1"
 
 # Server
-axum = { version = "0.8.4" }
+axum = { version = "0.8.6" }
 axum-server = "0.7.2"
 socketioxide = "0.17.2"
 tokio = { version = "1.46.1", features = ["full"] }
