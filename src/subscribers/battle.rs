@@ -27,35 +27,35 @@ unsafe fn get_elapsed_av(game_mode: RPG_GameCore_TurnBasedGameMode) -> Result<f6
 fn on_damage(
     task_context: *const c_void,
     damage_by_attack_property: *const c_void,
-    mut kcekdanaofi: KCEKDANAOFI,
+    mut bihkclpkjbc: BIHKCLPKJBC,
     attacker_ability: RPG_GameCore_TurnBasedAbilityComponent,
     defender_ability: RPG_GameCore_TurnBasedAbilityComponent,
     attacker: RPG_GameCore_GameEntity,
     defender: RPG_GameCore_GameEntity,
     attacker_task_single_target: RPG_GameCore_GameEntity,
     flag: bool,
-    EGBIFEKHNIC: *const c_void,
+    EPLAJFFODHO: *const c_void,
 ) -> bool {
     log::debug!(function_name!());
     let res = ON_DAMAGE_Detour.call(
         task_context,
         damage_by_attack_property,
-        kcekdanaofi,
+        bihkclpkjbc,
         attacker_ability,
         defender_ability,
         attacker,
         defender,
         attacker_task_single_target,
         flag,
-        EGBIFEKHNIC,
+        EPLAJFFODHO,
     );
 
     safe_call!(unsafe {
         let mut event: Option<Result<Event>> = None;
         match attacker._Team()? {
             RPG_GameCore_TeamType::TeamLight => {
-                let damage = fixpoint_to_raw(&kcekdanaofi.JNMNJBHALMO()?);
-                let damage_type = kcekdanaofi.IDFIOBDMLFF()?;
+                let damage = fixpoint_to_raw(&bihkclpkjbc.GDMICPLJAKA()?);
+                let damage_type = bihkclpkjbc.JDDOEMNAMFJ()?;
                 let attack_owner = {
                     let attack_owner = RPG_GameCore_AbilityStatic::get_actual_owner(attacker)?;
                     if !attack_owner.is_null() {
@@ -300,13 +300,13 @@ fn on_use_skill(
 
 // Insert skills are out of turn automatic skills
 #[named]
-fn on_combo(instance: MAJMDHFBJAB, game_mode: RPG_GameCore_TurnBasedGameMode) {
+fn on_combo(instance: OHCFAIPOEAH, game_mode: RPG_GameCore_TurnBasedGameMode) {
     log::debug!(function_name!());
 
     ON_COMBO_Detour.call(instance, game_mode);
     safe_call!(unsafe {
-        let turn_based_ability_component = instance.DMDLKCHDEAE()?;
-        let skill_character_component = instance.FKAPBDFMDGA()?;
+        let turn_based_ability_component = instance.DJJDPEJEHAJ()?;
+        let skill_character_component = instance.GMIEIJLDHAM()?;
         let entity = skill_character_component._OwnerRef()?;
         let skill_owner = {
             let skill_owner = RPG_GameCore_AbilityStatic::get_actual_owner(entity)?;
@@ -320,7 +320,7 @@ fn on_combo(instance: MAJMDHFBJAB, game_mode: RPG_GameCore_TurnBasedGameMode) {
         let mut event: Option<Result<Event>> = None;
         match skill_owner._Team()? {
             RPG_GameCore_TeamType::TeamLight => {
-                let ability_name = (instance.MEPIIGLGKAG()?).FJOOFKIADBC()?;
+                let ability_name = (instance.GMJNLMGADNN()?).NPKHCIODJAF()?;
 
                 let skill_name =
                     turn_based_ability_component.get_ability_mapped_skill(ability_name)?;
@@ -1284,7 +1284,7 @@ pub fn on_stat_change(
 }
 
 #[named]
-pub fn on_entity_defeated(instance: RPG_GameCore_TurnBasedGameMode, a2: DKKNECHPLHL) -> bool {
+pub fn on_entity_defeated(instance: RPG_GameCore_TurnBasedGameMode, a2: HIKJAFBBPIP) -> bool {
     log::debug!(function_name!());
     let res = ON_ENTITY_DEFEATED_Detour.call(instance, a2);
     safe_call!(unsafe {
@@ -1384,8 +1384,8 @@ pub fn on_initialize_enemy(
 }
 
 retour::static_detour! {
-    static ON_DAMAGE_Detour: fn(*const c_void, *const c_void, KCEKDANAOFI, RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, bool, *const c_void) -> bool;
-    static ON_COMBO_Detour: fn(MAJMDHFBJAB, RPG_GameCore_TurnBasedGameMode);
+    static ON_DAMAGE_Detour: fn(*const c_void, *const c_void, BIHKCLPKJBC, RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, bool, *const c_void) -> bool;
+    static ON_COMBO_Detour: fn(OHCFAIPOEAH, RPG_GameCore_TurnBasedGameMode);
     static ON_USE_SKILL_Detour: fn(RPG_GameCore_SkillCharacterComponent, i32, *const c_void, bool, *const c_void, *const c_void, i32) -> bool;
     static ON_SET_LINEUP_Detour: fn(RPG_GameCore_BattleInstance, *const c_void, RPG_GameCore_BattleLineupData, i32, u32, bool);
     static ON_BATTLE_BEGIN_Detour: fn(RPG_GameCore_TurnBasedGameMode);
@@ -1397,7 +1397,7 @@ retour::static_detour! {
     static ON_DIRECT_CHANGE_HP_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, i32, RPG_GameCore_FixPoint, RPG_GameCore_FixPoint, *const c_void);
     static ON_DIRECT_DAMAGE_HP_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_FixPoint, RPG_GameCore_FixPoint, i32, *const c_void, RPG_GameCore_FixPoint, *const c_void);
     static ON_STAT_CHANGE_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_AbilityProperty, i32, RPG_GameCore_FixPoint, *const c_void) -> bool;
-    static ON_ENTITY_DEFEATED_Detour: fn(RPG_GameCore_TurnBasedGameMode, DKKNECHPLHL) -> bool;
+    static ON_ENTITY_DEFEATED_Detour: fn(RPG_GameCore_TurnBasedGameMode, HIKJAFBBPIP) -> bool;
     static ON_UPDATE_TEAM_FORMATION_Detour: fn(RPG_GameCore_TeamFormationComponent);
     static ON_INITIALIZE_ENEMY_Detour: fn(RPG_GameCore_MonsterDataComponent, RPG_GameCore_TurnBasedAbilityComponent);
 }
@@ -1406,20 +1406,20 @@ pub fn subscribe() -> Result<()> {
     unsafe {
         subscribe_function!(
             ON_DAMAGE_Detour,
-            MFKHDKANHKP::get_class()?
+            KMCALMJKMII::get_class()?
                 .find_method_full(
-                    "LLKOCGFBIEL",
+                    "ODLKOGEDLPM",
                     &[
                         "RPG.GameCore.TaskContext",
                         "RPG.GameCore.DamageByAttackProperty",
-                        "KCEKDANAOFI",
+                        "BIHKCLPKJBC",
                         "RPG.GameCore.TurnBasedAbilityComponent",
                         "RPG.GameCore.TurnBasedAbilityComponent",
                         "RPG.GameCore.GameEntity",
                         "RPG.GameCore.GameEntity",
                         "RPG.GameCore.GameEntity",
                         "bool",
-                        "EGBIFEKHNIC"
+                        "EPLAJFFODHO"
                     ],
                     "bool"
                 )?
@@ -1428,8 +1428,8 @@ pub fn subscribe() -> Result<()> {
         )?;
         subscribe_function!(
             ON_COMBO_Detour,
-            MAJMDHFBJAB::get_class()?
-                .find_method_full("MAMHOGEALAN", &["RPG.GameCore.TurnBasedGameMode"], "void")?
+            OHCFAIPOEAH::get_class()?
+                .find_method_full("EDGCPNBIMOF", &["RPG.GameCore.TurnBasedGameMode"], "void")?
                 .va(),
             on_combo
         )?;
@@ -1456,7 +1456,7 @@ pub fn subscribe() -> Result<()> {
             RPG_GameCore_BattleInstance::get_class()?
                 .find_method_full(
                     ".ctor",
-                    &["BGGHEDDPDJN", "RPG.GameCore.BattleLineupData", "int", "uint", "bool"],
+                    &["LAJGGFFBCLI", "RPG.GameCore.BattleLineupData", "int", "uint", "bool"],
                     "void"
                 )?
                 .va(),
@@ -1513,7 +1513,7 @@ pub fn subscribe() -> Result<()> {
                         "RPG.GameCore.PropertyModifyFunction",
                         "RPG.GameCore.FixPoint",
                         "RPG.GameCore.FixPoint",
-                        "HOKJABDJFAF"
+                        "JNPIEKFLFGF"
                     ],
                     "void"
                 )?
@@ -1530,7 +1530,7 @@ pub fn subscribe() -> Result<()> {
                         "RPG.GameCore.FixPoint",
                         "RPG.GameCore.FixPoint",
                         "RPG.GameCore.AntiLockHPStrength",
-                        "HOKJABDJFAF",
+                        "JNPIEKFLFGF",
                         "RPG.GameCore.FixPoint&",
                         "System.Nullable<RPG.GameCore.FixPoint>"
                     ],
@@ -1548,7 +1548,7 @@ pub fn subscribe() -> Result<()> {
                         "RPG.GameCore.AbilityProperty",
                         "RPG.GameCore.PropertyModifyFunction",
                         "RPG.GameCore.FixPoint",
-                        "HOKJABDJFAF"
+                        "JNPIEKFLFGF"
                     ]
                 )?
                 .va(),
@@ -1558,7 +1558,7 @@ pub fn subscribe() -> Result<()> {
             ON_ENTITY_DEFEATED_Detour,
             RPG_GameCore_TurnBasedGameMode::get_class()
                 .unwrap()
-                .find_method_full("_MakeLimboEntityDie", &["DKKNECHPLHL"], "bool")?
+                .find_method_full("_MakeLimboEntityDie", &["HIKJAFBBPIP"], "bool")?
                 .va(),
             on_entity_defeated
         )?;

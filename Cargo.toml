@@ -3,7 +3,7 @@ name = "veritas"
 edition = "2024"
 license-file = "LICENSE"
 repository = "https://github.com/hessiser/veritas/"
-version = "0.2.41"
+version = "0.2.42"
 
 [package.metadata.i18n]
 available-locales = ["en", "fr", "es", "de", "it", "ja", "pt", "nl", "ru", "vi", "zh", "pl"]

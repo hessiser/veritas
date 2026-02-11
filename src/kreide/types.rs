@@ -44,23 +44,23 @@ pub enum RPG_GameCore_AliveState {
 
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// NMMHEOHJODF
-pub struct NMMHEOHJODF(pub usize);
-impl NMMHEOHJODF {
-    cs_class!("NMMHEOHJODF");
+// AFBBBCMBEME
+pub struct AFBBBCMBEME(pub usize);
+impl AFBBBCMBEME {
+    cs_class!("AFBBBCMBEME");
 
-    // NMMHEOHJODF -> Type: string | Name: FJOOFKIADBC | Offset: 0x8
-    cs_field!(FJOOFKIADBC, "FJOOFKIADBC", self, |v| -> Il2CppString {
+    // AFBBBCMBEME -> Type: string | Name: NPKHCIODJAF | Offset: 0x8
+    cs_field!(NPKHCIODJAF, "NPKHCIODJAF", self, |v| -> Il2CppString {
         Il2CppString(v.0)
     });
 }
 
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// NMMHEOHJODF
-pub struct DKKNECHPLHL(pub usize);
-impl DKKNECHPLHL {
-    cs_class!("DKKNECHPLHL");
+// AFBBBCMBEME
+pub struct HIKJAFBBPIP(pub usize);
+impl HIKJAFBBPIP {
+    cs_class!("HIKJAFBBPIP");
 
     cs_field!(
         MKFOEBBAKJA,
@@ -812,15 +812,15 @@ pub struct RPG_GameCore_FixPoint {
 
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// KCEKDANAOFI
-pub struct KCEKDANAOFI(pub usize);
-impl KCEKDANAOFI {
-    cs_class!("KCEKDANAOFI");
+// BIHKCLPKJBC
+pub struct BIHKCLPKJBC(pub usize);
+impl BIHKCLPKJBC {
+    cs_class!("BIHKCLPKJBC");
 
-    // KCEKDANAOFI -> Type: FixPoint | Name: JNMNJBHALMO | Offset: 0x340
+    // BIHKCLPKJBC -> Type: FixPoint | Name: GDMICPLJAKA | Offset: 0x340
     cs_field!(
-        JNMNJBHALMO,
-        "JNMNJBHALMO",
+        GDMICPLJAKA,
+        "GDMICPLJAKA",
         self,
         |v| -> RPG_GameCore_FixPoint {
             RPG_GameCore_FixPoint {
@@ -829,10 +829,10 @@ impl KCEKDANAOFI {
         }
     );
 
-    // KCEKDANAOFI -> Type: AttackType | Name: IDFIOBDMLFF | Offset: 0x434
+    // BIHKCLPKJBC -> Type: AttackType | Name: JDDOEMNAMFJ | Offset: 0x434
     cs_field!(
-        IDFIOBDMLFF,
-        "IDFIOBDMLFF",
+        JDDOEMNAMFJ,
+        "JDDOEMNAMFJ",
         self,
         |v| -> RPG_GameCore_AttackType { v.unbox::<RPG_GameCore_AttackType>() }
     );
@@ -949,28 +949,28 @@ impl RPG_Client_ModuleManager {
 
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// MAJMDHFBJAB
-pub struct MAJMDHFBJAB(pub usize);
-impl MAJMDHFBJAB {
-    cs_class!("MAJMDHFBJAB");
+// OHCFAIPOEAH
+pub struct OHCFAIPOEAH(pub usize);
+impl OHCFAIPOEAH {
+    cs_class!("OHCFAIPOEAH");
 
-    // MAJMDHFBJAB -> Type: NMMHEOHJODF | Name: MEPIIGLGKAG | Offset: 0x10
-    cs_field!(MEPIIGLGKAG, "MEPIIGLGKAG", self, |v| -> NMMHEOHJODF {
-        NMMHEOHJODF(v.0)
+    // OHCFAIPOEAH -> Type: AFBBBCMBEME | Name: GMJNLMGADNN | Offset: 0x10
+    cs_field!(GMJNLMGADNN, "GMJNLMGADNN", self, |v| -> AFBBBCMBEME {
+        AFBBBCMBEME(v.0)
     });
 
-    // MAJMDHFBJAB -> Type: SkillCharacterComponent | Name: FKAPBDFMDGA | Offset: 0x78
+    // OHCFAIPOEAH -> Type: SkillCharacterComponent | Name: GMIEIJLDHAM | Offset: 0x78
     cs_field!(
-        FKAPBDFMDGA,
-        "FKAPBDFMDGA",
+        GMIEIJLDHAM,
+        "GMIEIJLDHAM",
         self,
         |v| -> RPG_GameCore_SkillCharacterComponent { RPG_GameCore_SkillCharacterComponent(v.0) }
     );
 
-    // MAJMDHFBJAB -> Type: TurnBasedAbilityComponent | Name: DMDLKCHDEAE | Offset: 0x80
+    // OHCFAIPOEAH -> Type: TurnBasedAbilityComponent | Name: DJJDPEJEHAJ | Offset: 0x80
     cs_field!(
-        DMDLKCHDEAE,
-        "DMDLKCHDEAE",
+        DJJDPEJEHAJ,
+        "DJJDPEJEHAJ",
         self,
         |v| -> RPG_GameCore_TurnBasedAbilityComponent {
             RPG_GameCore_TurnBasedAbilityComponent(v.0)
@@ -1099,10 +1099,10 @@ impl UnityEngine_Application {
 
 #[repr(transparent)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// MFKHDKANHKP
-pub struct MFKHDKANHKP(pub usize);
-impl MFKHDKANHKP {
-    cs_class!("MFKHDKANHKP");
+// KMCALMJKMII
+pub struct KMCALMJKMII(pub usize);
+impl KMCALMJKMII {
+    cs_class!("KMCALMJKMII");
 }
 
 #[repr(transparent)]
