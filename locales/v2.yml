@@ -670,28 +670,160 @@ Reset:
   zh: 角色图例
 Show Damage Type Breakdown:
   en: Show Damage Type Breakdown
+  fr: Afficher la répartition par type de dégâts
+  es: Mostrar desglose por tipo de daño
+  de: Schadensarten-Aufschlüsselung anzeigen
+  it: Mostra ripartizione per tipo di danno
+  ja: ダメージタイプ内訳を表示
+  pt: Mostrar detalhamento por tipo de dano
+  nl: Uitsplitsing per schadetype tonen
+  ru: Показать разбивку по типам урона
+  vi: Hiển thị bảng phân tích loại sát thương
+  zh: 显示伤害类型明细
+  pl: Pokaż podział według typów obrażeń
 Damage Type Breakdown:
   en: Damage Type Breakdown
+  fr: Répartition par type de dégâts
+  es: Desglose por tipo de daño
+  de: Schadensarten-Aufschlüsselung
+  it: Ripartizione per tipo di danno
+  ja: ダメージタイプ内訳
+  pt: Detalhamento por tipo de dano
+  nl: Uitsplitsing per schadetype
+  ru: Разбивка по типам урона
+  vi: Bảng phân tích loại sát thương
+  zh: 伤害类型明细
+  pl: Podział według typów obrażeń
 Character Summary:
   en: Character Summary
+  fr: Résumé du personnage
+  es: Resumen del personaje
+  de: Charakterübersicht
+  it: Riepilogo personaggio
+  ja: キャラクター概要
+  pt: Resumo do personagem
+  nl: Personageoverzicht
+  ru: Сводка по персонажу
+  vi: Tóm tắt nhân vật
+  zh: 角色摘要
+  pl: Podsumowanie postaci
 Category:
   en: Category
+  fr: Catégorie
+  es: Categoría
+  de: Kategorie
+  it: Categoria
+  ja: カテゴリ
+  pt: Categoria
+  nl: Categorie
+  ru: Категория
+  vi: Danh mục
+  zh: 类别
+  pl: Kategoria
 Character:
   en: Character
+  fr: Personnage
+  es: Personaje
+  de: Charakter
+  it: Personaggio
+  ja: キャラクター
+  pt: Personagem
+  nl: Personage
+  ru: Персонаж
+  vi: Nhân vật
+  zh: 角色
+  pl: Postać
 Party Share:
   en: Party Share
+  fr: Part de l'équipe
+  es: Participación del equipo
+  de: Team-Anteil
+  it: Quota del team
+  ja: チーム内割合
+  pt: Participação da equipe
+  nl: Teamaandeel
+  ru: Доля команды
+  vi: Tỷ trọng đội hình
+  zh: 队伍占比
+  pl: Udział drużyny
 Selection Share:
   en: Selection Share
+  fr: Part de la sélection
+  es: Participación de la selección
+  de: Auswahl-Anteil
+  it: Quota selezione
+  ja: 選択内割合
+  pt: Participação da seleção
+  nl: Selectieaandeel
+  ru: Доля выбранного
+  vi: Tỷ trọng mục đã chọn
+  zh: 所选占比
+  pl: Udział zaznaczenia
 Teamwide:
   en: Teamwide
+  fr: Toute l'équipe
+  es: Todo el equipo
+  de: Gesamtes Team
+  it: Intero team
+  ja: チーム全体
+  pt: Equipe inteira
+  nl: Hele team
+  ru: Вся команда
+  vi: Toàn đội
+  zh: 全队
+  pl: Cała drużyna
 Pie Chart:
   en: Pie Chart
+  fr: Graphique circulaire
+  es: Gráfico circular
+  de: Kreisdiagramm
+  it: Grafico a torta
+  ja: 円グラフ
+  pt: Gráfico de pizza
+  nl: Cirkeldiagram
+  ru: Круговая диаграмма
+  vi: Biểu đồ tròn
+  zh: 饼图
+  pl: Wykres kołowy
 Bar Chart:
   en: Bar Chart
+  fr: Graphique en barres
+  es: Gráfico de barras
+  de: Balkendiagramm
+  it: Grafico a barre
+  ja: 棒グラフ
+  pt: Gráfico de barras
+  nl: Staafdiagram
+  ru: Столбчатая диаграмма
+  vi: Biểu đồ cột
+  zh: 柱状图
+  pl: Wykres słupkowy
 Legend:
   en: Legend
+  fr: Légende
+  es: Leyenda
+  de: Legende
+  it: Legenda
+  ja: 凡例
+  pt: Legenda
+  nl: Legenda
+  ru: Легенда
+  vi: Chú giải
+  zh: 图例
+  pl: Legenda
 Detailed Stats:
   en: Detailed Stats
+  fr: Statistiques détaillées
+  es: Estadísticas detalladas
+  de: Detaillierte Statistiken
+  it: Statistiche dettagliate
+  ja: 詳細統計
+  pt: Estatísticas detalhadas
+  nl: Gedetailleerde statistieken
+  ru: Подробная статистика
+  vi: Thống kê chi tiết
+  zh: 详细统计
+  pl: Szczegółowe statystyki
 Fonts:
   de: Schriftarten
   en: Fonts
