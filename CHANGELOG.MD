@@ -1,3 +1,7 @@
+# 0.2.46 - 2026-03-22
+  - Fixed Servant damage logging
+  - Added Damage Type Breakdown window
+
 # 0.2.45 - 2026-03-18
   - Fixed Resizing
 
