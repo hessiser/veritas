@@ -1,8 +1,11 @@
-use crate::ui::app::GraphUnit;
+use crate::ui::app::{DamageBreakdownChart, DamageBreakdownScope, GraphUnit};
 use egui::{Color32, Sense, Stroke, Ui, Vec2};
 use egui_plot::{Bar, BarChart, Legend, Line, Plot, PlotPoints, Polygon};
 
-use crate::{battle::BattleContext, models::misc::Avatar};
+use crate::{
+    battle::{BattleContext, DamageCategory, DamageCategoryBreakdown},
+    models::misc::Avatar,
+};
 
 use super::{app::App, helpers};
 
@@ -174,6 +177,152 @@ impl App {
                 plot_ui.bar_chart(
                     overkill_bar_chart
                 );
+            });
+    }
+
+    pub fn show_damage_type_breakdown_widget(&mut self, ui: &mut Ui) {
+        let battle_context = BattleContext::get_instance();
+        let total_damage = battle_context.total_damage;
+
+        if battle_context.avatar_lineup.is_empty() || total_damage <= 0.0 {
+            return;
+        }
+
+        let overall_breakdown = aggregate_damage_by_category(&battle_context.damage_by_category);
+        let max_index = battle_context.avatar_lineup.len().saturating_sub(1);
+        self.state.damage_breakdown_character_index = self
+            .state
+            .damage_breakdown_character_index
+            .min(max_index);
+
+        ui.horizontal(|ui| {
+            ui.radio_value(
+                &mut self.state.damage_breakdown_scope,
+                DamageBreakdownScope::Team,
+                t!("Teamwide"),
+            );
+            ui.radio_value(
+                &mut self.state.damage_breakdown_scope,
+                DamageBreakdownScope::Character,
+                t!("Character"),
+            );
+        });
+
+        ui.horizontal(|ui| {
+            ui.radio_value(
+                &mut self.state.damage_breakdown_chart,
+                DamageBreakdownChart::Pie,
+                t!("Pie Chart"),
+            );
+            ui.radio_value(
+                &mut self.state.damage_breakdown_chart,
+                DamageBreakdownChart::Bar,
+                t!("Bar Chart"),
+            );
+        });
+
+        if self.state.damage_breakdown_scope == DamageBreakdownScope::Character {
+            egui::ComboBox::new("damage_breakdown_character_picker", "")
+                .selected_text(
+                    battle_context.avatar_lineup[self.state.damage_breakdown_character_index]
+                        .name
+                        .clone(),
+                )
+                .show_ui(ui, |ui| {
+                    for (i, avatar) in battle_context.avatar_lineup.iter().enumerate() {
+                        ui.selectable_value(
+                            &mut self.state.damage_breakdown_character_index,
+                            i,
+                            &avatar.name,
+                        );
+                    }
+                });
+        }
+
+        ui.add_space(8.0);
+
+        let (title, breakdown, selected_damage) = match self.state.damage_breakdown_scope {
+            DamageBreakdownScope::Team => (
+                t!("Teamwide").into_owned(),
+                overall_breakdown.clone(),
+                total_damage,
+            ),
+            DamageBreakdownScope::Character => {
+                let index = self.state.damage_breakdown_character_index;
+                (
+                    battle_context.avatar_lineup[index].name.clone(),
+                    battle_context.damage_by_category[index].clone(),
+                    battle_context.real_time_damages[index],
+                )
+            }
+        };
+
+        ui.label(
+            egui::RichText::new(format!(
+                "{} | {} | {:.1}%",
+                title,
+                helpers::format_damage(selected_damage),
+                if total_damage > 0.0 {
+                    (selected_damage / total_damage) * 100.0
+                } else {
+                    0.0
+                }
+            ))
+            .strong(),
+        );
+
+        match self.state.damage_breakdown_chart {
+            DamageBreakdownChart::Pie => {
+                show_damage_category_pie_chart(ui, &breakdown);
+            }
+            DamageBreakdownChart::Bar => {
+                show_damage_category_bar_chart(ui, &breakdown);
+            }
+        }
+
+        ui.add_space(12.0);
+        egui::CollapsingHeader::new(t!("Legend"))
+            .id_salt("damage_type_breakdown_legend_header")
+            .default_open(false)
+            .show(ui, |ui| {
+                draw_damage_category_legend(ui, &breakdown);
+            });
+
+        egui::CollapsingHeader::new(t!("Detailed Stats"))
+            .id_salt("damage_type_breakdown_details_header")
+            .default_open(false)
+            .show(ui, |ui| {
+                draw_damage_category_grid(
+                    ui,
+                    "damage_type_breakdown_selected_grid",
+                    &breakdown,
+                    selected_damage,
+                    total_damage,
+                );
+
+                if self.state.damage_breakdown_scope == DamageBreakdownScope::Team {
+                    ui.add_space(12.0);
+                    ui.label(egui::RichText::new(t!("Character Summary")).strong());
+                    egui::Grid::new("damage_type_character_summary_grid")
+                        .striped(true)
+                        .num_columns(3)
+                        .show(ui, |ui| {
+                            ui.strong(t!("Character"));
+                            ui.strong(t!("Damage"));
+                            ui.strong(t!("Party Share"));
+                            ui.end_row();
+
+                            for (i, avatar) in battle_context.avatar_lineup.iter().enumerate() {
+                                let character_damage = battle_context.real_time_damages[i];
+                                let percentage = (character_damage / total_damage) * 100.0;
+
+                                ui.label(&avatar.name);
+                                ui.label(helpers::format_damage(character_damage));
+                                ui.label(format!("{percentage:.1}%"));
+                                ui.end_row();
+                            }
+                        });
+                }
             });
     }
 
@@ -378,28 +527,230 @@ fn create_bar_data(
     bar_data
 }
 
+fn aggregate_damage_by_category(
+    breakdowns: &[DamageCategoryBreakdown],
+) -> DamageCategoryBreakdown {
+    let mut aggregate = DamageCategoryBreakdown::default();
+
+    for breakdown in breakdowns {
+        for category in DamageCategory::ALL {
+            aggregate.add(category, breakdown.amount(category));
+        }
+    }
+
+    aggregate
+}
+
+fn draw_damage_category_grid(
+    ui: &mut Ui,
+    id: &str,
+    breakdown: &DamageCategoryBreakdown,
+    selected_damage: f64,
+    total_damage: f64,
+) {
+    egui::Grid::new(id).striped(true).num_columns(4).show(ui, |ui| {
+        ui.strong(t!("Category"));
+        ui.strong(t!("Damage"));
+        ui.strong(t!("Selection Share"));
+        ui.strong(t!("Party Share"));
+        ui.end_row();
+
+        for category in DamageCategory::ALL {
+            let damage = breakdown.amount(category);
+            if damage <= 0.0 {
+                continue;
+            }
+
+            ui.label(category.label());
+            ui.label(helpers::format_damage(damage));
+            ui.label(format!("{:.1}%", (damage / selected_damage) * 100.0));
+            ui.label(format!("{:.1}%", (damage / total_damage) * 100.0));
+            ui.end_row();
+        }
+    });
+}
+
+fn show_damage_category_pie_chart(ui: &mut Ui, breakdown: &DamageCategoryBreakdown) {
+    let chart_data = collect_damage_category_points(breakdown);
+    let available = ui.available_size();
+    let chart_height = 220.0;
+    let total_damage: f64 = chart_data.iter().map(|(_, damage)| *damage).sum();
+
+    Plot::new("damage_type_breakdown_pie")
+        .height(chart_height)
+        .width(available.x)
+        .data_aspect(1.0)
+        .clamp_grid(true)
+        .show_grid(false)
+        .show_background(false)
+        .show_axes([false; 2])
+        .allow_scroll(false)
+        .allow_drag(false)
+        .allow_zoom(false)
+        .show(ui, |plot_ui| {
+            let values: Vec<f64> = chart_data.iter().map(|(_, damage)| *damage).collect();
+            let segments = create_pie_segments_from_values(&values);
+
+            for ((category, damage), segment) in chart_data.iter().zip(segments.into_iter()) {
+                let color = get_damage_category_color(*category);
+                let polygon = Polygon::new(category.label(), PlotPoints::new(segment.points))
+                    .stroke(Stroke::new(1.5, color))
+                    .fill_color(color.linear_multiply(0.35))
+                    .name(format!(
+                        "{}: {} ({:.1}%)",
+                        category.label(),
+                        helpers::format_damage(*damage),
+                        (damage / total_damage) * 100.0,
+                    ));
+
+                plot_ui.polygon(polygon);
+            }
+        });
+}
+
+fn show_damage_category_bar_chart(ui: &mut Ui, breakdown: &DamageCategoryBreakdown) {
+    let chart_data = collect_damage_category_points(breakdown);
+    let available = ui.available_size();
+    let chart_height = 220.0;
+    let max_damage = chart_data
+        .iter()
+        .map(|(_, damage)| *damage)
+        .fold(0.0, f64::max);
+    let y_headroom = if max_damage > 0.0 {
+        max_damage * 1.15
+    } else {
+        1.0
+    };
+
+    Plot::new("damage_type_breakdown_bar")
+        .height(chart_height)
+        .width(available.x)
+        .include_y(0.0)
+        .include_y(y_headroom)
+        .allow_drag(false)
+        .allow_zoom(false)
+        .allow_scroll(false)
+        .show_background(false)
+        .show_axes([false, true])
+        .y_axis_formatter(|y, _| helpers::format_damage(y.value))
+        .show(ui, |plot_ui| {
+            for (index, (category, damage)) in chart_data.iter().enumerate() {
+                let bar = Bar::new(index as f64, *damage)
+                    .name(category.label())
+                    .fill(get_damage_category_color(*category))
+                    .width(0.7);
+
+                plot_ui.bar_chart(
+                    BarChart::new(category.label(), vec![bar])
+                        .id(format!("damage_type_breakdown_bar_{index}")),
+                );
+            }
+        });
+}
+
+fn draw_damage_category_legend(ui: &mut Ui, breakdown: &DamageCategoryBreakdown) {
+    let chart_data = collect_damage_category_points(breakdown);
+    if chart_data.is_empty() {
+        return;
+    }
+
+    let column_count = chart_data.len().min(3);
+    let row_count = chart_data.len().div_ceil(column_count);
+    let desired_height = row_count as f32 * 24.0 + 8.0;
+    let max_height = desired_height.min(ui.available_height());
+
+    egui::ScrollArea::vertical()
+        .id_salt("damage_type_breakdown_legend_scroll")
+        .max_height(max_height)
+        .auto_shrink([false, true])
+        .show(ui, |ui| {
+            egui::Grid::new("damage_type_breakdown_legend_grid")
+                .num_columns(column_count)
+                .spacing([12.0, 6.0])
+                .show(ui, |ui| {
+                    for (index, (category, damage)) in chart_data.iter().enumerate() {
+                        ui.horizontal(|ui| {
+                            ui.colored_label(get_damage_category_color(*category), "■");
+                            ui.label(category.label())
+                                .on_hover_text(helpers::format_damage(*damage));
+                        });
+
+                        if (index + 1) % column_count == 0 {
+                            ui.end_row();
+                        }
+                    }
+
+                    if chart_data.len() % column_count != 0 {
+                        ui.end_row();
+                    }
+                });
+        });
+}
+
+fn collect_damage_category_points(breakdown: &DamageCategoryBreakdown) -> Vec<(DamageCategory, f64)> {
+    DamageCategory::ALL
+        .into_iter()
+        .filter_map(|category| {
+            let damage = breakdown.amount(category);
+            (damage > 0.0).then_some((category, damage))
+        })
+        .collect()
+}
+
+fn get_damage_category_color(category: DamageCategory) -> Color32 {
+    match category {
+        DamageCategory::Basic => Color32::from_rgb(93, 156, 236),
+        DamageCategory::Skill => Color32::from_rgb(72, 201, 176),
+        DamageCategory::Ultimate => Color32::from_rgb(241, 196, 15),
+        DamageCategory::Qte => Color32::from_rgb(155, 89, 182),
+        DamageCategory::Dot => Color32::from_rgb(231, 76, 60),
+        DamageCategory::FollowUp => Color32::from_rgb(230, 126, 34),
+        DamageCategory::Technique => Color32::from_rgb(52, 152, 219),
+        DamageCategory::Additional => Color32::from_rgb(46, 204, 113),
+        DamageCategory::Break => Color32::from_rgb(26, 188, 156),
+        DamageCategory::Servant => Color32::from_rgb(149, 165, 166),
+        DamageCategory::TrueDamage => Color32::from_rgb(127, 140, 141),
+        DamageCategory::Elation => Color32::from_rgb(255, 105, 180),
+        DamageCategory::Other => Color32::from_rgb(189, 195, 199),
+    }
+}
+
 fn create_pie_segments(
     real_time_damages: &Vec<f64>,
     avatars: &Vec<Avatar>,
 ) -> Vec<(Avatar, PieSegment, usize)> {
-    let total_damage = real_time_damages.into_iter().sum::<f64>();
+    let generic_segments = create_pie_segments_from_values(real_time_damages);
+    let mut segments = Vec::new();
+
+    for (i, (avatar, segment)) in avatars.iter().zip(generic_segments.into_iter()).enumerate() {
+        segments.push((
+            avatar.clone(),
+            segment,
+            i,
+        ));
+    }
+
+    segments
+}
+
+fn create_pie_segments_from_values(values: &[f64]) -> Vec<PieSegment> {
+    let total_damage = values.iter().sum::<f64>();
+    if total_damage <= 0.0 {
+        return Vec::new();
+    }
+
     let mut segments = Vec::new();
     let mut start_angle = -std::f64::consts::FRAC_PI_2;
 
-    for (i, avatar) in avatars.iter().enumerate() {
-        let damage = real_time_damages[i];
-        let fraction = damage as f64 / total_damage;
+    for damage in values {
+        let fraction = *damage / total_damage;
         let angle = fraction * std::f64::consts::TAU;
         let end_angle = start_angle + angle;
 
-        segments.push((
-            avatar.clone(),
-            PieSegment {
-                points: create_pie_slice(start_angle, end_angle),
-                value: damage as f64,
-            },
-            i,
-        ));
+        segments.push(PieSegment {
+            points: create_pie_slice(start_angle, end_angle),
+            value: *damage,
+        });
 
         start_angle = end_angle;
     }

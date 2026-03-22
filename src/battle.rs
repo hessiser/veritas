@@ -21,6 +21,118 @@ pub struct SkillHistoryEntry {
     pub turn_battle_id: u32,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum DamageCategory {
+    Basic,
+    Skill,
+    Ultimate,
+    Qte,
+    Dot,
+    FollowUp,
+    Technique,
+    Additional,
+    Break,
+    Servant,
+    TrueDamage,
+    Elation,
+    Other,
+}
+
+impl DamageCategory {
+    pub const ALL: [Self; 13] = [
+        Self::Basic,
+        Self::Skill,
+        Self::Ultimate,
+        Self::Qte,
+        Self::Dot,
+        Self::FollowUp,
+        Self::Technique,
+        Self::Additional,
+        Self::Break,
+        Self::Servant,
+        Self::TrueDamage,
+        Self::Elation,
+        Self::Other,
+    ];
+
+    const fn index(self) -> usize {
+        match self {
+            Self::Basic => 0,
+            Self::Skill => 1,
+            Self::Ultimate => 2,
+            Self::Qte => 3,
+            Self::Dot => 4,
+            Self::FollowUp => 5,
+            Self::Technique => 6,
+            Self::Additional => 7,
+            Self::Break => 8,
+            Self::Servant => 9,
+            Self::TrueDamage => 10,
+            Self::Elation => 11,
+            Self::Other => 12,
+        }
+    }
+
+    pub fn from_attack_type(value: isize) -> Self {
+        match value {
+            1 => Self::Basic,
+            2 => Self::Skill,
+            3 => Self::Ultimate,
+            4 => Self::Qte,
+            5 => Self::Dot,
+            6 => Self::Additional,
+            7 | 8 => Self::Technique,
+            9 => Self::FollowUp,
+            10 | 11 => Self::Break,
+            12 => Self::Servant,
+            13 => Self::TrueDamage,
+            14 => Self::Elation,
+            _ => Self::Other,
+        }
+    }
+
+    pub const fn label(self) -> &'static str {
+        match self {
+            Self::Basic => "Basic",
+            Self::Skill => "Skill",
+            Self::Ultimate => "Ultimate",
+            Self::Qte => "QTE",
+            Self::Dot => "DoT",
+            Self::FollowUp => "Follow-Up",
+            Self::Technique => "Technique",
+            Self::Additional => "Additional",
+            Self::Break => "Break",
+            Self::Servant => "Servant",
+            Self::TrueDamage => "True Damage",
+            Self::Elation => "Elation",
+            Self::Other => "Other",
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DamageCategoryBreakdown {
+    totals: [f64; DamageCategory::ALL.len()],
+}
+
+impl Default for DamageCategoryBreakdown {
+    fn default() -> Self {
+        Self {
+            totals: [0.0; DamageCategory::ALL.len()],
+        }
+    }
+}
+
+impl DamageCategoryBreakdown {
+    pub fn add(&mut self, category: DamageCategory, damage: f64) {
+        self.totals[category.index()] += damage;
+    }
+
+    pub fn amount(&self, category: DamageCategory) -> f64 {
+        self.totals[category.index()]
+    }
+}
+
 #[derive(Clone, Copy)]
 pub enum BattleState {
     Started,
@@ -56,6 +168,8 @@ pub struct BattleContext {
     // Index w/ lineup index
     // Used to update UI damage when dmg occurs
     pub real_time_damages: Vec<f64>,
+    // Index w/ lineup index, split by event attack type
+    pub damage_by_category: Vec<DamageCategoryBreakdown>,
     // Index w/ lineup index
     // Used to update UI overkill damage when dmg occurs
     pub real_time_overkill_damages: Vec<f64>,
@@ -128,6 +242,7 @@ impl BattleContext {
         battle_context.total_damage = 0.;
         battle_context.last_wave_action_value = 0.;
         battle_context.action_value = 0.;
+        battle_context.damage_by_category = Vec::new();
         battle_context.max_waves = 0;
         battle_context.max_cycle = 0;
         battle_context.wave = 0;
@@ -176,6 +291,7 @@ impl BattleContext {
         Self::initialize_battle_context(&mut battle_context);
         battle_context.current_turn_info.avatars_turn_damage = vec![0f64; e.avatars.len()];
         battle_context.real_time_damages = vec![0f64; e.avatars.len()];
+        battle_context.damage_by_category = vec![DamageCategoryBreakdown::default(); e.avatars.len()];
         battle_context.real_time_overkill_damages = vec![0f64; e.avatars.len()];
         battle_context.avatar_lineup = e.avatars;
 
@@ -210,6 +326,8 @@ impl BattleContext {
         // Record character damage chunk
         turn.avatars_turn_damage[lineup_index] += e.damage;
         battle_context.real_time_damages[lineup_index] += e.damage as f64;
+        battle_context.damage_by_category[lineup_index]
+            .add(DamageCategory::from_attack_type(e.damage_type), e.damage as f64);
         battle_context.real_time_overkill_damages[lineup_index] += e.overkill_damage as f64;
         battle_context.total_damage += e.damage as f64;
 

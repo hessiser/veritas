@@ -668,6 +668,30 @@ Reset:
   ru: Легенда персонажей
   vi: Chú giải nhân vật
   zh: 角色图例
+Show Damage Type Breakdown:
+  en: Show Damage Type Breakdown
+Damage Type Breakdown:
+  en: Damage Type Breakdown
+Character Summary:
+  en: Character Summary
+Category:
+  en: Category
+Character:
+  en: Character
+Party Share:
+  en: Party Share
+Selection Share:
+  en: Selection Share
+Teamwide:
+  en: Teamwide
+Pie Chart:
+  en: Pie Chart
+Bar Chart:
+  en: Bar Chart
+Legend:
+  en: Legend
+Detailed Stats:
+  en: Detailed Stats
 Fonts:
   de: Schriftarten
   en: Fonts

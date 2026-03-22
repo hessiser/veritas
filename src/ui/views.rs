@@ -364,6 +364,10 @@ impl App {
                                 t!("Show Damage Distribution"),
                             );
                             ui.checkbox(
+                                &mut self.state.show_damage_type_breakdown,
+                                t!("Show Damage Type Breakdown"),
+                            );
+                            ui.checkbox(
                                 &mut self.state.show_damage_bars,
                                 t!("Show Damage Bars"),
                             );
@@ -841,6 +845,20 @@ impl App {
             .min_height(200.0)
             .show(ctx, |ui| {
                 self.show_damage_distribution_widget(ui);
+            });
+    }
+
+    pub fn show_damage_type_breakdown_window(&mut self, ctx: &egui::Context) {
+        egui::containers::Window::new(t!("Damage Type Breakdown"))
+            .id("damage_type_breakdown_window".into())
+            .frame(get_window_frame(ctx, self.config.widget_opacity))
+            .resizable(true)
+            .default_width(420.0)
+            .default_height(360.0)
+            .min_width(280.0)
+            .min_height(180.0)
+            .show(ctx, |ui| {
+                self.show_damage_type_breakdown_widget(ui);
             });
     }
 

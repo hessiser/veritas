@@ -46,6 +46,20 @@ pub enum GraphUnit {
     ActionValue,
 }
 
+#[derive(Default, PartialEq, Serialize, Deserialize)]
+pub enum DamageBreakdownScope {
+    #[default]
+    Team,
+    Character,
+}
+
+#[derive(Default, PartialEq, Serialize, Deserialize)]
+pub enum DamageBreakdownChart {
+    #[default]
+    Pie,
+    Bar,
+}
+
 #[derive(Clone)]
 pub enum ExportNotification {
     Success,
@@ -60,12 +74,24 @@ pub struct AppState {
     pub show_settings: bool,
     pub show_console: bool,
     pub show_damage_distribution: bool,
+    #[serde(default)]
+    pub show_damage_type_breakdown: bool,
     pub show_damage_bars: bool,
     pub show_real_time_damage: bool,
     pub show_enemy_stats: bool,
     pub show_battle_metrics: bool,
     pub should_hide: bool,
     pub graph_x_unit: GraphUnit,
+    #[serde(default)]
+    pub damage_breakdown_scope: DamageBreakdownScope,
+    #[serde(default)]
+    pub damage_breakdown_chart: DamageBreakdownChart,
+    #[serde(default)]
+    pub damage_breakdown_character_index: usize,
+    #[serde(default = "default_true")]
+    pub show_damage_breakdown_table: bool,
+    #[serde(default = "default_true")]
+    pub show_damage_breakdown_legend: bool,
     #[serde(skip)]
     pub use_custom_color: bool,
     #[serde(skip)]
@@ -96,6 +122,10 @@ pub struct App {
     pub init_err: Option<InitErrorInfo>,
     pub updater_hint: Option<String>,
     pub updater_window_last_size: Option<egui::Vec2>,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 pub const HIDE_UI_SHORTCUT: KeyboardShortcut = KeyboardShortcut::new(Modifiers::COMMAND, Key::H);
@@ -169,6 +199,10 @@ impl Overlay for App {
 
             if self.state.show_damage_distribution {
                 self.show_damage_distribution_window(ctx);
+            }
+
+            if self.state.show_damage_type_breakdown {
+                self.show_damage_type_breakdown_window(ctx);
             }
 
             if self.state.show_character_legend {
@@ -419,12 +453,18 @@ impl Default for AppState {
             show_settings: false,
             show_console: false,
             show_damage_distribution: false,
+            show_damage_type_breakdown: false,
             show_damage_bars: false,
             show_real_time_damage: false,
             show_enemy_stats: false,
             show_battle_metrics: false,
             should_hide: false,
             graph_x_unit: GraphUnit::default(),
+            damage_breakdown_scope: DamageBreakdownScope::default(),
+            damage_breakdown_chart: DamageBreakdownChart::default(),
+            damage_breakdown_character_index: 0,
+            show_damage_breakdown_table: false,
+            show_damage_breakdown_legend: false,
             use_custom_color: false,
             update_bttn_enabled: false,
             show_version_mismatch: false,
