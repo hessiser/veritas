@@ -29,7 +29,7 @@ egui_inbox = "0.10.0"
 egui_commonmark = "0.22.0"
 
 # Logging
-log = "0.4"
+log = "0.4.29"
 slog = { version = "2.7.0", features = ["max_level_trace", "release_max_level_trace"] }
 slog-term = "2.9.1"
 
@@ -64,6 +64,7 @@ indoc = "2.0.6"
 widestring = "1.2.0"
 ron = "0.10.1"
 parse-changelog = { version = "0.6.12", default-features = false }
+il2cpp-runtime = { git = "https://github.com/hessiser/il2cpp-rust.git", rev = "a8a6b38" , features = ["log"]}
 
 [dev-dependencies]
 eframe = { version = "0.33.3", features = ["serde", "persistence"] }
@@ -84,6 +85,7 @@ features = [
     "Win32_Graphics_Direct3D11",
     "Win32_UI_Input_KeyboardAndMouse",
     "Win32_System_ProcessStatus",
+    "Win32_System_Diagnostics_Debug",
 ]
 
 [build-dependencies]

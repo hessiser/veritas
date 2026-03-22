@@ -3,6 +3,5 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 pub mod helpers;
-pub mod il2cpp;
+pub mod obfuscated;
 pub mod types;
-pub mod prelude;

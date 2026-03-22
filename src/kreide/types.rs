@@ -5,1183 +5,696 @@
     clippy::upper_case_acronyms
 )]
 
-use crate::{
-    cs_class, cs_field, cs_method, cs_property,
-    kreide::il2cpp::native::{Il2CppArray, Il2CppObject, Il2CppString, List, RuntimeType},
+use std::ffi::c_void;
+
+use il2cpp_runtime::{il2cpp_enum_type, il2cpp_getter_property, il2cpp_value_type};
+use il2cpp_runtime::prelude::*;
+
+pub use super::obfuscated::{
+    EBKLINDPMKM, FHPFLNJLDHP, OHFGNONJNIG,
+    FGFFLOAEKKA,
 };
 
-#[repr(C)]
-#[derive(Clone, Copy)]
+
+#[il2cpp_value_type("RPG.Client.TextID")]
 pub struct RPG_Client_TextID {
     pub hash: i32,
     pub hash64: u64,
 }
 
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+impl RPG_Client_TextID__Boxed {
+    #[il2cpp_field(name = "hash")]
+    pub fn hash(&self) -> System_Int32__Boxed {}
+}
+
+#[il2cpp_enum_type(i32)]
 pub enum RPG_GameCore_TeamType {
-    TeamUnknow = 0,
-    TeamLight = 1,
-    TeamDark = 2,
-    TeamNeutral = 3,
-    TeamNPC = 4,
-    Count = 5,
+    TeamUnknow,
+    TeamLight,
+    TeamDark,
+    TeamNeutral,
+    TeamNPC,
+    Count
 }
 
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[il2cpp_enum_type(i32)]
 pub enum RPG_GameCore_AliveState {
-    Unknown = 0,
-    Alive = 1,
-    Limbo = 2,
-    LimboRevivable = 3,
-    Deathrattle = 4,
-    Dying = 5,
-    Died = 6,
-    WillBeDestroyed = 7,
-    Destroyed = 8,
+    Unknown,
+    Alive,
+    Limbo,
+    LimboRevivable,
+    Deathrattle,
+    Dying,
+    Died,
+    WillBeDestroyed,
+    Destroyed,
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// OOMAKCLAFOH
-pub struct OOMAKCLAFOH(pub usize);
-impl OOMAKCLAFOH {
-    cs_class!("OOMAKCLAFOH");
-
-    // OOMAKCLAFOH -> Type: string | Name: NPKHCIODJAF | Offset: 0x8
-    cs_field!(NPKHCIODJAF, "NPKHCIODJAF", self, |v| -> Il2CppString {
-        Il2CppString(v.0)
-    });
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// OOMAKCLAFOH
-pub struct FGFFLOAEKKA(pub usize);
-impl FGFFLOAEKKA {
-    cs_class!("FGFFLOAEKKA");
-
-    cs_field!(
-        MKFOEBBAKJA,
-        "MKFOEBBAKJA",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-
-    cs_field!(
-        IENPEBIHOHF,
-        "IENPEBIHOHF",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// GPFCKFCIKNI
-pub struct GPFCKFCIKNI(pub usize);
-impl GPFCKFCIKNI {
-    cs_class!("GPFCKFCIKNI");
-
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.BattleLineupData
-pub struct RPG_GameCore_BattleLineupData(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.BattleLineupData")]
+pub struct RPG_GameCore_BattleLineupData;
 impl RPG_GameCore_BattleLineupData {
-    cs_class!("RPG.GameCore.BattleLineupData");
+    #[il2cpp_field(name = "LightTeam")]
+    pub fn LightTeam(&self) -> Il2CppArray {}
 
-    // RPG.GameCore.BattleLineupData -> Type: RPG.GameCore.LineUpCharacter[] | Name: LightTeam | Offset: 0x48
-    cs_field!(LightTeam, "LightTeam", self, |v| -> Il2CppArray {
-        Il2CppArray(v.0)
-    });
-
-    // RPG.GameCore.BattleLineupData -> Type: RPG.GameCore.LineUpCharacter[] | Name: ExtraTeam | Offset: 0x58
-    cs_field!(ExtraTeam, "ExtraTeam", self, |v| -> Il2CppArray {
-        Il2CppArray(v.0)
-    });
+    #[il2cpp_field(name = "ExtraTeam")]
+    pub fn ExtraTeam(&self) -> Il2CppArray {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.TurnBasedGameMode
-pub struct RPG_GameCore_TurnBasedGameMode(pub usize);
+
+#[il2cpp_ref_type("RPG.GameCore.TurnBasedGameMode")]
+pub struct RPG_GameCore_TurnBasedGameMode;
 impl RPG_GameCore_TurnBasedGameMode {
-    cs_class!("RPG.GameCore.TurnBasedGameMode");
 
-    // RPG.GameCore.TurnBasedGameMode -> Type: RPG.GameCore.BattleInstance | Name: <OwnerBattleInstanceRef>k__BackingField | Offset: 0x20
-    cs_field!(_OwnerBattleInstanceRef_k__BackingField, "<OwnerBattleInstanceRef>k__BackingField",
-        self,
-        |v| -> RPG_GameCore_BattleInstance { RPG_GameCore_BattleInstance(v.0) }
-    );
+    #[il2cpp_field(name = "<OwnerBattleInstanceRef>k__BackingField")]
+    pub fn _OwnerBattleInstanceRef_k__BackingField(&self) -> RPG_GameCore_BattleInstance {}
 
-    // RPG.GameCore.TurnBasedGameMode -> Type: RPG.GameCore.GameEntity | Name: _CurrentTurnActionEntity | Offset: 0x40
-    cs_field!(_CurrentTurnActionEntity, "_CurrentTurnActionEntity",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
+    #[il2cpp_field(name = "_CurrentTurnActionEntity")]
+    pub fn _CurrentTurnActionEntity(&self) -> RPG_GameCore_GameEntity {}
 
-    // RPG.GameCore.TurnBasedGameMode -> Type: int | Name: _WaveMonsterCurrentCount | Offset: 0x2C8
-    cs_field!(_WaveMonsterCurrentCount, "_WaveMonsterCurrentCount",
-        self,
-        |v| -> i32 { v.unbox::<i32>() }
-    );
 
-    // RPG.GameCore.TurnBasedGameMode -> Type: RPG.GameCore.FixPoint | Name: <ElapsedActionDelay>k__BackingField | Offset: 0x290
-    cs_field!(_ElapsedActionDelay_k__BackingField, "<ElapsedActionDelay>k__BackingField",
-        self,
-        |v| -> RPG_GameCore_FixPoint {
-            RPG_GameCore_FixPoint {
-                m_rawValue: v.unbox::<i64>(),
-            }
-        }
-    );
+    #[il2cpp_field(name = "_WaveMonsterCurrentCount")]
+    pub fn _WaveMonsterCurrentCount(&self) -> System_Int32__Boxed {}
 
-    // RPG.GameCore.TurnBasedGameMode -> Type: int | Name: <WaveMonsterMaxCount>k__BackingField | Offset: 0x2E4
-    cs_field!(_WaveMonsterMaxCount_k__BackingField, "<WaveMonsterMaxCount>k__BackingField",
-        self,
-        |v| -> i32 { v.unbox::<i32>() }
-    );
+    #[il2cpp_field(name = "<ElapsedActionDelay>k__BackingField")]
+    pub fn _ElapsedActionDelay_k__BackingField(&self) -> RPG_GameCore_FixPoint__Boxed {}
 
-    // RPG.GameCore.TurnBasedGameMode -> Type: uint | Name: <ChallengeTurnLimit>k__BackingField | Offset: 0x344
-    cs_field!(_ChallengeTurnLimit_k__BackingField, "<ChallengeTurnLimit>k__BackingField",
-        self,
-        |v| -> u32 { v.unbox::<u32>() }
-    );
+    #[il2cpp_field(name = "<WaveMonsterMaxCount>k__BackingField")]
+    pub fn _WaveMonsterMaxCount_k__BackingField(&self) -> System_Int32__Boxed {}
 
-    // RPG.GameCore.TurnBasedGameMode -> Type: uint | Name: <CurrentWaveStageID>k__BackingField | Offset: 0x354
-    cs_field!(_CurrentWaveStageID_k__BackingField, "<CurrentWaveStageID>k__BackingField",
-        self,
-        |v| -> u32 { v.unbox::<u32>() }
-    );
+    #[il2cpp_field(name = "<ChallengeTurnLimit>k__BackingField")]
+    pub fn _ChallengeTurnLimit_k__BackingField(&self) -> System_UInt32__Boxed {}
+
+    #[il2cpp_field(name = "<CurrentWaveStageID>k__BackingField")]
+    pub fn _CurrentWaveStageID_k__BackingField(&self) -> System_UInt32__Boxed {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.TurnBasedAbilityComponent
-pub struct RPG_GameCore_TurnBasedAbilityComponent(pub usize);
+
+#[il2cpp_ref_type("RPG.GameCore.TurnBasedAbilityComponent", base(RPG_GameCore_GameComponentBase))]
+pub struct RPG_GameCore_TurnBasedAbilityComponent;
+
 impl RPG_GameCore_TurnBasedAbilityComponent {
-    cs_class!("RPG.GameCore.TurnBasedAbilityComponent");
+    #[il2cpp_method(name = "GetAbilityMappedSkill", args = ["string"])]
+    pub fn get_ability_mapped_skill(&self, ability_name: Il2CppString) -> Il2CppString {}
 
-    cs_method!(pub get_ability_mapped_skill, "GetAbilityMappedSkill", &["string"], Il2CppString, (ability_name: Il2CppString), self);
-    cs_method!(pub get_property, "GetProperty", &["RPG.GameCore.AbilityProperty"], RPG_GameCore_FixPoint, (property: RPG_GameCore_AbilityProperty), self);
-    cs_method!(pub try_check_limbo_wait_heal, "TryCheckLimboWaitHeal", &["RPG.GameCore.GameEntity"], bool, (attacker: RPG_GameCore_GameEntity), self);
+    #[il2cpp_method(name = "GetProperty", args = ["RPG.GameCore.AbilityProperty"])]
+    pub fn get_property(&self, property: RPG_GameCore_AbilityProperty) -> RPG_GameCore_FixPoint {}
 
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
+    #[il2cpp_method(name = "TryCheckLimboWaitHeal", args = ["RPG.GameCore.GameEntity"])]
+    pub fn try_check_limbo_wait_heal(&self, attacker: RPG_GameCore_GameEntity) -> bool {}
 
-    // RPG.GameCore.TurnBasedAbilityComponent -> Type: AFKEDIMIJPH[] | Name: _AbilityProperties | Offset: 0x30
-    cs_field!(_AbilityProperties, "_AbilityProperties",
-        self,
-        |v| -> Il2CppArray { Il2CppArray(v.0) }
-    );
+    // HJFKBBCMCCI[]
+    #[il2cpp_field(name = "_AbilityProperties")]
+    pub fn _AbilityProperties(&self) -> Il2CppArray {}
 
-    cs_field!(
-        _KillerEntity,
-        "_KillerEntity",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
 
-    // RPG.GameCore.TurnBasedAbilityComponent -> Type: CharacterDataComponent | Name: _CharacterDataRef | Offset: 0x1C0
-    cs_field!(_CharacterDataRef, "_CharacterDataRef",
-        self,
-        |v| -> RPG_GameCore_CharacterDataComponent { RPG_GameCore_CharacterDataComponent(v.0) }
-    );
+    #[il2cpp_field(name = "_KillerEntity")]
+    pub fn _KillerEntity(&self) -> RPG_GameCore_GameEntity {}
+
+    #[il2cpp_field(name = "_CharacterDataRef")]
+    pub fn _CharacterDataRef(&self) -> RPG_GameCore_CharacterDataComponent {}   
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.CharacterConfig
-pub struct RPG_GameCore_CharacterConfig(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.CharacterConfig")]
+pub struct RPG_GameCore_CharacterConfig;
 impl RPG_GameCore_CharacterConfig {
-    cs_class!("RPG.GameCore.CharacterConfig");
-
-    cs_method!(pub get_skill_index_by_trigger_key, "GetSkillIndexByTriggerKey", &["string"], i32, (skill_name: Il2CppString), self);
+    #[il2cpp_method(name = "GetSkillIndexByTriggerKey", args = ["string"])]
+    pub fn get_skill_index_by_trigger_key(&self, skill_name: Il2CppString) -> i32 {}
 }
 
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[il2cpp_enum_type(i32)]
 pub enum UnityEngine_ProBuilder_EntityType {
-    Detail = 0,
-    Occluder = 1,
-    Trigger = 2,
-    Collider = 3,
-    Mover = 4,
+    Detail,
+    Occluder,
+    Trigger,
+    Collider,
+    Mover,
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.TeamFormationComponent
-pub struct RPG_GameCore_TeamFormationComponent(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.TeamFormationComponent", base(RPG_GameCore_GameComponentBase))]
+pub struct RPG_GameCore_TeamFormationComponent;
 impl RPG_GameCore_TeamFormationComponent {
-    cs_class!("RPG.GameCore.TeamFormationComponent");
+    #[il2cpp_field(name = "_TeamFormationDatas")]
+    pub fn _TeamFormationDatas(&self) -> List {}
 
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-
-    // RPG.GameCore.TeamFormationComponent -> Type: System.Collections.Generic.List<GPFCKFCIKNI> | Name: _TeamFormationDatas | Offset: 0x98
-    cs_field!(_TeamFormationDatas, "_TeamFormationDatas",
-        self,
-        |v| -> List { List(v.0) }
-    );
-
-    // RPG.GameCore.TeamFormationComponent -> Type: TeamType | Name: _Team | Offset: 0xF4
-    cs_field!(_Team, "_Team", self, |v| -> RPG_GameCore_TeamType {
-        v.unbox::<RPG_GameCore_TeamType>()
-    });
+    #[il2cpp_field(name = "_Team")]
+    pub fn _Team(&self) -> RPG_GameCore_TeamType__Boxed {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.AvatarServantData
-pub struct RPG_Client_AvatarServantData(pub usize);
-impl RPG_Client_AvatarServantData {
-    cs_class!("RPG.Client.AvatarServantData");
-}
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.MonsterRowData
-pub struct RPG_GameCore_MonsterRowData(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.MonsterRowData")]
+pub struct RPG_GameCore_MonsterRowData;
 impl RPG_GameCore_MonsterRowData {
-    cs_class!("RPG.GameCore.MonsterRowData");
+    #[il2cpp_method(name = "get_Level", args = [])]
+    pub fn get_Level(&self) -> u32 {}
 
-    cs_method!(pub get_level, "get_Level", &[], u32, (), self);
-
-    // RPG.GameCore.MonsterRowData -> Type: MonsterRow | Name: _Row | Offset: 0xA8
-    cs_field!(_Row, "_Row", self, |v| -> RPG_GameCore_MonsterRow {
-        RPG_GameCore_MonsterRow(v.0)
-    });
+    #[il2cpp_field(name = "_Row")]
+    pub fn _Row(&self) -> RPG_GameCore_MonsterRow {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.BattleEventSkillRowData
-pub struct RPG_GameCore_BattleEventSkillRowData(pub usize);
-impl RPG_GameCore_BattleEventSkillRowData {
-    cs_class!("RPG.GameCore.BattleEventSkillRowData");
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.AvatarData
-pub struct RPG_Client_AvatarData(pub usize);
+#[il2cpp_ref_type("RPG.Client.AvatarData")]
+pub struct RPG_Client_AvatarData;
 impl RPG_Client_AvatarData {
-    cs_class!("RPG.Client.AvatarData");
 
-    cs_property!(pub avatarname, "get_AvatarName", Il2CppString, self);
+    #[il2cpp_getter_property(property = "AvatarName")]
+    pub fn AvatarName(&self) -> Il2CppString {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.MonsterRow
-pub struct RPG_GameCore_MonsterRow(pub usize);
+
+#[il2cpp_ref_type("RPG.GameCore.MonsterRow")]
+pub struct RPG_GameCore_MonsterRow;
 impl RPG_GameCore_MonsterRow {
-    cs_class!("RPG.GameCore.MonsterRow");
-
-    // RPG.GameCore.MonsterRow -> Type: RPG.Client.TextID | Name: MonsterName | Offset: 0x90
-    cs_field!(MonsterName, "MonsterName",
-        self,
-        |v| -> RPG_Client_TextID_Boxed { RPG_Client_TextID_Boxed(v.0) }
-    );
+    #[il2cpp_field(name = "MonsterName")]
+    pub fn MonsterName(&self) -> RPG_Client_TextID__Boxed {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.AvatarSkillRowData
-pub struct RPG_GameCore_AvatarSkillRowData(pub usize);
-impl RPG_GameCore_AvatarSkillRowData {
-    cs_class!("RPG.GameCore.AvatarSkillRowData");
-}
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.MonsterDataComponent
-pub struct RPG_GameCore_MonsterDataComponent(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.MonsterDataComponent", base(RPG_GameCore_GameComponentBase))]
+pub struct RPG_GameCore_MonsterDataComponent;
 impl RPG_GameCore_MonsterDataComponent {
-    cs_class!("RPG.GameCore.MonsterDataComponent");
+    #[il2cpp_method(name = "GetMonsterID", args = [])]
+    pub fn get_monster_id(&self) -> u32 {}
 
-    cs_method!(pub get_monster_id, "GetMonsterID", &[], u32, (), self);
+    #[il2cpp_field(name = "_OwnerRef")]
+    pub fn _OwnerRef(&self) -> RPG_GameCore_GameEntity {}
 
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
+    #[il2cpp_field(name = "_MonsterRowData")]
+    pub fn _MonsterRowData(&self) -> RPG_GameCore_MonsterRowData {}
 
-    // RPG.GameCore.MonsterDataComponent -> Type: MonsterRowData | Name: _MonsterRowData | Offset: 0xE0
-    cs_field!(_MonsterRowData, "_MonsterRowData",
-        self,
-        |v| -> RPG_GameCore_MonsterRowData { RPG_GameCore_MonsterRowData(v.0) }
-    );
-
-    // RPG.GameCore.MonsterDataComponent -> Type: RPG.GameCore.FixPoint | Name: _DefaultMaxHP | Offset: 0x118
-    cs_field!(_DefaultMaxHP, "_DefaultMaxHP",
-        self,
-        |v| -> RPG_GameCore_FixPoint {
-            RPG_GameCore_FixPoint {
-                m_rawValue: v.unbox::<i64>(),
-            }
-        }
-    );
+    #[il2cpp_field(name = "_DefaultMaxHP")]
+    pub fn _DefaultMaxHP(&self) -> RPG_GameCore_FixPoint__Boxed {}
 }
 
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.MonsterDataComponent
-pub struct RPG_GameCore_AvatarDataComponent(pub usize);
-impl RPG_GameCore_AvatarDataComponent {
-    cs_class!("RPG.GameCore.AvatarDataComponent");
-
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.ServantSkillRowData
-pub struct RPG_GameCore_ServantSkillRowData(pub usize);
-impl RPG_GameCore_ServantSkillRowData {
-    cs_class!("RPG.GameCore.ServantSkillRowData");
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.GameComponentBase
-pub struct RPG_GameCore_GameComponentBase(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.GameComponentBase")]
+pub struct RPG_GameCore_GameComponentBase;
 impl RPG_GameCore_GameComponentBase {
-    cs_class!("RPG.GameCore.GameComponentBase");
+
+    #[il2cpp_field(name = "_OwnerRef")]
+    pub fn _OwnerRef(&self) -> RPG_GameCore_GameEntity {}
 }
 
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[il2cpp_enum_type(i32)]
 pub enum RPG_GameCore_AbilityProperty {
-    Unknow = 0,
-    MaxHP = 1,
-    BaseHP = 2,
-    HPAddedRatio = 3,
-    HPDelta = 4,
-    HPConvert = 5,
-    DirtyHPDelta = 6,
-    DirtyHPRatio = 7,
-    RallyHP = 8,
-    NegativeHP = 9,
-    CurrentHP = 10,
-    MaxSP = 11,
-    CurrentSP = 12,
-    MaxSpecialSP = 13,
-    CurrentSpecialSP = 14,
-    AdditionalBP = 15,
-    Attack = 16,
-    BaseAttack = 17,
-    AttackAddedRatio = 18,
-    AttackDelta = 19,
-    AttackConvert = 20,
-    Defence = 21,
-    BaseDefence = 22,
-    DefenceAddedRatio = 23,
-    DefenceDelta = 24,
-    DefenceConvert = 25,
-    DefenceOverride = 26,
-    Level = 27,
-    Promotion = 28,
-    Rank = 29,
-    Speed = 30,
-    BaseSpeed = 31,
-    SpeedAddedRatio = 32,
-    SpeedDelta = 33,
-    SpeedConvert = 34,
-    SpeedOverride = 35,
-    ActionDelay = 36,
-    ActionDelayAddedRatio = 37,
-    ActionDelayAddAttenuation = 38,
-    MaxStance = 39,
-    CurrentStance = 40,
-    Level_AllDamageAddedRatio = 41,
-    AllDamageTypeAddedRatio = 42,
-    AllDamageReduce = 43,
-    DotDamageAddedRatio = 44,
-    FatigueRatio = 45,
-    CriticalChance = 46,
-    CriticalChanceBase = 47,
-    CriticalChanceConvert = 48,
-    CriticalDamage = 49,
-    CriticalDamageBase = 50,
-    CriticalDamageConvert = 51,
-    CriticalResistance = 52,
-    PhysicalAddedRatio = 53,
-    FireAddedRatio = 54,
-    IceAddedRatio = 55,
-    ThunderAddedRatio = 56,
-    QuantumAddedRatio = 57,
-    ImaginaryAddedRatio = 58,
-    WindAddedRatio = 59,
-    PhysicalResistance = 60,
-    FireResistance = 61,
-    IceResistance = 62,
-    ThunderResistance = 63,
-    QuantumResistance = 64,
-    ImaginaryResistance = 65,
-    WindResistance = 66,
-    PhysicalResistanceBase = 67,
-    FireResistanceBase = 68,
-    IceResistanceBase = 69,
-    ThunderResistanceBase = 70,
-    QuantumResistanceBase = 71,
-    ImaginaryResistanceBase = 72,
-    WindResistanceBase = 73,
-    PhysicalResistanceDelta = 74,
-    FireResistanceDelta = 75,
-    IceResistanceDelta = 76,
-    ThunderResistanceDelta = 77,
-    QuantumResistanceDelta = 78,
-    ImaginaryResistanceDelta = 79,
-    WindResistanceDelta = 80,
-    AllDamageTypeResistance = 81,
-    PhysicalPenetrate = 82,
-    FirePenetrate = 83,
-    IcePenetrate = 84,
-    ThunderPenetrate = 85,
-    QuantumPenetrate = 86,
-    ImaginaryPenetrate = 87,
-    WindPenetrate = 88,
-    AllDamageTypePenetrate = 89,
-    PhysicalTakenRatio = 90,
-    FireTakenRatio = 91,
-    IceTakenRatio = 92,
-    ThunderTakenRatio = 93,
-    QuantumTakenRatio = 94,
-    ImaginaryTakenRatio = 95,
-    WindTakenRatio = 96,
-    AllDamageTypeTakenRatio = 97,
-    Monster_DamageTakenRatio = 98,
-    PhysicalAbsorb = 99,
-    FireAbsorb = 100,
-    IceAbsorb = 101,
-    ThunderAbsorb = 102,
-    QuantumAbsorb = 103,
-    ImaginaryAbsorb = 104,
-    WindAbsorb = 105,
-    MinimumFatigueRatio = 106,
-    ForceStanceBreakRatio = 107,
-    StanceBreakAddedRatio = 108,
-    StanceBreakResistance = 109,
-    StanceBreakTakenRatio = 110,
-    PhysicalStanceBreakTakenRatio = 111,
-    FireStanceBreakTakenRatio = 112,
-    IceStanceBreakTakenRatio = 113,
-    ThunderStanceBreakTakenRatio = 114,
-    WindStanceBreakTakenRatio = 115,
-    QuantumStanceBreakTakenRatio = 116,
-    ImaginaryStanceBreakTakenRatio = 117,
-    StanceWeakAddedRatio = 118,
-    StanceDefaultAddedRatio = 119,
-    HealRatio = 120,
-    HealRatioBase = 121,
-    HealRatioConvert = 122,
-    HealTakenRatio = 123,
-    Shield = 124,
-    MaxShield = 125,
-    ShieldAddedRatio = 126,
-    ShieldTakenRatio = 127,
-    StatusProbability = 128,
-    StatusProbabilityBase = 129,
-    StatusProbabilityConvert = 130,
-    StatusResistance = 131,
-    StatusResistanceBase = 132,
-    StatusResistanceConvert = 133,
-    SPRatio = 134,
-    SPRatioBase = 135,
-    SPRatioConvert = 136,
-    SPRatioOverride = 137,
-    BreakDamageAddedRatio = 138,
-    BreakDamageAddedRatioBase = 139,
-    BreakDamageAddedRatioConvert = 140,
-    BreakDamageExtraAddedRatio = 141,
-    PhysicalStanceBreakResistance = 142,
-    FireStanceBreakResistance = 143,
-    IceStanceBreakResistance = 144,
-    ThunderStanceBreakResistance = 145,
-    WindStanceBreakResistance = 146,
-    QuantumStanceBreakResistance = 147,
-    ImaginaryStanceBreakResistance = 148,
-    AggroBase = 149,
-    AggroAddedRatio = 150,
-    AggroDelta = 151,
-    RelicValueExtraAdditionRatio = 152,
-    EquipValueExtraAdditionRatio = 153,
-    EquipExtraRank = 154,
-    AvatarExtraRank = 155,
-    Combo = 156,
-    NormalBattleCount = 157,
-    ExtraAttackAddedRatio1 = 158,
-    ExtraAttackAddedRatio2 = 159,
-    ExtraAttackAddedRatio3 = 160,
-    ExtraAttackAddedRatio4 = 161,
-    ExtraDefenceAddedRatio1 = 162,
-    ExtraDefenceAddedRatio2 = 163,
-    ExtraDefenceAddedRatio3 = 164,
-    ExtraDefenceAddedRatio4 = 165,
-    ExtraHPAddedRatio1 = 166,
-    ExtraHPAddedRatio2 = 167,
-    ExtraHPAddedRatio3 = 168,
-    ExtraHPAddedRatio4 = 169,
-    ExtraHealAddedRatio = 170,
-    ExtraAllDamageTypeAddedRatio1 = 171,
-    ExtraAllDamageTypeAddedRatio2 = 172,
-    ExtraAllDamageTypeAddedRatio3 = 173,
-    ExtraAllDamageTypeAddedRatio4 = 174,
-    ExtraAllDamageReduce = 175,
-    ExtraShieldAddedRatio = 176,
-    ExtraSpeedAddedRatio1 = 177,
-    ExtraSpeedAddedRatio2 = 178,
-    ExtraSpeedAddedRatio3 = 179,
-    ExtraSpeedAddedRatio4 = 180,
-    ExtraLuckChance = 181,
-    ExtraLuckDamage = 182,
-    ExtraFrontPowerBase = 183,
-    ExtraFrontPowerAddedRatio1 = 184,
-    ExtraFrontPowerAddedRatio2 = 185,
-    ExtraBackPowerBase = 186,
-    ExtraBackPowerAddedRatio1 = 187,
-    ExtraBackPowerAddedRatio2 = 188,
-    ExtraUltraDamageAddedRatio1 = 189,
-    ExtraSkillDamageAddedRatio1 = 190,
-    ExtraNormalDamageAddedRatio1 = 191,
-    ExtraInsertDamageAddedRatio1 = 192,
-    Count = 193,
+	Unknow,
+	MaxHP,
+	BaseHP,
+	HPAddedRatio,
+	HPDelta,
+	HPConvert,
+	DirtyHPDelta,
+	DirtyHPRatio,
+	RallyHP,
+	NegativeHP,
+	CurrentHP,
+	MaxSP,
+	CurrentSP,
+	MaxSpecialSP,
+	CurrentSpecialSP,
+	MaxExtraSpecialSP,
+	CurExtraSpecialSP,
+	AdditionalBP,
+	Attack,
+	BaseAttack,
+	AttackAddedRatio,
+	AttackDelta,
+	AttackConvert,
+	Defence,
+	BaseDefence,
+	DefenceAddedRatio,
+	DefenceDelta,
+	DefenceConvert,
+	DefenceOverride,
+	Level,
+	Promotion,
+	Rank,
+	Speed,
+	BaseSpeed,
+	SpeedAddedRatio,
+	SpeedDelta,
+	SpeedConvert,
+	SpeedOverride,
+	ActionDelay,
+	ActionDelayAddedRatio,
+	ActionDelayAddAttenuation,
+	MaxStance,
+	CurrentStance,
+	Level_FinalDamageAddedRatio,
+	AllDamageTypeAddedRatio,
+	AllDamageReduce,
+	BaseDamageMultiRatio,
+	DotDamageAddedRatio,
+	FatigueRatio,
+	CriticalChance,
+	CriticalChanceBase,
+	CriticalChanceConvert,
+	CriticalDamage,
+	CriticalDamageBase,
+	CriticalDamageConvert,
+	CriticalResistance,
+	PhysicalAddedRatio,
+	FireAddedRatio,
+	IceAddedRatio,
+	ThunderAddedRatio,
+	QuantumAddedRatio,
+	ImaginaryAddedRatio,
+	WindAddedRatio,
+	PhysicalResistance,
+	FireResistance,
+	IceResistance,
+	ThunderResistance,
+	QuantumResistance,
+	ImaginaryResistance,
+	WindResistance,
+	PhysicalResistanceBase,
+	FireResistanceBase,
+	IceResistanceBase,
+	ThunderResistanceBase,
+	QuantumResistanceBase,
+	ImaginaryResistanceBase,
+	WindResistanceBase,
+	PhysicalResistanceDelta,
+	FireResistanceDelta,
+	IceResistanceDelta,
+	ThunderResistanceDelta,
+	QuantumResistanceDelta,
+	ImaginaryResistanceDelta,
+	WindResistanceDelta,
+	AllDamageTypeResistance,
+	PhysicalPenetrate,
+	FirePenetrate,
+	IcePenetrate,
+	ThunderPenetrate,
+	QuantumPenetrate,
+	ImaginaryPenetrate,
+	WindPenetrate,
+	AllDamageTypePenetrate,
+	PhysicalTakenRatio,
+	FireTakenRatio,
+	IceTakenRatio,
+	ThunderTakenRatio,
+	QuantumTakenRatio,
+	ImaginaryTakenRatio,
+	WindTakenRatio,
+	AllDamageTypeTakenRatio,
+	Monster_DamageTakenRatio,
+	PhysicalAbsorb,
+	FireAbsorb,
+	IceAbsorb,
+	ThunderAbsorb,
+	QuantumAbsorb,
+	ImaginaryAbsorb,
+	WindAbsorb,
+	MinimumFatigueRatio,
+	ForceStanceBreakRatio,
+	StanceBreakAddedRatio,
+	StanceBreakResistance,
+	StanceBreakTakenRatio,
+	PhysicalStanceBreakTakenRatio,
+	FireStanceBreakTakenRatio,
+	IceStanceBreakTakenRatio,
+	ThunderStanceBreakTakenRatio,
+	WindStanceBreakTakenRatio,
+	QuantumStanceBreakTakenRatio,
+	ImaginaryStanceBreakTakenRatio,
+	StanceWeakAddedRatio,
+	StanceDefaultAddedRatio,
+	HealRatio,
+	HealRatioBase,
+	HealRatioConvert,
+	HealTakenRatio,
+	Shield,
+	MaxShield,
+	ShieldAddedRatio,
+	ShieldTakenRatio,
+	StatusProbability,
+	StatusProbabilityBase,
+	StatusProbabilityConvert,
+	StatusResistance,
+	StatusResistanceBase,
+	StatusResistanceConvert,
+	SPRatio,
+	SPRatioBase,
+	SPRatioConvert,
+	SPRatioOverride,
+	BreakDamageAddedRatio,
+	BreakDamageAddedRatioBase,
+	BreakDamageAddedRatioConvert,
+	BreakDamageExtraAddedRatio,
+	PhysicalStanceBreakResistance,
+	FireStanceBreakResistance,
+	IceStanceBreakResistance,
+	ThunderStanceBreakResistance,
+	WindStanceBreakResistance,
+	QuantumStanceBreakResistance,
+	ImaginaryStanceBreakResistance,
+	AggroBase,
+	AggroAddedRatio,
+	AggroDelta,
+	RelicValueExtraAdditionRatio,
+	EquipValueExtraAdditionRatio,
+	EquipExtraRank,
+	AvatarExtraRank,
+	Combo,
+	NormalBattleCount,
+	ExtraAttackAddedRatio1,
+	ExtraAttackAddedRatio2,
+	ExtraAttackAddedRatio3,
+	ExtraAttackAddedRatio4,
+	ExtraDefenceAddedRatio1,
+	ExtraDefenceAddedRatio2,
+	ExtraDefenceAddedRatio3,
+	ExtraDefenceAddedRatio4,
+	ExtraHPAddedRatio1,
+	ExtraHPAddedRatio2,
+	ExtraHPAddedRatio3,
+	ExtraHPAddedRatio4,
+	ExtraHealAddedRatio,
+	ExtraAllDamageTypeAddedRatio1,
+	ExtraAllDamageTypeAddedRatio2,
+	ExtraAllDamageTypeAddedRatio3,
+	ExtraAllDamageTypeAddedRatio4,
+	ExtraAllDamageReduce,
+	ExtraShieldAddedRatio,
+	ExtraSpeedAddedRatio1,
+	ExtraSpeedAddedRatio2,
+	ExtraSpeedAddedRatio3,
+	ExtraSpeedAddedRatio4,
+	ExtraLuckChance,
+	ExtraLuckDamage,
+	ExtraTotalFrontPower,
+	ExtraFrontPowerBase,
+	ExtraFrontPowerAddedRatio1,
+	ExtraFrontPowerAddedRatio2,
+	ExtraTotalBackPower,
+	ExtraBackPowerBase,
+	ExtraBackPowerAddedRatio1,
+	ExtraBackPowerAddedRatio2,
+	ExtraUltraDamageAddedRatio1,
+	ExtraSkillDamageAddedRatio1,
+	ExtraNormalDamageAddedRatio1,
+	ExtraInsertDamageAddedRatio1,
+	ExtraDOTDamageAddedRatio1,
+	ExtraElementDamageAddedRatio1,
+	ExtraHealBase,
+	ExtraShieldBase,
+	ExtraTotalShieldPower,
+	ExtraTotalHealPower,
+	ExtraTotalSpeedAddedRatio,
+	ExtraInitSP,
+	ExtraTotalLuckDamage,
+	ExtraTotalLuckChance,
+	ExtraBackPowerConvert,
+	ExtraFrontPowerConvert,
+	ExtraLuckDamageConvert,
+	ExtraLuckChanceConvert,
+	ExtraHealConvert,
+	ExtraShieldConvert,
+	ExtraAllDamageReduceConvert,
+	ExtraQuantumResonance,
+	ExtraTotalAllDamageReduce,
+	Count,
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.SkillCharacterComponent
-pub struct RPG_GameCore_SkillCharacterComponent(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.SkillCharacterComponent", base(RPG_GameCore_GameComponentBase))]
+pub struct RPG_GameCore_SkillCharacterComponent;
 impl RPG_GameCore_SkillCharacterComponent {
-    cs_class!("RPG.GameCore.SkillCharacterComponent");
+    #[il2cpp_method(name = "GetSkillData", args = ["int", "int"])]
+    pub fn get_skill_data(&self, skill_index: i32, extra_use_param: i32) -> RPG_GameCore_SkillData {}
 
-    cs_method!(pub get_skill_data, "GetSkillData", &["int", "int"], RPG_GameCore_SkillData, (skill_index: i32, extra_use_param: i32), self);
-
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-
-    // RPG.GameCore.SkillCharacterComponent -> Type: CharacterDataComponent | Name: _CharacterDataRef | Offset: 0xE0
-    cs_field!(_CharacterDataRef, "_CharacterDataRef",
-        self,
-        |v| -> RPG_GameCore_CharacterDataComponent { RPG_GameCore_CharacterDataComponent(v.0) }
-    );
+    #[il2cpp_field(name = "_CharacterDataRef")]
+    pub fn _CharacterDataRef(&self) -> RPG_GameCore_CharacterDataComponent {}
 }
 
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[il2cpp_enum_type(i32)]
 pub enum RPG_GameCore_EntityType {
-    None = 0,
-    Avatar = 1,
-    Monster = 2,
-    LocalPlayer = 3,
-    NPC = 4,
-    NPCMonster = 5,
-    StoryCharacter = 6,
-    Prop = 7,
-    Mission = 8,
-    LevelEntity = 9,
-    Neutral = 10,
-    AtmoNpc = 11,
-    BattleEvent = 12,
-    TutorialEntity = 13,
-    Team = 14,
-    Partner = 15,
-    LevelGraph = 16,
-    Snapshot = 17,
-    TeamFormation = 18,
-    Model = 19,
-    UICamera = 20,
-    District = 21,
-    GlobalShield = 22,
-    CustomData = 23,
-    Simple = 24,
-    PuzzleGameObjectProp = 25,
-    PerformanceLevelGraph = 26,
-    Group = 27,
-    RtCharacter = 28,
-    RtGrid = 29,
-    RtTrigger = 30,
-    SummonUnit = 31,
-    LittleGameInstance = 32,
-    Servant = 33,
-    PreviewShow = 34,
-    LittleGameContainer = 35,
-    LittleGameViewProxy = 36,
-    GridFightBackend = 37,
-    DummyEntity = 38,
+    None,
+    Avatar,
+    Monster,
+    LocalPlayer,
+    NPC,
+    NPCMonster,
+    StoryCharacter,
+    Prop,
+    Mission,
+    LevelEntity,
+    Neutral,
+    AtmoNpc,
+    BattleEvent,
+    TutorialEntity,
+    Team,
+    Partner,
+    LevelGraph,
+    Snapshot,
+    TeamFormation,
+    Model,
+    UICamera,
+    District,
+    GlobalShield,
+    CustomData,
+    Simple,
+    PuzzleGameObjectProp,
+    PerformanceLevelGraph,
+    Group,
+    ChessCharacter,
+    ChessTerrain,
+    SummonUnit,
+    LittleGameInstance,
+    Servant,
+    PreviewShow,
+    LittleGameContainer,
+    LittleGameViewProxy,
+    GridFightBackend,
+    DummyEntity,
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.BattleEventDataComponent
-pub struct RPG_GameCore_BattleEventDataComponent(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.BattleEventDataComponent", base(RPG_GameCore_GameComponentBase))]
+pub struct RPG_GameCore_BattleEventDataComponent;
 impl RPG_GameCore_BattleEventDataComponent {
-    cs_class!("RPG.GameCore.BattleEventDataComponent");
-
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-
-    // RPG.GameCore.BattleEventDataComponent -> Type: GameEntity | Name: <SourceCaster>k__BackingField | Offset: 0xF8
-    cs_field!(_SourceCaster_k__BackingField, "<SourceCaster>k__BackingField",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
+    #[il2cpp_field(name = "<SourceCaster>k__BackingField")]
+    pub fn _SourceCaster_k__BackingField(&self) -> RPG_GameCore_GameEntity {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.SkillData
-pub struct RPG_GameCore_SkillData(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.SkillData")]
+pub struct RPG_GameCore_SkillData;
 impl RPG_GameCore_SkillData {
-    cs_class!("RPG.GameCore.SkillData");
 
-    // RPG.GameCore.SkillData -> Type: RPG.GameCore.ICharacterSkillRowData | Name: RowData | Offset: 0x20
-    cs_field!(RowData, "RowData",
-        self,
-        |v| -> RPG_GameCore_ICharacterSkillRowData { RPG_GameCore_ICharacterSkillRowData(v.0) }
-    );
+    #[il2cpp_field(name = "RowData")]
+    pub fn RowData(&self) -> RPG_GameCore_ICharacterSkillRowData {}
 
-    cs_field!(SkillConfigID, "SkillConfigID", self, |v| -> u32 {
-        v.unbox::<u32>()
-    });
+    #[il2cpp_field(name = "SkillConfigID")]
+    pub fn SkillConfigID(&self) -> System_UInt32__Boxed {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.AbilityConfig
-pub struct RPG_GameCore_AbilityConfig(pub usize);
-impl RPG_GameCore_AbilityConfig {
-    cs_class!("RPG.GameCore.AbilityConfig");
-}
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.LineUpCharacter
-pub struct RPG_GameCore_LineUpCharacter(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.LineUpCharacter")]
+pub struct RPG_GameCore_LineUpCharacter;
 impl RPG_GameCore_LineUpCharacter {
-    cs_class!("RPG.GameCore.LineUpCharacter");
-
-    // RPG.GameCore.LineUpCharacter -> Type: uint | Name: CharacterID | Offset: 0x50
-    cs_field!(CharacterID, "CharacterID", self, |v| -> u32 {
-        v.unbox::<u32>()
-    });
+    #[il2cpp_field(name = "CharacterID")]
+    pub fn CharacterID(&self) -> System_UInt32__Boxed {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.TextID
-pub struct RPG_Client_TextID_Boxed(pub usize);
-impl RPG_Client_TextID_Boxed {
-    cs_class!("RPG.Client.TextID");
-
-    // RPG.Client.TextID -> Type: int | Name: hash | Offset: 0x0
-    cs_field!(hash, "hash", self, |v| -> i32 { v.unbox::<i32>() });
-
-    pub fn unbox(&self) -> RPG_Client_TextID {
-        Il2CppObject(self.0).unbox::<RPG_Client_TextID>()
-    }
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.CharacterDataComponent
-pub struct RPG_GameCore_CharacterDataComponent(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.CharacterDataComponent", base(RPG_GameCore_GameComponentBase))]
+pub struct RPG_GameCore_CharacterDataComponent;
 impl RPG_GameCore_CharacterDataComponent {
-    cs_class!("RPG.GameCore.CharacterDataComponent");
+    #[il2cpp_field(name = "<JsonConfig>k__BackingField")]
+    pub fn _JsonConfig_k__BackingField(&self) -> RPG_GameCore_CharacterConfig {}
 
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-
-    // RPG.GameCore.CharacterDataComponent -> Type: RPG.GameCore.CharacterConfig | Name: <JsonConfig>k__BackingField | Offset: 0x88
-    cs_field!(_JsonConfig_k__BackingField, "<JsonConfig>k__BackingField",
-        self,
-        |v| -> RPG_GameCore_CharacterConfig { RPG_GameCore_CharacterConfig(v.0) }
-    );
-
-    // RPG.GameCore.CharacterDataComponent -> Type: GameEntity | Name: Summoner | Offset: 0xA0
-    cs_field!(Summoner, "Summoner", self, |v| -> RPG_GameCore_GameEntity {
-        RPG_GameCore_GameEntity(v.0)
-    });
+    #[il2cpp_field(name = "Summoner")]
+    pub fn Summoner(&self) -> RPG_GameCore_GameEntity {}
 }
 
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum StageBudgetTool_EntityType {
-    Prpp_S = 0,
-    Prop_A = 1,
-    Prop_B = 2,
-    Prop_C = 3,
-    Prop_D = 4,
-    Monster_1 = 5,
-    Monster_2 = 6,
-    Monster_3 = 7,
-    Monster_4 = 8,
-    Monster_5 = 9,
-    NPC = 10,
-    NPC_Avatar = 11,
-    NPC_Special = 12,
-    NPC_Monster = 13,
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.FixPoint
+#[il2cpp_value_type("RPG.GameCore.FixPoint")]
 pub struct RPG_GameCore_FixPoint {
     pub m_rawValue: i64,
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// OHFGNONJNIG
-pub struct OHFGNONJNIG(pub usize);
-impl OHFGNONJNIG {
-    cs_class!("OHFGNONJNIG");
-    // OHFGNONJNIG -> Type: FixPoint | Name: KJLBAGPFBDC | Offset: 0x340
-    cs_field!(
-        KJLBAGPFBDC,
-        "KJLBAGPFBDC",
-        self,
-        |v| -> RPG_GameCore_FixPoint {
-            RPG_GameCore_FixPoint {
-                m_rawValue: v.unbox::<i64>(),
-            }
-        }
-    );
-
-    // OHFGNONJNIG -> Type: AttackType | Name: DOODKEMMAPK | Offset: 0x434
-    cs_field!(
-        DOODKEMMAPK,
-        "DOODKEMMAPK",
-        self,
-        |v| -> RPG_GameCore_AttackType { v.unbox::<RPG_GameCore_AttackType>() }
-    );
-}
-
-#[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[il2cpp_enum_type(i32)]
 pub enum RPG_GameCore_AttackType {
-    Unknown = 0,
-    Normal = 1,
-    BPSkill = 2,
-    Ultra = 3,
-    QTE = 4,
-    DOT = 5,
-    Pursued = 6,
-    Maze = 7,
-    MazeNormal = 8,
-    Insert = 9,
-    ElementDamage = 10,
-    Level = 11,
-    Servant = 12,
-    TrueDamage = 13,
+    Unknown,
+    Normal,
+    BPSkill,
+    Ultra,
+    QTE,
+    DOT,
+    Pursued,
+    Maze,
+    MazeNormal,
+    Insert,
+    ElementDamage,
+    Level,
+    Servant,
+    TrueDamage,
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.BattleInstance
-pub struct RPG_GameCore_BattleInstance(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.BattleInstance")]
+pub struct RPG_GameCore_BattleInstance;
 impl RPG_GameCore_BattleInstance {
-    cs_class!("RPG.GameCore.BattleInstance");
+    #[il2cpp_field(name = "_GameWorld")]
+    pub fn _GameWorld(&self) -> RPG_GameCore_GameWorld {}
 
-    // RPG.GameCore.BattleInstance -> Type: RPG.GameCore.GameWorld | Name: _GameWorld | Offset: 0x38
-    cs_field!(_GameWorld, "_GameWorld",
-        self,
-        |v| -> RPG_GameCore_GameWorld { RPG_GameCore_GameWorld(v.0) }
-    );
-
-    cs_field!(
-        _BattleLineupData,
-        "_BattleLineupData",
-        self,
-        |v| -> RPG_GameCore_BattleLineupData { RPG_GameCore_BattleLineupData(v.0) }
-    );
-
-    
+    #[il2cpp_field(name = "_BattleLineupData")]
+    pub fn _BattleLineupData(&self) -> RPG_GameCore_BattleLineupData {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.GameEntity
-pub struct RPG_GameCore_GameEntity(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.GameEntity")]
+pub struct RPG_GameCore_GameEntity;
 impl RPG_GameCore_GameEntity {
-    cs_class!("RPG.GameCore.GameEntity");
+    #[il2cpp_method(name = "GetComponent", args = ["System.Type"])]
+    pub fn get_component(&self, ty: System_RuntimeType) -> RPG_GameCore_GameComponentBase {}
 
-    cs_method!(pub get_component, "GetComponent", &["System.Type"], RPG_GameCore_GameComponentBase, (ty: RuntimeType), self);
+    #[il2cpp_field(name = "_ComponentList")]
+    pub fn _ComponentList(&self) -> Il2CppArray {}
 
-    // RPG.GameCore.GameEntity -> Type: RPG.GameCore.GameEntity.GameComponentList | Name: _ComponentList | Offset: 0x48
-    cs_field!(_ComponentList, "_ComponentList", self, |v| -> Il2CppArray {
-        Il2CppArray(v.0)
-    });
+    #[il2cpp_field(name = "_AliveState")]
+    pub fn _AliveState(&self) -> RPG_GameCore_AliveState__Boxed {}
 
-    // RPG.GameCore.GameEntity -> Type: RPG.GameCore.AliveState | Name: _AliveState | Offset: 0x4C
-    cs_field!(_AliveState, "_AliveState", self, |v| -> RPG_GameCore_AliveState {
-        v.unbox::<RPG_GameCore_AliveState>()
-    });
+    #[il2cpp_field(name = "_Team")]
+    pub fn _Team(&self) -> RPG_GameCore_TeamType__Boxed {}
 
+    #[il2cpp_field(name = "<RuntimeID>k__BackingField")]
+    pub fn _RuntimeID_k__BackingField(&self) -> System_UInt32__Boxed {}
 
-    // RPG.GameCore.GameEntity -> Type: TeamType | Name: _Team | Offset: 0xF0
-    cs_field!(_Team, "_Team", self, |v| -> RPG_GameCore_TeamType {
-        v.unbox::<RPG_GameCore_TeamType>()
-    });
+    #[il2cpp_field(name = "_EntityType")]
+    pub fn _EntityType(&self) -> RPG_GameCore_EntityType__Boxed {}
 
-    // RPG.GameCore.GameEntity -> Type: uint | Name: <RuntimeID>k__BackingField | Offset: 0xF4
-    cs_field!(_RuntimeID_k__BackingField, "<RuntimeID>k__BackingField",
-        self,
-        |v| -> u32 { v.unbox::<u32>() }
-    );
-
-    // RPG.GameCore.GameEntity -> Type: EntityType | Name: _EntityType | Offset: 0x10C
-    cs_field!(_EntityType, "_EntityType",
-        self,
-        |v| -> RPG_GameCore_EntityType { v.unbox::<RPG_GameCore_EntityType>() }
-    );
-
-    cs_field!(
-        _OwnerWorldRef,
-        "_OwnerWorldRef",
-        self,
-        |v| -> RPG_GameCore_GameWorld { RPG_GameCore_GameWorld(v.0) }
-    );
+    #[il2cpp_field(name = "_OwnerWorldRef")]
+    pub fn _OwnerWorldRef(&self) -> RPG_GameCore_GameWorld {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.ModuleManager
-pub struct RPG_Client_ModuleManager(pub usize);
+#[il2cpp_ref_type("RPG.Client.ModuleManager")]
+pub struct RPG_Client_ModuleManager;
 impl RPG_Client_ModuleManager {
-    cs_class!("RPG.Client.ModuleManager");
 
-    // RPG.Client.ModuleManager -> Type: RPG.Client.AvatarModule | Name: AvatarModule | Offset: 0x168
-    cs_field!(AvatarModule, "AvatarModule",
-        self,
-        |v| -> RPG_Client_AvatarModule { RPG_Client_AvatarModule(v.0) }
-    );
+    #[il2cpp_field(name = "AvatarModule")]
+    pub fn AvatarModule(&self) -> RPG_Client_AvatarModule {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// FHPFLNJLDHP
-pub struct FHPFLNJLDHP(pub usize);
-impl FHPFLNJLDHP {
-    cs_class!("FHPFLNJLDHP");
 
-    // FHPFLNJLDHP -> Type: BIACLKKBFMM | Name: OFFOJDPMMBG | Offset: 0x10
-    cs_field!(OFFOJDPMMBG, "OFFOJDPMMBG", self, |v| -> OOMAKCLAFOH {
-        OOMAKCLAFOH(v.0)
-    });
-
-    // FHPFLNJLDHP -> Type: SkillCharacterComponent | Name: GMIEIJLDHAM | Offset: 0x78
-    cs_field!(
-        GMIEIJLDHAM,
-        "GMIEIJLDHAM",
-        self,
-        |v| -> RPG_GameCore_SkillCharacterComponent { RPG_GameCore_SkillCharacterComponent(v.0) }
-    );
-
-    // FHPFLNJLDHP -> Type: TurnBasedAbilityComponent | Name: DJJDPEJEHAJ | Offset: 0x80
-    cs_field!(
-        DJJDPEJEHAJ,
-        "DJJDPEJEHAJ",
-        self,
-        |v| -> RPG_GameCore_TurnBasedAbilityComponent {
-            RPG_GameCore_TurnBasedAbilityComponent(v.0)
-        }
-    );
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.ICharacterSkillRowData
-pub struct RPG_GameCore_ICharacterSkillRowData(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.ICharacterSkillRowData")]
+pub struct RPG_GameCore_ICharacterSkillRowData;
 impl RPG_GameCore_ICharacterSkillRowData {
-    cs_class!("RPG.GameCore.ICharacterSkillRowData");
+    #[il2cpp_getter_property(property = "SkillName")]
+    pub fn get_SkillName(&self) -> RPG_Client_TextID {}
 
-    cs_property!(pub skillname, "get_SkillName", RPG_Client_TextID, self);
-    cs_property!(pub attacktype, "get_AttackType", enumtype RPG_GameCore_AttackType, self);
+    #[il2cpp_getter_property(property = "AttackType")]
+    pub fn get_AttackType(&self) -> RPG_GameCore_AttackType {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.AvatarModule
-pub struct RPG_Client_AvatarModule(pub usize);
+#[il2cpp_ref_type("RPG.Client.AvatarModule")]
+pub struct RPG_Client_AvatarModule;
 impl RPG_Client_AvatarModule {
-    cs_class!("RPG.Client.AvatarModule");
-
-    cs_method!(pub get_avatar, "GetAvatar", &["uint"], RPG_Client_AvatarData, (avatar_id: u32), self);
+    #[il2cpp_method(name = "GetAvatar", args = ["uint"])]
+    pub fn get_avatar(&self, avatar_id: u32) -> RPG_Client_AvatarData {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.GameWorld
-pub struct RPG_GameCore_GameWorld(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.GameWorld")]
+pub struct RPG_GameCore_GameWorld;
 impl RPG_GameCore_GameWorld {
-    cs_class!("RPG.GameCore.GameWorld");
+    #[il2cpp_field(name = "_EntityManager")]
+    pub fn _EntityManager(&self) -> RPG_GameCore_EntityManager {}
 
-    // RPG.GameCore.GameWorld -> Type: EntityManager | Name: _EntityManager | Offset: 0xC8
-    cs_field!(_EntityManager, "_EntityManager",
-        self,
-        |v| -> RPG_GameCore_EntityManager { RPG_GameCore_EntityManager(v.0) }
-    );
-
-    cs_field!(
-        _BattleInstanceRef_k__BackingField,
-        "<BattleInstanceRef>k__BackingField",
-        self,
-        |v| -> RPG_GameCore_BattleInstance { RPG_GameCore_BattleInstance(v.0) }
-    );
+    #[il2cpp_field(name = "<BattleInstanceRef>k__BackingField")]
+    pub fn _BattleInstanceRef_k__BackingField(&self) -> RPG_GameCore_BattleInstance {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.EntityManager
-pub struct RPG_GameCore_EntityManager(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.EntityManager")]
+pub struct RPG_GameCore_EntityManager;
 impl RPG_GameCore_EntityManager {
-    cs_class!("RPG.GameCore.EntityManager");
+    #[il2cpp_method(name = "GetEntityByRuntimeID", args = ["uint"])]
+    pub fn get_entity_by_runtime_id(&self, runtime_id: u32) -> RPG_GameCore_GameEntity {}
 
-    cs_method!(pub get_entity_by_runtime_id, "GetEntityByRuntimeID", &["uint"], RPG_GameCore_GameEntity, (runtime_id: u32), self);
-    cs_method!(pub get_entity_summoner, "_GetEntitySummoner", &["RPG.GameCore.GameEntity"], RPG_GameCore_GameEntity, (entity: RPG_GameCore_GameEntity), self);
+    #[il2cpp_method(name = "GetEntitySummoner", args = ["RPG.GameCore.GameEntity"])]
+    pub fn get_entity_summoner(&self, entity: RPG_GameCore_GameEntity) -> RPG_GameCore_GameEntity {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.GlobalVars
-pub struct RPG_Client_GlobalVars(pub usize);
+
+#[il2cpp_ref_type("RPG.Client.GlobalVars")]
+pub struct RPG_Client_GlobalVars;
 impl RPG_Client_GlobalVars {
-    cs_class!("RPG.Client.GlobalVars");
-
-    // RPG.Client.GlobalVars -> Type: ModuleManager | Name: s_ModuleManager | Offset: 0xEB8
-    cs_field!(s_ModuleManager, "s_ModuleManager",
-        |v| -> RPG_Client_ModuleManager { RPG_Client_ModuleManager(v.0) }
-    );
+    #[il2cpp_field(name = "s_ModuleManager")]
+    pub fn s_ModuleManager() -> RPG_Client_ModuleManager {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.TextmapStatic
-pub struct RPG_Client_TextmapStatic(pub usize);
+#[il2cpp_ref_type("RPG.Client.TextmapStatic")]
+pub struct RPG_Client_TextmapStatic;
 impl RPG_Client_TextmapStatic {
-    cs_class!("RPG.Client.TextmapStatic");
-
-    cs_method!(pub get_text, "GetText", &["RPG.Client.TextID", "System.Object[]"], Il2CppString, (id: RPG_Client_TextID, replace_params: Il2CppObject));
+    #[il2cpp_method(name = "GetText", args = ["RPG.Client.TextID", "object[]"])]
+    pub fn get_text(id: &RPG_Client_TextID, replace_params: *const c_void) -> Il2CppString {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.UIGameEntityUtils
-pub struct RPG_Client_UIGameEntityUtils(pub usize);
+#[il2cpp_ref_type("RPG.Client.UIGameEntityUtils")]
+pub struct RPG_Client_UIGameEntityUtils;
 impl RPG_Client_UIGameEntityUtils {
-    cs_class!("RPG.Client.UIGameEntityUtils");
-
-    cs_method!(pub get_avatar_id, "GetAvatarID", &["RPG.GameCore.GameEntity"], u32, (entity: RPG_GameCore_GameEntity));
+    #[il2cpp_method(name = "GetAvatarID", args = ["RPG.GameCore.GameEntity"])]
+    pub fn get_avatar_id(entity: RPG_GameCore_GameEntity) -> u32 {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.AbilityStatic
-pub struct RPG_GameCore_AbilityStatic(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.AbilityStatic")]
+pub struct RPG_GameCore_AbilityStatic;
 impl RPG_GameCore_AbilityStatic {
-    cs_class!("RPG.GameCore.AbilityStatic");
-
-    cs_method!(pub get_actual_owner, "GetActualOwner", &["RPG.GameCore.GameEntity"], RPG_GameCore_GameEntity, (entity: RPG_GameCore_GameEntity));
+    #[il2cpp_method(name = "GetActualOwner", args = ["RPG.GameCore.GameEntity"])]
+    pub fn get_actual_owner(entity: RPG_GameCore_GameEntity) -> RPG_GameCore_GameEntity {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// MiHoYo.SDK.Win.MiHoYoSDKDll
-pub struct MiHoYo_SDK_Win_MiHoYoSDKDll(pub usize);
-impl MiHoYo_SDK_Win_MiHoYoSDKDll {
-    cs_class!("MiHoYo.SDK.Win.MiHoYoSDKDll");
-}
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// UnityEngine.Application
-pub struct UnityEngine_Application(pub usize);
-impl UnityEngine_Application {
-    cs_class!("UnityEngine.Application");
-
-    cs_method!(pub set_target_framerate, "set_targetFrameRate", &["int"], (), (fps: i32));
-    cs_method!(pub get_target_framerate, "get_targetFrameRate", &[], i32, ());
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// EBKLINDPMKM
-pub struct EBKLINDPMKM(pub usize);
-impl EBKLINDPMKM {
-    cs_class!("EBKLINDPMKM");
-}
-
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.Client.BattleAssetPreload
-pub struct RPG_Client_BattleAssetPreload(pub usize);
+#[il2cpp_ref_type("RPG.Client.BattleAssetPreload")]
+pub struct RPG_Client_BattleAssetPreload;
 impl RPG_Client_BattleAssetPreload {
-    cs_class!("RPG.Client.BattleAssetPreload");
-
-    // RPG.Client.BattleAssetPreload -> Type: RPG.GameCore.BattleLineupData | Name: _LineupData | Offset: 0x68
-    cs_field!(_LineupData, "_LineupData",
-        self,
-        |v| -> RPG_GameCore_BattleLineupData { RPG_GameCore_BattleLineupData(v.0) }
-    );
+    #[il2cpp_field(name = "_LineupData")]
+    pub fn _LineupData(&self) -> RPG_GameCore_BattleLineupData {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.ServantDataComponent
-pub struct RPG_GameCore_ServantDataComponent(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.ServantDataComponent", base(RPG_GameCore_GameComponentBase))]
+pub struct RPG_GameCore_ServantDataComponent;
 impl RPG_GameCore_ServantDataComponent {
-    cs_class!("RPG.GameCore.ServantDataComponent");
-
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-
-    // RPG.GameCore.ServantDataComponent -> Type: ServantRowData | Name: _ServantRowData | Offset: 0xD8
-    cs_field!(_ServantRowData, "_ServantRowData",
-        self,
-        |v| -> RPG_GameCore_ServantRowData { RPG_GameCore_ServantRowData(v.0) }
-    );
+    #[il2cpp_field(name = "_ServantRowData")]
+    pub fn _ServantRowData(&self) -> RPG_GameCore_ServantRowData {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.ServantRowData
-pub struct RPG_GameCore_ServantRowData(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.ServantRowData")]
+pub struct RPG_GameCore_ServantRowData;
 impl RPG_GameCore_ServantRowData {
-    cs_class!("RPG.GameCore.ServantRowData");
-
-    // RPG.GameCore.ServantRowData -> Type: RPG.GameCore.IAvatarServantRowWrap | Name: _Row | Offset: 0x70
-    cs_field!(_Row, "_Row", self, |v| -> RPG_GameCore_AvatarServantRow {
-        RPG_GameCore_AvatarServantRow(v.0)
-    });
+    #[il2cpp_field(name = "_Row")]
+    pub fn _Row(&self) -> RPG_GameCore_AvatarServantRow {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.AvatarServantRow
-pub struct RPG_GameCore_AvatarServantRow(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.AvatarServantRow")]
+pub struct RPG_GameCore_AvatarServantRow;
 impl RPG_GameCore_AvatarServantRow {
-    cs_class!("RPG.GameCore.AvatarServantRow");
+    #[il2cpp_field(name = "ServantID")]
+    pub fn ServantID(&self) -> System_UInt32__Boxed {}
 
-    // RPG.GameCore.AvatarServantRow -> Type: uint | Name: ServantID | Offset: 0x88
-    cs_field!(ServantID, "ServantID", self, |v| -> u32 {
-        v.unbox::<u32>()
-    });
-
-    // RPG.GameCore.AvatarServantRow -> Type: RPG.Client.TextID | Name: ServantName | Offset: 0x98
-    cs_field!(ServantName, "ServantName",
-        self,
-        |v| -> RPG_Client_TextID_Boxed { RPG_Client_TextID_Boxed(v.0) }
-    );
+    #[il2cpp_field(name = "ServantName")]
+    pub fn ServantName(&self) -> RPG_Client_TextID__Boxed {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.AbilityComponent
-pub struct RPG_GameCore_AbilityComponent(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.AbilityComponent", base(RPG_GameCore_GameComponentBase))]
+pub struct RPG_GameCore_AbilityComponent;
 impl RPG_GameCore_AbilityComponent {
-    cs_class!("RPG.GameCore.AbilityComponent");
-
-    // RPG.GameCore.GameComponentBase -> Type: GameEntity | Name: _OwnerRef | Offset: 0x10
-    cs_field!(
-        _OwnerRef,
-        "_OwnerRef",
-        self,
-        |v| -> RPG_GameCore_GameEntity { RPG_GameCore_GameEntity(v.0) }
-    );
-
-    // RPG.GameCore.AbilityComponent -> Type: System.Collections.Generic.List<ALJLEJPMKPH> | Name: _ModifierList | Offset: 0x28
-    cs_field!(_ModifierList, "_ModifierList", self);
+    #[il2cpp_field(name = "_ModifierList")]
+    pub fn _ModifierList(&self) -> Il2CppArray {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.StatusExcelTable
-pub struct RPG_GameCore_StatusExcelTable(pub usize);
-impl RPG_GameCore_StatusExcelTable {
-    cs_class!("RPG.GameCore.StatusExcelTable");
+// #[il2cpp_ref_type("RPG.GameCore.StatusExcelTable")]
+// pub struct RPG_GameCore_StatusExcelTable;
+// impl RPG_GameCore_StatusExcelTable {
+//     #[il2cpp_method(name = "GetByModifierName", args = ["string"])]
+//     pub fn get_by_modifier_name(&self, modifier_name: Il2CppString) -> RPG_GameCore_StatusRow {}
+// }
 
-    cs_method!(pub get_by_modifier_name, "GetByModifierName",  &["string"], RPG_GameCore_StatusRow, (modifier_name: Il2CppString));
-}
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.StatusRow
-pub struct RPG_GameCore_StatusRow(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.StatusRow")]
+pub struct RPG_GameCore_StatusRow;
 impl RPG_GameCore_StatusRow {
-    cs_class!("RPG.GameCore.StatusRow");
+    #[il2cpp_field(name = "StatusName")]
+    pub fn StatusName(&self) -> RPG_Client_TextID__Boxed {}
 
-    // RPG.GameCore.StatusRow -> Type: RPG.Client.TextID | Name: StatusName | Offset: 0x38
-    cs_field!(StatusName, "StatusName",
-        self,
-        |v| -> RPG_Client_TextID_Boxed { RPG_Client_TextID_Boxed(v.0) }
-    );
-
-    // RPG.GameCore.StatusRow -> Type: RPG.Client.TextID | Name: StatusDesc | Offset: 0x48
-    cs_field!(StatusDesc, "StatusDesc",
-        self,
-        |v| -> RPG_Client_TextID_Boxed { RPG_Client_TextID_Boxed(v.0) }
-    );
+    #[il2cpp_field(name = "StatusDesc")]
+    pub fn StatusDesc(&self) -> RPG_Client_TextID__Boxed {}
 }
 
-#[repr(transparent)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-// RPG.GameCore.TurnBasedModifierInstance
-pub struct RPG_GameCore_TurnBasedModifierInstance(pub usize);
+#[il2cpp_ref_type("RPG.GameCore.TurnBasedModifierInstance")]
+pub struct RPG_GameCore_TurnBasedModifierInstance;
 impl RPG_GameCore_TurnBasedModifierInstance {
-    cs_class!("RPG.GameCore.TurnBasedModifierInstance");
-
-    cs_property!(pub key_for_status_config, "get_KeyForStatusConfig", Il2CppString, self);
+    #[il2cpp_method(name = "get_KeyForStatusConfig", args = [])]
+    pub fn get_key_for_status_config(&self) -> Il2CppString {}
 }

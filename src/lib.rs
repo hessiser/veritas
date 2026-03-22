@@ -22,23 +22,15 @@ use std::sync::LazyLock;
 use tokio::runtime::Runtime;
 use widestring::u16str;
 use windows::{Win32::System::LibraryLoader::GetModuleHandleW, core::PCWSTR};
+use anyhow::{Context, Result, anyhow};
 
-fn get_module_handle(name: &widestring::U16Str) -> usize {
+fn get_module_handle(name: PCWSTR) -> Result<usize> {
     unsafe {
-        GetModuleHandleW(PCWSTR(name.as_ptr()))
+        GetModuleHandleW(name)
             .map(|v| v.0 as usize)
-            .unwrap_or_else(|e| {
-                log::error!("{e}");
-                panic!("{e}");
-            })
+            .context("Failed to get module handle")
     }
 }
-
-pub static GAMEASSEMBLY_HANDLE: LazyLock<usize> =
-    LazyLock::new(|| get_module_handle(u16str!("GameAssembly")));
-
-pub static UNITYPLAYER_HANDLE: LazyLock<usize> =
-    LazyLock::new(|| get_module_handle(u16str!("UnityPlayer")));
 
 pub static RUNTIME: LazyLock<Runtime> = LazyLock::new(|| {
     Runtime::new().unwrap_or_else(|e| {
