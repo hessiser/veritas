@@ -109,8 +109,13 @@ pub fn populate_avatar_buffers(avatar_ids: &Vec<u32>) {
     cache.clear();
     
     for &avatar_id in avatar_ids {
-        if let Ok(buffer) = crate::kreide::helpers::get_avatar_png_bytes(avatar_id) {
-            cache.insert(avatar_id, buffer);
+        match crate::kreide::helpers::get_avatar_png_bytes(avatar_id) {
+            Ok(buffer) => {
+                cache.insert(avatar_id, buffer);
+            }
+            Err(e) => {
+                log::warn!("Failed to cache avatar icon {}: {}", avatar_id, e);
+            }
         }
     }
 }
@@ -128,8 +133,13 @@ pub fn cache_monster_buffer(monster_id: u32) {
         return;
     }
 
-    if let Ok(buffer) = crate::kreide::helpers::get_monster_png_bytes(monster_id) {
-        cache.insert(monster_id, buffer);
+    match crate::kreide::helpers::get_monster_png_bytes(monster_id) {
+        Ok(buffer) => {
+            cache.insert(monster_id, buffer);
+        }
+        Err(e) => {
+            log::warn!("Failed to cache monster icon {}: {}", monster_id, e);
+        }
     }
 }
 
@@ -140,8 +150,13 @@ pub fn cache_property_buffer(property_name: RPG_GameCore_AvatarPropertyType) {
         return;
     }
 
-    if let Ok(buffer) = crate::kreide::helpers::get_property_icon_png_bytes(&property_name.to_string()) {
-        cache.insert(property_name.to_string(), buffer);
+    match crate::kreide::helpers::get_property_icon_png_bytes(&property_name.to_string()) {
+        Ok(buffer) => {
+            cache.insert(property_name.to_string(), buffer);
+        }
+        Err(e) => {
+            log::warn!("Failed to cache property icon {}: {}", property_name, e);
+        }
     }
 }
 

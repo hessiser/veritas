@@ -2753,7 +2753,7 @@ dependencies = [
 [[package]]
 name = "il2cpp-macros"
 version = "0.1.0"
-source = "git+https://github.com/NightKoneko/il2cpp-rust.git?branch=hsr-4.2.51-fixes#3e2d23423d6fb399066e849b55383f254d60cb58"
+source = "git+https://github.com/NightKoneko/il2cpp-rust.git?branch=hsr-4.2.51-fixes#df4375adb3a6eca02afe4e7d626d6861580e1b2c"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -2764,11 +2764,10 @@ dependencies = [
 [[package]]
 name = "il2cpp-runtime"
 version = "0.1.0"
-source = "git+https://github.com/NightKoneko/il2cpp-rust.git?branch=hsr-4.2.51-fixes#3e2d23423d6fb399066e849b55383f254d60cb58"
+source = "git+https://github.com/NightKoneko/il2cpp-rust.git?branch=hsr-4.2.51-fixes#df4375adb3a6eca02afe4e7d626d6861580e1b2c"
 dependencies = [
  "il2cpp-macros",
  "log",
- "microseh",
  "patternscan",
  "thiserror 2.0.18",
  "widestring",

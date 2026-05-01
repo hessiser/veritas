@@ -77,18 +77,10 @@ fn init() {
 
 fn get_il2cpp_table_offset() -> Result<usize> {
     unsafe {
-        log::info!(
-            "Skipping GameAssembly!il2cpp_get_api_table probe on this build; using UnityPlayer scan fallback"
-        );
-
         let unityplayer_offset = get_module_handle(w!("UnityPlayer"))
             .map_err(|e| anyhow!(e.to_string()))
             .context("Failed to resolve UnityPlayer module")?;
         let module = windows::Win32::Foundation::HMODULE(unityplayer_offset as *mut c_void);
-
-        log::info!(
-            "GameAssembly!il2cpp_get_api_table unavailable; falling back to UnityPlayer scan at {unityplayer_offset:#x}"
-        );
 
         let process_handle = GetCurrentProcess();
         let mut lp_mod_info = MODULEINFO::default();
@@ -128,9 +120,6 @@ fn get_il2cpp_table_offset() -> Result<usize> {
             .map_err(|_| anyhow!("Pattern displacement did not contain 4 bytes"))?;
         let displacement = i32::from_le_bytes(displacement_bytes) as isize;
         let qword_addr = ((addr + 7) as isize + displacement) as usize;
-        log::info!(
-            "Resolved IL2CPP API table via UnityPlayer scan: instruction={addr:#x}, table={qword_addr:#x}"
-        );
         Ok(qword_addr)
     }
 }
@@ -143,26 +132,16 @@ unsafe fn try_get_il2cpp_table_from_export() -> Result<Option<usize>> {
         .context("Failed to resolve GameAssembly module")?;
     let module = HMODULE(gameassembly_offset as *mut c_void);
 
-    log::info!(
-        "Checking GameAssembly export il2cpp_get_api_table in module {gameassembly_offset:#x}"
-    );
-
     let Some(proc) = (unsafe {
         GetProcAddress(
             module,
             windows::core::PCSTR::from_raw(IL2CPP_GET_API_TABLE_EXPORT.as_ptr()),
         )
     }) else {
-        log::info!(
-            "GameAssembly!il2cpp_get_api_table is not exported from module {gameassembly_offset:#x}"
-        );
         return Ok(None);
     };
 
     let export_addr = proc as usize;
-    log::info!(
-        "Found GameAssembly!il2cpp_get_api_table at {export_addr:#x}; attempting protected call"
-    );
 
     let get_api_table = unsafe {
         std::mem::transmute::<
@@ -181,36 +160,25 @@ unsafe fn try_get_il2cpp_table_from_export() -> Result<Option<usize>> {
                 .map(|value| (*value).to_string())
                 .or_else(|| panic.downcast_ref::<String>().cloned())
                 .unwrap_or_else(|| "unknown panic payload".to_string());
-            log::warn!(
-                "GameAssembly!il2cpp_get_api_table panicked: {message}; falling back to UnityPlayer scan"
-            );
+            let _ = message;
             return Ok(None);
         }
         Err(seh) => {
-            log::warn!(
-                "GameAssembly!il2cpp_get_api_table raised SEH {seh:?}; falling back to UnityPlayer scan"
-            );
+            let _ = seh;
             return Ok(None);
         }
     };
 
     if api_table_offset == 0 {
-        log::warn!(
-            "GameAssembly!il2cpp_get_api_table returned null; falling back to UnityPlayer scan"
-        );
         return Ok(None);
     }
-
-    log::info!(
-        "Resolved IL2CPP API table from GameAssembly export: module={gameassembly_offset:#x}, table={api_table_offset:#x}"
-    );
+    let _ = gameassembly_offset;
+    let _ = export_addr;
     Ok(Some(api_table_offset))
 }
 
 fn setup_subscribers() -> anyhow::Result<()> {
     unsafe {
-        log::info!("Setting up...");
-
         while GetModuleHandleW(windows::core::w!("GameAssembly")).is_err()
             || GetModuleHandleW(windows::core::w!("UnityPlayer")).is_err()
         {
@@ -223,9 +191,8 @@ fn setup_subscribers() -> anyhow::Result<()> {
         let unityplayer = get_module_handle(w!("UnityPlayer"))
             .map_err(|e| anyhow!(e.to_string()))
             .context("Failed to confirm UnityPlayer module after wait")?;
-        log::info!(
-            "Required modules detected: GameAssembly={gameassembly:#x}, UnityPlayer={unityplayer:#x}"
-        );
+        let _ = gameassembly;
+        let _ = unityplayer;
 
         let table = ApiIndexTable {
             il2cpp_assembly_get_image: 22,
@@ -251,15 +218,10 @@ fn setup_subscribers() -> anyhow::Result<()> {
             il2cpp_image_get_class_count: 169,
             il2cpp_image_get_class: 170,
         };
-        log::info!("Resolving IL2CPP API table...");
         let api_table_offset = get_il2cpp_table_offset().context("Failed to resolve IL2CPP API table")?;
-        log::info!("Initializing IL2CPP runtime using table {api_table_offset:#x}");
         il2cpp_runtime::init(api_table_offset, table).context("Failed to initialize IL2CPP runtime")?;
-        log::info!("Registering battle subscriber hooks...");
         subscribers::battle::subscribe().context("Failed to register battle subscriber hooks")?;
-        log::info!("Registering remaining subscriber hooks...");
         subscribers::enable_subscribers!().context("Failed to register subscriber hooks")?;
-        log::info!("Subscriber setup completed");
         Ok(())
     }
 }

@@ -169,6 +169,9 @@ impl RPG_GameCore_MonsterDataComponent {
     #[il2cpp_method(name = "GetMonsterID", args = [])]
     pub fn get_monster_id(&self) -> u32 {}
 
+    #[il2cpp_method(name = "GetMonsterTemplateID", args = [])]
+    pub fn get_monster_template_id(&self) -> u32 {}
+
     #[il2cpp_field(name = "_OwnerRef")]
     pub fn _OwnerRef(&self) -> RPG_GameCore_GameEntity {}
 
@@ -661,6 +664,7 @@ impl RPG_GameCore_CharacterDataComponent {
 pub struct RPG_GameCore_FixPoint {
     pub m_rawValue: i64,
 }
+
 
 #[il2cpp_enum_type(i32)]
 pub enum RPG_GameCore_AttackType {

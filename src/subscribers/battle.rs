@@ -30,7 +30,6 @@ use std::sync::{Mutex, OnceLock};
 
 #[named]
 unsafe fn get_elapsed_av(game_mode: RPG_GameCore_TurnBasedGameMode) -> Result<f64> {
-    log::debug!(function_name!());
     Ok(fixpoint_to_raw(&*game_mode._ElapsedActionDelay_k__BackingField()?) * 10f64)
 }
 
@@ -197,27 +196,11 @@ unsafe fn resolve_attack_type_offset(class: Il2CppClass) -> Result<usize> {
             || field_type_name.ends_with(".AttackType")
             || (class_name == "NCJILFFNINI" && field_name == NCJILFFNINI_ATTACK_TYPE_FIELD_NAME)
         {
-            if class_name == "NCJILFFNINI"
-                && field_type_name != "AttackType"
-                && !field_type_name.ends_with(".AttackType")
-            {
-                log::warn!(
-                    "battle::subscribe: using NCJILFFNINI AttackType fallback field {} at {:#x} (reported type {})",
-                    field_name,
-                    field_offset,
-                    field_type_name
-                );
-            }
-
             return Ok(field_offset);
         }
     }
 
     if class_name == "NCJILFFNINI" {
-        log::warn!(
-            "battle::subscribe: field scan missed NCJILFFNINI AttackType; falling back to verified offset {:#x}",
-            NCJILFFNINI_ATTACK_TYPE_OFFSET
-        );
         return Ok(NCJILFFNINI_ATTACK_TYPE_OFFSET);
     }
 
@@ -248,7 +231,6 @@ fn on_record_damage_action_in_attack(
     defender: RPG_GameCore_GameEntity,
     damage_info: *const c_void,
 ) {
-    log::debug!(function_name!());
 
     // Fast component lookup via _ComponentArray — no IL2CPP reflection in the hot path
     let hp_before_raw = unsafe { find_tba_component(defender) }
@@ -318,16 +300,7 @@ fn on_record_damage_action_in_attack(
                                 if let Ok(mut map) = pending_damage_contexts().lock() {
                                     let q = map.entry(defender_uid).or_default();
                                     q.push_back(ctx.clone());
-                                    log::debug!(
-                                        "damage_probe enqueue id={} defender_uid={} attacker_uid={} raw={:.2} raw_hex={:#x} hp_before={:.2} queue_len={}",
-                                        id,
-                                        defender_uid,
-                                        ctx.attacker.uid,
-                                        ctx.raw_damage,
-                                        ctx.raw_damage_fixpoint as u64,
-                                        ctx.hp_before_raw,
-                                        q.len()
-                                    );
+                                    let _ = q;
                                 }
                             }
                             Err(e) => log::error!(
@@ -360,7 +333,6 @@ fn on_use_skill(
     a6: *const c_void,
     skill_extra_use_param: i32,
 ) -> bool {
-    log::debug!(function_name!());
     let res =
         ON_USE_SKILL_Detour.call(instance, skill_index, a3, a4, a5, a6, skill_extra_use_param);
 
@@ -446,8 +418,10 @@ fn on_use_skill(
                             let battle_event_data_comp = RPG_GameCore_BattleEventDataComponent(
                                 instance._CharacterDataRef()?.0,
                             );
-                            let avatar_entity =
-                                battle_event_data_comp._SourceCaster_k__BackingField()?;
+                            let avatar_entity = match battle_event_data_comp._SourceCaster_k__BackingField() {
+                                Ok(e) if !e.0.is_null() => e,
+                                _ => return Ok(()), // SourceCaster not set; skip silently
+                            };
 
                             let e = match get_skill_from_skilldata(skill_data) {
                                 Ok(skill) => match get_avatar_from_owner_entity(avatar_entity) {
@@ -499,7 +473,6 @@ fn on_use_skill(
 // Insert skills are out of turn automatic skills
 #[named]
 fn on_combo(instance: *const c_void, game_mode: RPG_GameCore_TurnBasedGameMode) {
-    log::debug!(function_name!());
 
     ON_COMBO_Detour.call(instance, game_mode);
     safe_call!(unsafe {
@@ -650,8 +623,10 @@ fn on_combo(instance: *const c_void, game_mode: RPG_GameCore_TurnBasedGameMode) 
                             let battle_event_data_comp = RPG_GameCore_BattleEventDataComponent(
                                 skill_character_component._CharacterDataRef()?.0,
                             );
-                            let avatar_entity =
-                                battle_event_data_comp._SourceCaster_k__BackingField()?;
+                            let avatar_entity = match battle_event_data_comp._SourceCaster_k__BackingField() {
+                                Ok(e) if !e.0.is_null() => e,
+                                _ => return Ok(()), // SourceCaster not set; skip silently
+                            };
 
                             let e = match get_skill_from_skilldata(skill_data) {
                                 Ok(skill) => match get_avatar_from_owner_entity(avatar_entity) {
@@ -707,7 +682,6 @@ fn on_set_lineup(
     a4: u32,
     a5: bool,
 ) {
-    log::debug!(function_name!());
     safe_call!(unsafe {
         let light_team = a2.LightTeam()?;
         let extra_team = a2.ExtraTeam()?;
@@ -732,10 +706,12 @@ fn on_set_lineup(
             }
         }
  
-        // Skip icon prewarming on this build; it still depends on System.Type-driven asset loading.
         crate::ui::helpers::clear_avatar_buffers();
         crate::ui::helpers::clear_monster_buffers();
         crate::ui::helpers::clear_property_buffers();
+
+        let avatar_ids: Vec<u32> = avatars.iter().map(|a| a.id).collect();
+        crate::ui::helpers::populate_avatar_buffers(&avatar_ids);
 
         let event = if !errors.is_empty() {
             let errors = errors
@@ -754,7 +730,6 @@ fn on_set_lineup(
 
 #[named]
 fn on_battle_begin(instance: RPG_GameCore_TurnBasedGameMode) {
-    log::debug!(function_name!());
     let res = ON_BATTLE_BEGIN_Detour.call(instance);
     safe_call!({
         BattleContext::handle_event(Ok(Event::OnBattleBegin(OnBattleBeginEvent {
@@ -771,7 +746,6 @@ fn on_battle_begin(instance: RPG_GameCore_TurnBasedGameMode) {
 
 #[named]
 fn on_battle_end(instance: RPG_GameCore_TurnBasedGameMode) {
-    log::debug!(function_name!());
     let res = ON_BATTLE_END_Detour.call(instance);
     BattleContext::handle_event(Ok(Event::OnBattleEnd));
     res
@@ -779,7 +753,6 @@ fn on_battle_end(instance: RPG_GameCore_TurnBasedGameMode) {
 
 #[named]
 fn on_turn_begin(instance: RPG_GameCore_TurnBasedGameMode) {
-    log::debug!(function_name!());
     // Update AV first
     let res = ON_TURN_BEGIN_Detour.call(instance);
 
@@ -831,7 +804,6 @@ fn on_turn_begin(instance: RPG_GameCore_TurnBasedGameMode) {
 
 #[named]
 fn on_turn_end(instance: RPG_GameCore_TurnBasedAbilityComponent, a1: i32) {
-    log::debug!(function_name!());
     // Can match player v enemy turn w/
     // RPG.GameCore.TurnBasedGameMode.GetCurrentTurnTeam
     BattleContext::handle_event(Ok(Event::OnTurnEnd));
@@ -852,7 +824,6 @@ pub fn on_update_wave(instance: RPG_GameCore_TurnBasedGameMode) {
 
 #[named]
 pub fn on_update_cycle(instance: RPG_GameCore_TurnBasedGameMode) -> u32 {
-    log::debug!(function_name!());
     let cycle = ON_UPDATE_CYCLE_Detour.call(instance);
     BattleContext::handle_event(Ok(Event::OnUpdateCycle(OnUpdateCycleEvent { cycle })));
     cycle
@@ -860,7 +831,6 @@ pub fn on_update_cycle(instance: RPG_GameCore_TurnBasedGameMode) -> u32 {
 
 #[named]
 fn handle_hp_change(turn_based_ability_component: RPG_GameCore_TurnBasedAbilityComponent) {
-    log::debug!(function_name!());
     use std::string::ToString;
     safe_call!(unsafe {
         let property_kind = RPG_GameCore_AbilityProperty::CurrentHP.to_string();
@@ -917,7 +887,6 @@ pub fn on_direct_change_hp(
     a2: RPG_GameCore_FixPoint,
     a3: *const c_void,
 ) {
-    log::debug!(function_name!());
     let res = ON_DIRECT_CHANGE_HP_Detour.call(instance, a1, a2, a3);
     handle_hp_change(instance);
     res
@@ -932,7 +901,6 @@ pub fn on_direct_damage_hp(
     a4: RPG_GameCore_FixPoint,
     a5: *const c_void,
 ) {
-    log::debug!(function_name!());
 
     let hp_before_raw = unsafe { instance.get_property(RPG_GameCore_AbilityProperty::CurrentHP) }
         .ok()
@@ -957,17 +925,6 @@ pub fn on_direct_damage_hp(
 
         if let Some(ctx) = pending {
             let hp_damage = (hp_before_raw - hp_after_raw).max(0.0);
-            log::debug!(
-                "damage_probe dequeue id={} defender_uid={} attacker_uid={} hp_before={:.2} hp_after={:.2} hp_delta={:.2} raw={:.2} raw_hex={:#x}",
-                ctx.id,
-                defender_uid,
-                ctx.attacker.uid,
-                hp_before_raw,
-                hp_after_raw,
-                hp_damage,
-                ctx.raw_damage,
-                ctx.raw_damage_fixpoint as u64
-            );
             // Only emit finalized damage from observed post-mutation HP delta.
             // Falling back to raw getter here can duplicate hits when DirectDamageHP
             // is invoked multiple times for the same queued record.
@@ -978,32 +935,13 @@ pub fn on_direct_damage_hp(
                     0.0
                 };
 
-                let emitted_damage = hp_damage / 2.0;
-                let emitted_overkill_damage = overkill_damage / 2.0;
-
                 BattleContext::handle_event(Ok(Event::OnDamage(OnDamageEvent {
                     attacker: ctx.attacker,
-                    damage: emitted_damage,
-                    overkill_damage: emitted_overkill_damage,
+                    damage: hp_damage,
+                    overkill_damage,
                     r#type: ctx.r#type,
                 })));
-                log::debug!(
-                    "damage_probe emit id={} raw_hex={:#x} damage={:.2} overkill={:.2} (halved)",
-                    ctx.id,
-                    ctx.raw_damage_fixpoint as u64,
-                    emitted_damage,
-                    emitted_overkill_damage
-                );
-            } else {
-                log::debug!("damage_probe skip id={} reason=non_positive_delta", ctx.id);
             }
-        } else {
-            log::debug!(
-                "damage_probe dequeue_miss defender_uid={} hp_before={:.2} hp_after={:.2}",
-                defender_uid,
-                hp_before_raw,
-                hp_after_raw
-            );
         }
 
         Ok(())
@@ -1021,7 +959,6 @@ pub fn on_stat_change(
     new_stat: RPG_GameCore_FixPoint,
     a4: *const c_void,
 ) -> bool {
-    log::debug!(function_name!());
     let res = ON_STAT_CHANGE_Detour.call(instance, property, a2, new_stat, a4);
     safe_call!(unsafe {
         let entity = instance
@@ -1301,7 +1238,6 @@ unsafe fn get_entity_defeated_offsets() -> Result<EntityDefeatedOffsets> {
 
 #[named]
 pub fn on_entity_defeated(instance: RPG_GameCore_TurnBasedGameMode, a2: *const c_void) -> bool {
-    log::debug!(function_name!());
     let res = ON_ENTITY_DEFEATED_Detour.call(instance, a2);
 
     safe_call!(unsafe {
@@ -1347,7 +1283,6 @@ pub fn on_entity_defeated(instance: RPG_GameCore_TurnBasedGameMode, a2: *const c
 
 #[named]
 pub fn on_update_team_formation(instance: RPG_GameCore_TeamFormationComponent) {
-    log::debug!(function_name!());
     let res = ON_UPDATE_TEAM_FORMATION_Detour.call(instance);
     safe_call!({
         let team_value: RPG_GameCore_TeamType = parse_il2cpp_enum(instance._Team()?)?;
@@ -1385,12 +1320,11 @@ pub fn on_initialize_enemy(
     instance: RPG_GameCore_MonsterDataComponent,
     turn_based_ability_component: RPG_GameCore_TurnBasedAbilityComponent,
 ) {
-    log::debug!(function_name!());
     let res = ON_INITIALIZE_ENEMY_Detour.call(instance, turn_based_ability_component);
     safe_call!({
         let row_data = instance._MonsterRowData()?;
         let row = row_data._Row()?;
-        let monster_id = unsafe { instance.get_monster_id()? };
+        let monster_template_id = unsafe { instance.get_monster_template_id()? };
         let mut base_stats = BattleStats {
             properties: HashMap::new(),
         };
@@ -1405,12 +1339,13 @@ pub fn on_initialize_enemy(
         
         BattleContext::handle_event(Ok(Event::OnInitializeEnemy(OnInitializeEnemyEvent {
             enemy: Enemy {
-                id: monster_id,
+                id: monster_template_id,
                 uid: (*entity._RuntimeID_k__BackingField().unwrap()).into(),
                 name: (*monster_name).to_string(),
                 base_stats,
             },
         })));
+        crate::ui::helpers::cache_monster_buffer(monster_template_id);
         Ok(())
     });
     res
@@ -1449,26 +1384,12 @@ pub fn subscribe() -> Result<()> {
 
         // Prewarm damage class metadata from arg 1 (the damage info struct)
         let damage_info_class = record_damage_method.arg(1).class();
-        log::info!(
-            "battle::subscribe: damage info class for RecordDamageActionInAttack is {}",
-            damage_info_class.qualified_name()
-        );
         get_attack_type_offset(damage_info_class)
             .context("Failed to resolve AttackType field offset")?;
         get_damage_getter(damage_info_class)
             .context("Failed to resolve damage getter (GBOAGIMFJCK)")?;
-        match get_damage_field_offset() {
-            Ok(offset) => log::info!(
-                "battle::subscribe: resolved damage field offset from on_damage pattern at {:#x}",
-                offset
-            ),
-            Err(e) => log::warn!(
-                "battle::subscribe: failed to resolve damage field offset from on_damage pattern: {}",
-                e
-            ),
-        }
+        let _ = get_damage_field_offset();
 
-        log::info!("battle::subscribe: hooking RecordDamageActionInAttack at {:?}", record_damage_method.va());
         subscribe_function!(ON_RECORD_DAMAGE_Detour, record_damage_method.va(), on_record_damage_action_in_attack)
             .context("Failed to initialize RecordDamageActionInAttack detour")?;
 
@@ -1499,7 +1420,6 @@ pub fn subscribe() -> Result<()> {
         }
 
         if let Some(method) = on_combo_method {
-            log::info!("battle::subscribe: hooking on_combo at {:?}", method.va());
             subscribe_function!(ON_COMBO_Detour, method.va(), on_combo)
                 .context("Failed to initialize on_combo detour")?;
         } else {
@@ -1507,14 +1427,9 @@ pub fn subscribe() -> Result<()> {
         }
 
         if let Some(class) = combo_instance_class {
-            log::info!(
-                "battle::subscribe: prewarming combo metadata for {}",
-                class.qualified_name()
-            );
             get_combo_field_offsets(class).context("Failed to resolve on_combo field offsets")?;
         }
 
-        log::info!("battle::subscribe: prewarming entity-defeated offsets");
         let defeated_offsets =
             resolve_defeated_entity_offset().context("Failed to resolve entity-defeated offsets")?;
         let _ = ENTITY_DEFEATED_OFFSETS.set(defeated_offsets);
@@ -1648,3 +1563,4 @@ pub fn subscribe() -> Result<()> {
         Ok(())
     }
 }
+
