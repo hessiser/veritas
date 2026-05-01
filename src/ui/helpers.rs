@@ -21,6 +21,16 @@ static MONSTER_BUFFER_CACHE: LazyLock<Mutex<HashMap<u32, Vec<u8>>>> =
 static PROPERTY_BUFFER_CACHE: LazyLock<Mutex<HashMap<String, Vec<u8>>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
 
+pub fn clear_avatar_buffers() {
+    let mut cache = AVATAR_BUFFER_CACHE.lock().unwrap();
+    cache.clear();
+}
+
+pub fn clear_property_buffers() {
+    let mut cache = PROPERTY_BUFFER_CACHE.lock().unwrap();
+    cache.clear();
+}
+
 pub fn format_damage(value: f64) -> String {
     if value >= 1_000_000.0 {
         let m = value / 1_000_000.0;

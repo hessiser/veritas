@@ -1,8 +1,8 @@
-use std::{ptr::null, sync::LazyLock};
+use std::{collections::HashMap, ptr::null, sync::{LazyLock, Mutex}};
 
 use crate::{
     kreide::types::{
-        RPG_Client_AvatarData, RPG_Client_CachedAssetLoader, RPG_Client_GlobalVars, RPG_Client_ModuleManager, RPG_Client_UIGameEntityUtils, RPG_GameCore_AttackType__Boxed, RPG_GameCore_AvatarExcelTable, RPG_GameCore_AvatarPropertyExcelTable, RPG_GameCore_AvatarPropertyType__Boxed, RPG_GameCore_MonsterDataComponent, RPG_GameCore_MonsterTemplateExcelTable, RPG_GameCore_ServantDataComponent, UnityEngine_Graphics, UnityEngine_ImageConversion, UnityEngine_Rect, UnityEngine_RenderTexture, UnityEngine_Sprite, UnityEngine_Texture2D
+        RPG_Client_CachedAssetLoader, RPG_Client_UIGameEntityUtils, RPG_GameCore_AvatarExcelTable, RPG_GameCore_AvatarPropertyExcelTable, RPG_GameCore_AvatarPropertyType__Boxed, RPG_GameCore_BattleEventDataComponent, RPG_GameCore_EntityType, RPG_GameCore_GameComponentBase, RPG_GameCore_MonsterDataComponent, RPG_GameCore_MonsterTemplateExcelTable, RPG_GameCore_ServantDataComponent, UnityEngine_Graphics, UnityEngine_ImageConversion, UnityEngine_Rect, UnityEngine_RenderTexture, UnityEngine_Sprite, UnityEngine_Texture2D
     },
     models::misc::{Avatar, Skill},
 };
@@ -28,46 +28,46 @@ fn sanitize_entity_name<S: AsRef<str>>(name: S) -> String {
     name.replace("<ub>", "").replace("</ub>", "")
 }
 
+static AVATAR_CACHE: LazyLock<Mutex<HashMap<u32, Avatar>>> =
+    LazyLock::new(|| Mutex::new(HashMap::new()));
+
+unsafe fn get_component_by_name(
+    entity: RPG_GameCore_GameEntity,
+    type_name: &str,
+) -> Result<RPG_GameCore_GameComponentBase> {
+    let class = get_cached_class(type_name)?;
+    Ok(unsafe { entity.get_component_by_type_handle(class.byval_arg())? })
+}
+
 pub fn get_textmap_content(hash: &RPG_Client_TextID) -> Result<String> {
     Ok(unsafe { RPG_Client_TextmapStatic::get_text(hash, null()) }.map(|s| s.to_string())?)
-}
-
-#[named]
-pub fn get_module_manager() -> Result<RPG_Client_ModuleManager> {
-    log::debug!(function_name!());
-    Ok(RPG_Client_GlobalVars::s_ModuleManager()?)
-}
-
-#[named]
-pub fn get_avatar_data_from_id(avatar_id: u32) -> Result<RPG_Client_AvatarData> {
-    log::debug!(function_name!());
-    let s_module_manager = get_module_manager()?;
-    let avatar_module = s_module_manager.AvatarModule()?;
-    Ok(unsafe { avatar_module.get_avatar(avatar_id)? })
 }
 
 #[named]
 pub unsafe fn get_avatar_from_id(avatar_id: u32) -> Result<Avatar> {
     log::debug!(function_name!());
 
-    let avatar_data = get_avatar_data_from_id(avatar_id)
-        .context(format!("AvatarData with id {avatar_id} was null"))?;
+    if let Some(avatar) = AVATAR_CACHE
+        .lock()
+        .ok()
+        .and_then(|cache| cache.get(&avatar_id).cloned())
+    {
+        return Ok(avatar);
+    }
 
-    let avatar_name = unsafe { avatar_data.AvatarName() }
-        .map(|name| name.to_string())
-        .unwrap_or_default();
+    let data = unsafe { RPG_GameCore_AvatarExcelTable::GetData(avatar_id)? };
+    let avatar_name = get_textmap_content(&*data.AvatarName()?)?;
 
-    let avatar_name = if avatar_name.is_empty() {
-        let data = unsafe { RPG_GameCore_AvatarExcelTable::GetData(avatar_id)? };
-        get_textmap_content(&*data.AvatarName()?)?
-    } else {
-        avatar_name
-    };
-
-    Ok(Avatar {
+    let avatar = Avatar {
         id: avatar_id,
         name: sanitize_entity_name(avatar_name),
-    })
+    };
+
+    if let Ok(mut cache) = AVATAR_CACHE.lock() {
+        cache.insert(avatar_id, avatar.clone());
+    }
+
+    Ok(avatar)
 }
 
 #[named]
@@ -83,11 +83,7 @@ pub unsafe fn get_skill_from_skilldata(skill_data: RPG_GameCore_SkillData) -> Re
     let text_id = unsafe { row_data.get_SkillName()? };
 
     let skill_type = unsafe {
-        let boxed = RPG_GameCore_AttackType__Boxed(System_Enum::to_object_from_int(
-            get_type_handle("RPG.GameCore.AttackType")?,
-            row_data.get_AttackType()? as i32,
-        )?);
-        System_Enum::get_name(get_type_handle("RPG.GameCore.AttackType")?, boxed.0)?.to_string()
+        row_data.get_AttackType()?.to_string()
     };
 
     Ok(Skill {
@@ -107,18 +103,40 @@ pub unsafe fn get_avatar_from_entity(entity: RPG_GameCore_GameEntity) -> Result<
 
     let id = unsafe { RPG_Client_UIGameEntityUtils::get_avatar_id(entity) }
         .context("Failed to get AvatarID from GameEntity")?;
+    unsafe { get_avatar_from_id(id) }
+}
 
-    let avatar_data =
-        get_avatar_data_from_id(id).context(format!("AvatarData with id {id} was null"))?;
+#[named]
+pub unsafe fn get_avatar_from_owner_entity(entity: RPG_GameCore_GameEntity) -> Result<Avatar> {
+    log::debug!(function_name!());
 
-    let name = unsafe { avatar_data.AvatarName() }
-        .map(|name| name.to_string())
-        .unwrap_or_default();
+    if entity.0.is_null() {
+        return Err(anyhow!("Owner entity was null"));
+    }
 
-    Ok(Avatar {
-        id,
-        name: sanitize_entity_name(name),
-    })
+    match *entity._EntityType()? {
+        RPG_GameCore_EntityType::Avatar => unsafe { get_avatar_from_entity(entity) },
+        RPG_GameCore_EntityType::Servant | RPG_GameCore_EntityType::Snapshot => {
+            unsafe { get_avatar_from_servant_entity(entity) }
+        }
+        RPG_GameCore_EntityType::BattleEvent => {
+            let battle_event_data_comp = RPG_GameCore_BattleEventDataComponent(
+                unsafe { get_component_by_name(entity, "RPG.GameCore.BattleEventDataComponent")? }.0,
+            );
+
+            if battle_event_data_comp.0.is_null() {
+                return Err(anyhow!("entity does not have BattleEventDataComponent!"));
+            }
+
+            let source_caster = battle_event_data_comp._SourceCaster_k__BackingField()?;
+            if source_caster.0.is_null() || source_caster.0 == entity.0 {
+                return Err(anyhow!("BattleEvent source caster was null"));
+            }
+
+            unsafe { get_avatar_from_owner_entity(source_caster) }
+        }
+        _ => unsafe { get_avatar_from_entity(entity) },
+    }
 }
 
 #[named]
@@ -142,12 +160,7 @@ pub unsafe fn get_avatar_from_servant_entity(entity: RPG_GameCore_GameEntity) ->
 pub unsafe fn get_monster_from_entity(entity: RPG_GameCore_GameEntity) -> Result<Avatar> {
     log::debug!(function_name!());
     let monster_data_comp = RPG_GameCore_MonsterDataComponent(
-        unsafe {
-            entity.get_component(System_RuntimeType::from_name(
-                "RPG.GameCore.MonsterDataComponent",
-            )?)?
-        }
-        .0,
+        unsafe { get_component_by_name(entity, "RPG.GameCore.MonsterDataComponent")? }.0,
     );
 
     if monster_data_comp.0.is_null() {
@@ -168,12 +181,7 @@ pub unsafe fn get_monster_from_entity(entity: RPG_GameCore_GameEntity) -> Result
 pub unsafe fn get_servant_from_entity(entity: RPG_GameCore_GameEntity) -> Result<Avatar> {
     log::debug!(function_name!());
     let servant_data_comp = RPG_GameCore_ServantDataComponent(
-        unsafe {
-            entity.get_component(System_RuntimeType::from_name(
-                "RPG.GameCore.ServantDataComponent",
-            )?)?
-        }
-        .0,
+        unsafe { get_component_by_name(entity, "RPG.GameCore.ServantDataComponent")? }.0,
     );
 
     if servant_data_comp.0.is_null() {

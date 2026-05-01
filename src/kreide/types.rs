@@ -709,6 +709,9 @@ impl RPG_GameCore_GameEntity {
     #[il2cpp_method(name = "GetComponent", args = ["System.Type"])]
     pub fn get_component(&self, ty: System_RuntimeType) -> RPG_GameCore_GameComponentBase {}
 
+	#[il2cpp_method(name = "GetComponent", args = ["System.RuntimeTypeHandle"])]
+	pub fn get_component_by_type_handle(&self, ty: Il2CppType) -> RPG_GameCore_GameComponentBase {}
+
     #[il2cpp_field(name = "_ComponentList")]
     pub fn _ComponentList(&self) -> Il2CppArray {}
 
