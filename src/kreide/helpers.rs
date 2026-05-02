@@ -16,7 +16,7 @@ use il2cpp_runtime::{
 
 use super::types::{
     RPG_Client_TextID, RPG_Client_TextmapStatic,
-    RPG_GameCore_BattleInstance, RPG_GameCore_FixPoint, RPG_GameCore_GameEntity,
+    RPG_GameCore_BattleInstance, RPG_GameCore_FixPoint, RPG_GameCore_FixPoint__Boxed, RPG_GameCore_GameEntity,
     RPG_GameCore_SkillData,
 };
 
@@ -279,14 +279,12 @@ pub unsafe fn get_monster_from_runtime_id(
     }
 }
 
-static FIXPOINT_TO_FLOAT_VA: OnceLock<usize> = OnceLock::new();
+static FIXPOINT_TO_DOUBLE_VA: OnceLock<usize> = OnceLock::new();
 
-fn get_fixpoint_op_explicit_float_va() -> Result<usize> {
-    if let Some(va) = FIXPOINT_TO_FLOAT_VA.get() {
+fn get_fixpoint_op_explicit_double_va() -> Result<usize> {
+    if let Some(va) = FIXPOINT_TO_DOUBLE_VA.get() {
         return Ok(*va);
     }
-    // There are multiple op_Explicit(FixPoint) overloads (→long, →float, →double, →uint …).
-    // We must pick the one whose return type is "float" / "System.Single".
     let method = get_cached_class("RPG.GameCore.FixPoint")?
         .methods()
         .into_iter()
@@ -298,27 +296,25 @@ fn get_fixpoint_op_explicit_float_va() -> Result<usize> {
                 return false;
             }
             let ret = il2cpp_method_get_return_type(*m).alias_name();
-            ret == "float" || ret == "System.Single"
+            ret == "double" || ret == "System.Double"
         })
-        .ok_or_else(|| anyhow!("op_Explicit(FixPoint)->float not found on RPG.GameCore.FixPoint"))?;
+        .ok_or_else(|| anyhow!("op_Explicit(FixPoint)->double not found on RPG.GameCore.FixPoint"))?;
+
     let va = method.va() as usize;
-    let _ = FIXPOINT_TO_FLOAT_VA.set(va);
+    let _ = FIXPOINT_TO_DOUBLE_VA.set(va);
     Ok(va)
 }
 #[named]
 pub fn fixpoint_to_raw(fixpoint: &RPG_GameCore_FixPoint) -> f64 {
     log::debug!(function_name!());
-    match get_fixpoint_op_explicit_float_va() {
+    match get_fixpoint_op_explicit_double_va() {
         Ok(va) => {
-            // op_Explicit(FixPoint)->float is a static method; FixPoint is 8 bytes,
-            // so it is passed by value in the first integer register (RCX on x64 fastcall).
-            let op_explicit: unsafe fn(i64) -> f32 =
+            let op_explicit: unsafe extern "fastcall" fn(RPG_GameCore_FixPoint) -> f64 =
                 unsafe { std::mem::transmute(va as *const ()) };
-            let result = unsafe { op_explicit(fixpoint.m_rawValue) };
-            result as f64
+            unsafe { op_explicit(*fixpoint) }
         }
         Err(e) => {
-            log::error!("fixpoint_to_raw: op_Explicit(FixPoint)->float VA unavailable: {e}");
+            log::error!("fixpoint_to_raw: op_Explicit(FixPoint)->double VA unavailable: {e}");
             0.0
         }
     }

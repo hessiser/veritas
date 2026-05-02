@@ -665,6 +665,11 @@ pub struct RPG_GameCore_FixPoint {
     pub m_rawValue: i64,
 }
 
+impl RPG_GameCore_FixPoint__Boxed {
+	#[il2cpp_method(name = "ToFloat", args = [])]
+	pub fn ToFloat(self) -> System_Single__Boxed {}
+}
+
 
 #[il2cpp_enum_type(i32)]
 pub enum RPG_GameCore_AttackType {
