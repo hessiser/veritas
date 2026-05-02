@@ -236,6 +236,10 @@ impl App {
                                 t!("Show Damage Bars"),
                             );
                             ui.checkbox(
+                                &mut self.state.show_character_damage,
+                                t!("Show Character Damage"),
+                            );
+                            ui.checkbox(
                                 &mut self.state.show_real_time_damage,
                                 t!("Show Real-Time Damage"),
                             );
@@ -707,7 +711,7 @@ impl App {
     }
 
     pub fn show_damage_bar_window(&mut self, ctx: &egui::Context) {
-        egui::containers::Window::new(t!("Character Damage"))
+        egui::containers::Window::new(t!("Damage Bars"))
             .id("damage_by_character_window".into())
             .frame(get_window_frame(ctx, self.config.widget_opacity))
             .resizable(true)
@@ -715,6 +719,21 @@ impl App {
             .min_height(200.0)
             .show(ctx, |ui| {
                 self.show_damage_bar_widget(ui);
+            });
+    }
+
+    pub fn show_character_damage_window(&mut self, ctx: &egui::Context) {
+        egui::containers::Window::new(t!("Character Damage"))
+            .id("character_damage_window".into())
+            .title_bar(false)
+            .frame(get_window_frame(ctx, self.config.widget_opacity))
+            .resizable(true)
+            .default_width(290.0)
+            .default_height(180.0)
+            .min_width(240.0)
+            .min_height(48.0)
+            .show(ctx, |ui| {
+                self.show_character_damage_widget(ui);
             });
     }
 
