@@ -223,7 +223,7 @@ unsafe fn get_attack_type_offset(class: Il2CppClass) -> Result<usize> {
         .ok_or_else(|| anyhow!("Failed to cache attack type offset"))
 }
 
-// Called on any damage instance (includes additional damage paths).
+// Called on any damage instance
 #[named]
 fn on_damage(
     task_context: *const c_void,
@@ -291,8 +291,6 @@ fn on_damage(
         let hp_final_raw = fixpoint_to_raw(&hp_final);
         let hp_damage = (hp_initial_raw - hp_final_raw).max(0.0);
 
-        // HP delta reflects actual applied damage in-battle. Raw damage is used as fallback
-        // for events where HP has not yet moved (or does not move) at this hook point.
         let damage = if hp_damage > 0.0 { hp_damage } else { raw_damage };
 
         if damage <= 0.0 {
