@@ -1,7 +1,7 @@
-use crate::{kreide::types::RPG_GameCore_AvatarPropertyType, ui::app::{DamageBreakdownChart, DamageBreakdownScope, GraphUnit}};
-use egui::{Align2, Color32, FontId, Layout, Stroke, TextStyle, Ui};
+﻿use crate::{kreide::types::RPG_GameCore_AvatarPropertyType, ui::app::{DamageBarValue, DamageBreakdownChart, DamageBreakdownScope, GraphUnit}};
+use egui::{Align, Align2, Color32, FontId, Frame, Layout, RichText, ScrollArea, Sense, Stroke, StrokeKind, TextStyle, Ui, Vec2};
 use egui_extras::Column;
-use egui_plot::{Bar, BarChart, Legend, Line, Plot, PlotPoints, Polygon};
+use egui_plot::{Bar, BarChart, Line, Plot, PlotPoints, Polygon};
 
 use crate::{
     battle::{display_damage_type, BattleContext, DamageTypeBreakdown},
@@ -14,6 +14,15 @@ use super::{app::App, helpers};
 pub struct PieSegment {
     pub points: Vec<[f64; 2]>,
     pub value: f64,
+}
+
+struct DamagePortraitRow {
+    avatar: Avatar,
+    damage: f64,
+    dpav: f64,
+    effective_damage: f64,
+    overkill_damage: f64,
+    percentage: f64,
 }
 
 impl App {
@@ -260,7 +269,6 @@ impl App {
         let avatar_lineup_for_formatter = avatar_lineup.clone();
 
         Plot::new("damage_bars")
-            .legend(Legend::default().text_style(self.config.legend_text_style.clone()))
             .height(available.y)
             .width(available.x)
             .allow_drag(false)
@@ -313,6 +321,175 @@ impl App {
                     .stack_on(&[&dmg_bar_chart]);
                 plot_ui.bar_chart(dmg_bar_chart);
                 plot_ui.bar_chart(overkill_bar_chart);
+            });
+    }
+
+    pub fn show_character_damage_widget(&mut self, ui: &mut Ui) {
+        ui.spacing_mut().item_spacing = Vec2::new(8.0, 6.0);
+
+        let mut rows = {
+            let battle_context = BattleContext::get_instance();
+            create_damage_portrait_rows(
+                &battle_context.avatar_lineup,
+                &battle_context.real_time_damages,
+                &battle_context.real_time_overkill_damages,
+                battle_context.action_value,
+            )
+        };
+
+        rows.sort_by(|left, right| {
+            let left_value = match self.state.damage_bar_value {
+                DamageBarValue::Damage => left.damage,
+                DamageBarValue::Dpav => left.dpav,
+            };
+            let right_value = match self.state.damage_bar_value {
+                DamageBarValue::Damage => right.damage,
+                DamageBarValue::Dpav => right.dpav,
+            };
+            right_value
+                .partial_cmp(&left_value)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+
+        let visuals = ui.visuals().clone();
+        let dark_mode = visuals.dark_mode;
+        let max_value = rows
+            .iter()
+            .map(|row| match self.state.damage_bar_value {
+                DamageBarValue::Damage => row.damage,
+                DamageBarValue::Dpav => row.dpav,
+            })
+            .fold(0.0, f64::max);
+
+        let primary_text = if dark_mode {
+            Color32::from_gray(235)
+        } else {
+            visuals.widgets.noninteractive.fg_stroke.color
+        };
+        let secondary_text = if dark_mode {
+            Color32::from_gray(138)
+        } else {
+            visuals.widgets.inactive.fg_stroke.color.gamma_multiply(0.9)
+        };
+        let accent = visuals.selection.bg_fill;
+
+        let tab_height = 24.0;
+        let tab_width = (ui.available_width() / 2.0).max(80.0);
+        let tabs = [
+            (DamageBarValue::Damage, t!("DMG")),
+            (DamageBarValue::Dpav, t!("DPAV")),
+        ];
+
+        let (tabs_rect, _) = ui.allocate_exact_size(Vec2::new(ui.available_width(), tab_height), Sense::hover());
+        let tab_painter = ui.painter_at(tabs_rect);
+
+        ui.allocate_ui_at_rect(tabs_rect, |ui| {
+        ui.horizontal(|ui| {
+            ui.spacing_mut().item_spacing.x = 0.0;
+
+            for (value, label) in tabs {
+                let (rect, response) = ui.allocate_exact_size(Vec2::new(tab_width, tab_height), Sense::click());
+                let selected = self.state.damage_bar_value == value;
+
+                if response.clicked() {
+                    self.state.damage_bar_value = value;
+                }
+
+                tab_painter.text(
+                    rect.center_top() + egui::vec2(0.0, 2.0),
+                    Align2::CENTER_TOP,
+                    label.as_ref(),
+                    FontId::proportional(16.0),
+                    if selected { primary_text } else { secondary_text },
+                );
+
+            }
+        });
+        });
+
+        let separator_color = if dark_mode {
+            Color32::from_rgba_premultiplied(255, 255, 255, 20)
+        } else {
+            visuals.widgets.noninteractive.bg_stroke.color.gamma_multiply(0.6)
+        };
+        ui.painter().line_segment(
+            [
+                egui::pos2(tabs_rect.left(), tabs_rect.bottom()),
+                egui::pos2(tabs_rect.right(), tabs_rect.bottom()),
+            ],
+            Stroke::new(1.0, separator_color),
+        );
+
+        let selected_index = if self.state.damage_bar_value == DamageBarValue::Damage {
+            0.0
+        } else {
+            1.0
+        };
+        let underline_left = tabs_rect.left() + selected_index * tab_width + 10.0;
+        let underline_right = tabs_rect.left() + (selected_index + 1.0) * tab_width - 10.0;
+        ui.painter().line_segment(
+            [
+                egui::pos2(underline_left, tabs_rect.bottom() - 1.0),
+                egui::pos2(underline_right, tabs_rect.bottom() - 1.0),
+            ],
+            Stroke::new(2.0, accent),
+        );
+
+        ui.add_space(8.0);
+
+        if rows.is_empty() {
+            return;
+        }
+
+        ScrollArea::vertical()
+            .id_salt("character_damage_rows_v3")
+            .auto_shrink([false, false])
+            .show(ui, |ui| {
+                for row in rows {
+                    let display_value = match self.state.damage_bar_value {
+                        DamageBarValue::Damage => row.damage,
+                        DamageBarValue::Dpav => row.dpav,
+                    };
+                    let response = ui
+                        .horizontal(|ui| {
+                            ui.with_layout(Layout::left_to_right(Align::Center), |ui| {
+                                self.show_avatar_portrait(ui, &row.avatar);
+                                ui.add_space(12.0);
+                                ui.vertical(|ui| {
+                                    ui.set_min_width(185.0);
+                                    ui.label(
+                                        RichText::new(helpers::format_damage(display_value))
+                                            .size(if dark_mode { 20.0 } else { 18.0 })
+                                            .strong()
+                                            .color(primary_text),
+                                    );
+                                    ui.add_space(2.0);
+                                    draw_damage_meter(
+                                        ui,
+                                        if max_value > 0.0 {
+                                            display_value / max_value
+                                        } else {
+                                            0.0
+                                        },
+                                        &visuals,
+                                    );
+                                });
+                            });
+                        })
+                        .response;
+
+                    response.on_hover_text(format!(
+                        "{}\n{} dealt\n{} DPAV\n{} effective\n{} overkill\n{:.1}% of team damage",
+                        row.avatar.name,
+                        helpers::format_damage(row.damage),
+                        helpers::format_damage(row.dpav),
+                        helpers::format_damage(row.effective_damage),
+                        helpers::format_damage(row.overkill_damage),
+                        row.percentage,
+                    ));
+
+                    ui.add_space(2.0);
+                }
             });
     }
 
@@ -737,6 +914,33 @@ impl App {
                 });
             });
     }
+
+    fn show_avatar_portrait(&mut self, ui: &mut Ui, avatar: &Avatar) {
+        let avatar_size = Vec2::splat(46.0);
+        if let Some(texture) = self.avatar_texture(ui.ctx(), avatar.id) {
+            ui.add(
+                egui::Image::new((texture.id(), avatar_size))
+                    .corner_radius(999.0)
+                    .sense(Sense::hover()),
+            );
+        } else {
+            let (rect, _) = ui.allocate_exact_size(avatar_size, Sense::hover());
+            let painter = ui.painter_at(rect);
+            let fill = helpers::get_character_color(avatar.id as usize).linear_multiply(0.45);
+            painter.circle_filled(rect.center(), rect.width() * 0.5, fill);
+            painter.text(
+                rect.center(),
+                egui::Align2::CENTER_CENTER,
+                avatar.name.chars().next().unwrap_or('?'),
+                egui::FontId::proportional(20.0),
+                Color32::WHITE,
+            );
+        }
+    }
+
+    fn avatar_texture(&mut self, ctx: &egui::Context, avatar_id: u32) -> Option<egui::TextureHandle> {
+        helpers::load_avatar_image(ctx, avatar_id, egui::TextureOptions::LINEAR)
+    }
 }
 
 fn create_bar_data(
@@ -748,6 +952,80 @@ fn create_bar_data(
         bar_data.push((avatar.clone(), real_time_damages[i], i));
     }
     bar_data
+}
+
+fn draw_damage_meter(ui: &mut Ui, fill_ratio: f64, visuals: &egui::Visuals) {
+    let desired_size = Vec2::new(ui.available_width().clamp(110.0, 170.0), 12.0);
+    let (rect, _) = ui.allocate_exact_size(desired_size, Sense::hover());
+    let painter = ui.painter_at(rect);
+    let track_fill = if visuals.dark_mode {
+        Color32::from_rgba_premultiplied(8, 10, 16, 220)
+    } else {
+        Color32::from_rgba_premultiplied(40, 42, 48, 80)
+    };
+    let track_stroke = if visuals.dark_mode {
+        Color32::from_rgba_premultiplied(255, 255, 255, 28)
+    } else {
+        Color32::from_rgba_premultiplied(0, 0, 0, 18)
+    };
+    let fill = visuals.selection.bg_fill;
+    let highlight = fill.gamma_multiply(if visuals.dark_mode { 1.15 } else { 0.92 });
+
+    painter.rect_filled(rect, 5.0, track_fill);
+    painter.rect_stroke(rect, 5.0, Stroke::new(1.0, track_stroke), StrokeKind::Inside);
+
+    let clamped_ratio = fill_ratio.clamp(0.0, 1.0) as f32;
+    if clamped_ratio <= 0.0 {
+        return;
+    }
+
+    let fill_rect = egui::Rect::from_min_max(
+        rect.min,
+        egui::pos2(rect.left() + rect.width() * clamped_ratio, rect.bottom()),
+    );
+    painter.rect_filled(fill_rect, 5.0, fill);
+
+    let highlight_y = fill_rect.top() + 1.5;
+    painter.line_segment(
+        [
+            egui::pos2(fill_rect.left() + 2.0, highlight_y),
+            egui::pos2((fill_rect.right() - 2.0).max(fill_rect.left() + 2.0), highlight_y),
+        ],
+        Stroke::new(1.0, highlight),
+    );
+}
+
+fn create_damage_portrait_rows(
+    avatars: &[Avatar],
+    real_time_damages: &[f64],
+    real_time_overkill_damages: &[f64],
+    action_value: f64,
+) -> Vec<DamagePortraitRow> {
+    let total_damage = real_time_damages.iter().sum::<f64>();
+    avatars
+        .iter()
+        .enumerate()
+        .map(|(index, avatar)| {
+            let damage = *real_time_damages.get(index).unwrap_or(&0.0);
+            let overkill_damage = *real_time_overkill_damages.get(index).unwrap_or(&0.0);
+            DamagePortraitRow {
+                avatar: avatar.clone(),
+                damage,
+                dpav: if action_value > 0.0 {
+                    damage / action_value
+                } else {
+                    damage
+                },
+                effective_damage: (damage - overkill_damage).max(0.0),
+                overkill_damage,
+                percentage: if total_damage > 0.0 {
+                    damage / total_damage * 100.0
+                } else {
+                    0.0
+                },
+            }
+        })
+        .collect::<Vec<_>>()
 }
 
 const ORDERED_DAMAGE_TYPES: [RPG_GameCore_AttackType; 12] = [

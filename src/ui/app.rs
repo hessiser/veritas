@@ -1,8 +1,6 @@
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
-use std::sync::Once;
-
 use anyhow::Result;
 use anyhow::anyhow;
 use directories::ProjectDirs;
@@ -59,6 +57,13 @@ pub enum DamageBreakdownChart {
     Bar,
 }
 
+#[derive(Default, PartialEq, Serialize, Deserialize)]
+pub enum DamageBarValue {
+    #[default]
+    Damage,
+    Dpav,
+}
+
 #[derive(Clone)]
 pub enum ExportNotification {
     Success,
@@ -76,11 +81,15 @@ pub struct AppState {
     #[serde(default)]
     pub show_damage_type_breakdown: bool,
     pub show_damage_bars: bool,
+    #[serde(default)]
+    pub show_character_damage: bool,
     pub show_real_time_damage: bool,
     pub show_enemy_stats: bool,
     pub show_battle_metrics: bool,
     pub should_hide: bool,
     pub graph_x_unit: GraphUnit,
+    #[serde(default)]
+    pub damage_bar_value: DamageBarValue,
     #[serde(default)]
     pub damage_breakdown_scope: DamageBreakdownScope,
     #[serde(default)]
@@ -172,6 +181,10 @@ impl Overlay for App {
 
             if self.state.show_damage_bars {
                 self.show_damage_bar_window(ctx);
+            }
+
+            if self.state.show_character_damage {
+                self.show_character_damage_window(ctx);
             }
 
             if self.state.show_real_time_damage {
@@ -412,11 +425,13 @@ impl Default for AppState {
             show_damage_distribution: false,
             show_damage_type_breakdown: false,
             show_damage_bars: false,
+            show_character_damage: false,
             show_real_time_damage: false,
             show_enemy_stats: false,
             show_battle_metrics: false,
             should_hide: false,
             graph_x_unit: GraphUnit::default(),
+            damage_bar_value: DamageBarValue::default(),
             damage_breakdown_scope: DamageBreakdownScope::default(),
             damage_breakdown_chart: DamageBreakdownChart::default(),
             damage_breakdown_character_index: 0,
@@ -701,6 +716,10 @@ fn export_json_data(
     )?;
     let full_path = export_dir.join(filename);
 
+    if let Some(parent) = full_path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+
     std::fs::write(&full_path, &json)?;
     Ok(full_path.to_string_lossy().to_string())
 }
@@ -718,6 +737,10 @@ fn export_csv_data(
         auto_create_date_folders,
     )?;
     let full_path = export_dir.join(filename);
+
+    if let Some(parent) = full_path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
 
     let mut wtr = csv::Writer::from_path(&full_path)?;
     for record in csv_data {

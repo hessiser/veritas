@@ -409,6 +409,9 @@ impl BattleDataExporter {
         });
         
         let full_path = export_dir.join(&filename);
+        if let Some(parent) = full_path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
         std::fs::write(&full_path, &json)?;
         Ok(full_path.to_string_lossy().to_string())
     }
@@ -426,6 +429,9 @@ impl BattleDataExporter {
         });
         
         let full_path = export_dir.join(&filename);
+        if let Some(parent) = full_path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
         let chart_data = self.generate_comprehensive_chart_data(battle_context);
         self.write_csv(&chart_data, &full_path.to_string_lossy())?;
         
