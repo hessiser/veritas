@@ -1,5 +1,5 @@
 use crate::{kreide::types::RPG_GameCore_AvatarPropertyType, ui::app::{DamageBreakdownChart, DamageBreakdownScope, GraphUnit}};
-use egui::{Align2, Color32, FontId, Layout, Stroke, TextStyle, Ui};
+use egui::{Color32, CornerRadius, FontId, Layout, Pos2, Rect, Stroke, StrokeKind, TextStyle, Ui};
 use egui_extras::Column;
 use egui_plot::{Bar, BarChart, Legend, Line, Plot, PlotPoints, Polygon};
 
@@ -13,7 +13,6 @@ use super::{app::App, helpers};
 
 pub struct PieSegment {
     pub points: Vec<[f64; 2]>,
-    pub value: f64,
 }
 
 impl App {
@@ -136,7 +135,7 @@ impl App {
                             Layout::centered_and_justified(egui::Direction::LeftToRight),
                             |ui| {
                                 if i == battle_context.avatar_lineup.len() {
-                                    ui.label(t!("Total"));
+                                    ui.label("Σ");
                                 } else {
                                     // Load avatar image with caching, display name if loading fails
                                     if let Some(handle) = helpers::load_avatar_image(
@@ -161,22 +160,39 @@ impl App {
                                         let text_pos = image_response.rect.right_bottom()
                                             - egui::vec2(0.0, 0.0);
                                         let percentage_text = format!("{percentage:.0}%");
-
-                                        // Text Shadow
-                                        ui.painter().text(
-                                            text_pos + egui::vec2(-1., 1.),
-                                            Align2::RIGHT_BOTTOM,
-                                            &percentage_text,
-                                            FontId::proportional(dim / 4.0),
-                                            Color32::BLACK,
+                                        let text_color = ui.visuals().text_color();
+                                        let area_color = ui
+                                            .visuals()
+                                            .extreme_bg_color
+                                            .gamma_multiply(0.75);
+                                        let badge_rounding = CornerRadius::same(2);
+                                        let badge_stroke = Stroke::new(
+                                            1.0,
+                                            ui.visuals().widgets.noninteractive.bg_stroke.color,
                                         );
 
-                                        ui.painter().text(
+                                        let painter = ui.painter();
+                                        let galley = painter.layout(percentage_text, FontId::proportional(dim / 4.0), text_color, 50.);
+                                        let size = galley.size();
+                                        let badge_width = 36.0;
+                                        let rect = Rect::from_min_max(
+                                            Pos2::new(text_pos.x - badge_width, text_pos.y - size.y),
                                             text_pos,
-                                            Align2::RIGHT_BOTTOM,
-                                            &percentage_text,
-                                            FontId::proportional(dim / 4.0),
-                                            Color32::WHITE,
+                                        );
+                                        painter.rect(
+                                            rect,
+                                            badge_rounding,
+                                            area_color,
+                                            badge_stroke,
+                                            StrokeKind::Middle,
+                                        );
+                                        painter.galley(
+                                            Pos2::new(
+                                                rect.center().x - size.x * 0.5,
+                                                rect.center().y - size.y * 0.5,
+                                            ),
+                                            galley,
+                                            text_color,
                                         );
                                     } else {
                                         ui.label(format!("{}", battle_context.avatar_lineup[i].name));
@@ -699,24 +715,43 @@ impl App {
                                             0.0
                                         };
                                         let percentage_text = format!("{percentage:.0}%");
-
-                                        // Text Shadow
-                                        ui.painter().text(
-                                            text_pos + egui::vec2(-1., 1.),
-                                            Align2::RIGHT_BOTTOM,
-                                            &percentage_text,
-                                            FontId::proportional(dim / 4.0),
-                                            Color32::BLACK,
+                                        let text_color = ui.visuals().text_color();
+                                        let area_color = ui
+                                            .visuals()
+                                            .extreme_bg_color
+                                            .gamma_multiply(0.75);
+                                        let badge_rounding = CornerRadius::same(2);
+                                        let badge_stroke = Stroke::new(
+                                            1.0,
+                                            ui.visuals().widgets.noninteractive.bg_stroke.color,
                                         );
 
-                                        ui.painter().text(
+                                        let painter = ui.painter();
+                                        let galley = painter.layout(percentage_text, FontId::proportional(dim / 4.0), text_color, 50.);
+                                        let size = galley.size();
+                                        let badge_width = 36.0;
+                                        let rect = Rect::from_min_max(
+                                            Pos2::new(text_pos.x - badge_width, text_pos.y - size.y),
                                             text_pos,
-                                            Align2::RIGHT_BOTTOM,
-                                            &percentage_text,
-                                            FontId::proportional(dim / 4.0),
-                                            Color32::WHITE,
                                         );
-
+                                        painter.rect(
+                                            rect,
+                                            badge_rounding,
+                                            area_color,
+                                            badge_stroke,
+                                            StrokeKind::Middle,
+                                        );
+                                        painter.galley(
+                                            Pos2::new(
+                                                rect.center().x - size.x * 0.5,
+                                                rect.center().y - size.y * 0.5,
+                                            ),
+                                            galley,
+                                            text_color,
+                                        );
+                                    }
+                                    else {
+                                        ui.label(battle_context.enemies[i].name.clone());
                                     }
                                 },
                             );
@@ -1001,7 +1036,6 @@ fn create_pie_segments_from_values(values: &[f64]) -> Vec<PieSegment> {
 
         segments.push(PieSegment {
             points: create_pie_slice(start_angle, end_angle),
-            value: *damage,
         });
 
         start_angle = end_angle;
