@@ -8,7 +8,7 @@ use anyhow::{Context, Result};
 
 use crate::{
     kreide::types::{RPG_GameCore_AbilityProperty, RPG_GameCore_AttackType},
-    models::{events::*, misc::*, packets::Packet},
+    models::{events::*, packets::Packet, types::*},
     server,
 };
 
@@ -449,8 +449,8 @@ impl BattleContext {
         Ok(Packet::OnUpdateCycle { cycle: e.cycle })
     }
 
-    fn handle_on_property_change_event(
-        e: OnPropertyChangeEvent,
+    fn handle_on_stat_change_event(
+        e: OnStatChangeEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
     ) -> Result<Packet> {
         match e.entity.team {
@@ -474,7 +474,7 @@ impl BattleContext {
             }
         }
 
-        Ok(Packet::OnPropertyChange {
+        Ok(Packet::OnStatChange {
             entity: e.entity,
             property: e.property,
         })
@@ -532,8 +532,8 @@ impl BattleContext {
                     }
                     Self::handle_on_update_cycle_event(e, battle_context)
                 }
-                Event::OnPropertyChange(e) => {
-                    Self::handle_on_property_change_event(e, battle_context)
+                Event::OnStatChange(e) => {
+                    Self::handle_on_stat_change_event(e, battle_context)
                 }
                 Event::OnInitializeEnemy(e) => {
                     Self::handle_on_initialize_enemy_event(e, battle_context)

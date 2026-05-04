@@ -5,7 +5,7 @@ use crate::{
     kreide::types::{
         RPG_Client_CachedAssetLoader, RPG_Client_UIGameEntityUtils, RPG_GameCore_AvatarExcelTable, RPG_GameCore_AvatarPropertyExcelTable, RPG_GameCore_AvatarPropertyType__Boxed, RPG_GameCore_BattleEventDataComponent, RPG_GameCore_EntityType, RPG_GameCore_GameComponentBase, RPG_GameCore_MonsterDataComponent, RPG_GameCore_MonsterTemplateExcelTable, RPG_GameCore_ServantDataComponent, UnityEngine_Graphics, UnityEngine_ImageConversion, UnityEngine_Rect, UnityEngine_RenderTexture, UnityEngine_Sprite, UnityEngine_Texture2D
     },
-    models::misc::{Avatar, Skill},
+    models::types::{Avatar, Skill},
 };
 use anyhow::{Context, Result, anyhow};
 use function_name::named;

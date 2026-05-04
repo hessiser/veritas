@@ -1,5 +1,5 @@
 
-use super::misc::{Avatar, Enemy, Entity, Skill, Property, Team};
+use super::types::{Avatar, Enemy, Entity, Skill, Property, Team};
 
 pub enum Event {
     OnBattleBegin(OnBattleBeginEvent),
@@ -11,7 +11,7 @@ pub enum Event {
     OnBattleEnd,
     OnUpdateWave(OnUpdateWaveEvent),
     OnUpdateCycle(OnUpdateCycleEvent),
-    OnPropertyChange(OnPropertyChangeEvent),
+    OnStatChange(OnStatChangeEvent),
     OnEntityDefeated(OnEntityDefeatedEvent),
     OnUpdateTeamFormation(OnUpdateTeamFormationEvent),
     OnInitializeEnemy(OnInitializeEnemyEvent)
@@ -57,7 +57,7 @@ pub struct OnEntityDefeatedEvent {
     pub entity_defeated: Entity
 }
 
-pub struct OnPropertyChangeEvent {
+pub struct OnStatChangeEvent {
     pub entity: Entity,
     pub property: Property
 }

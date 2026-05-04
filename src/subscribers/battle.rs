@@ -4,12 +4,12 @@ use crate::kreide::types::*;
 use crate::kreide::*;
 
 use crate::models::events::*;
-use crate::models::misc::Avatar;
-use crate::models::misc::BattleStats;
-use crate::models::misc::Enemy;
-use crate::models::misc::Entity;
-use crate::models::misc::Property;
-use crate::models::misc::Team;
+use crate::models::types::Avatar;
+use crate::models::types::BattleStats;
+use crate::models::types::Enemy;
+use crate::models::types::Entity;
+use crate::models::types::Property;
+use crate::models::types::Team;
 
 use anyhow::Result;
 use anyhow::{Error, anyhow};
@@ -863,13 +863,13 @@ fn handle_hp_change(turn_based_ability_component: RPG_GameCore_TurnBasedAbilityC
         match entity_value {
             RPG_GameCore_EntityType::Avatar => {
                 let e = match helpers::get_avatar_from_entity(entity) {
-                    Ok(avatar) => Ok(Event::OnPropertyChange(OnPropertyChangeEvent {
+                    Ok(avatar) => Ok(Event::OnStatChange(OnStatChangeEvent {
                         entity: Entity {
                             uid: avatar.id,
                             team: Team::Player,
                         },
                         property: Property {
-                            kind: property_kind,
+                            r#type: property_kind,
                             value: property_value,
                         },
                     })),
@@ -882,13 +882,13 @@ fn handle_hp_change(turn_based_ability_component: RPG_GameCore_TurnBasedAbilityC
                 BattleContext::handle_event(e);
             }
             RPG_GameCore_EntityType::Monster => {
-                BattleContext::handle_event(Ok(Event::OnPropertyChange(OnPropertyChangeEvent {
+                BattleContext::handle_event(Ok(Event::OnStatChange(OnStatChangeEvent {
                     entity: Entity {
                         uid: (*entity._RuntimeID_k__BackingField()?).into(),
                         team: Team::Enemy,
                     },
                     property: Property {
-                        kind: property_kind,
+                        r#type: property_kind,
                         value: property_value,
                     },
                 })));
@@ -998,13 +998,13 @@ pub fn on_stat_change(
                 let e = match helpers::get_avatar_from_entity(entity)
                     .context("on_stat_change: failed to resolve avatar from entity")
                 {
-                    Ok(avatar) => Ok(Event::OnPropertyChange(OnPropertyChangeEvent {
+                    Ok(avatar) => Ok(Event::OnStatChange(OnStatChangeEvent {
                         entity: Entity {
                             uid: avatar.id,
                             team: Team::Player,
                         },
                         property: Property {
-                            kind: property_kind.clone(),
+                            r#type: property_kind.clone(),
                             value: property_value,
                         },
                     })),
@@ -1017,13 +1017,13 @@ pub fn on_stat_change(
                 BattleContext::handle_event(e);
             }
             RPG_GameCore_EntityType::Monster => {
-                BattleContext::handle_event(Ok(Event::OnPropertyChange(OnPropertyChangeEvent {
+                BattleContext::handle_event(Ok(Event::OnStatChange(OnStatChangeEvent {
                     entity: Entity {
                         uid: (*entity._RuntimeID_k__BackingField()?).into(),
                         team: Team::Enemy,
                     },
                     property: Property {
-                        kind: property_kind,
+                        r#type: property_kind,
                         value: property_value,
                     },
                 })));

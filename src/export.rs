@@ -193,7 +193,7 @@ impl BattleDataExporter {
             .as_secs()
     }
 
-    fn build_stats_map(properties: &crate::models::misc::BattleStats) -> HashMap<String, f64> {
+    fn build_stats_map(properties: &crate::models::types::BattleStats) -> HashMap<String, f64> {
         let mut stats = HashMap::new();
 
         let tracked = [
