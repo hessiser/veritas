@@ -7,7 +7,6 @@ use chrono::DateTime;
 
 use crate::battle::BattleContext;
 use crate::kreide::types::RPG_GameCore_AbilityProperty;
-use crate::overlay;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ComprehensiveData {

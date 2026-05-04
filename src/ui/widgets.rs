@@ -1,4 +1,4 @@
-use crate::{kreide::types::RPG_GameCore_AvatarPropertyType, ui::app::{DamageBreakdownChart, DamageBreakdownScope, GraphUnit}};
+﻿use crate::{kreide::types::RPG_GameCore_AvatarPropertyType, ui::app::{DamageBreakdownChart, DamageBreakdownScope, GraphUnit}};
 use egui::{Color32, CornerRadius, FontId, Layout, Pos2, Rect, Stroke, StrokeKind, TextStyle, Ui};
 use egui_extras::Column;
 use egui_plot::{Bar, BarChart, Legend, Line, Plot, PlotPoints, Polygon};
@@ -16,57 +16,6 @@ pub struct PieSegment {
 }
 
 impl App {
-    pub fn show_damage_distribution_widget(&mut self, ui: &mut Ui) {
-        let available = ui.available_size();
-
-        Plot::new("damage_pie")
-            // .legend(
-            //     Legend::default()
-            //         .position(self.config.legend_position)
-            //         .text_style(self.config.legend_text_style.clone()),
-            // )
-            .height(available.y)
-            .width(available.x)
-            .data_aspect(1.0)
-            .clamp_grid(true)
-            .show_grid(false)
-            .show_background(false)
-            .show_axes([false; 2])
-            // .allow_drag(false)
-            // .allow_zoom(false)
-            .allow_scroll(false)
-            .show(ui, |plot_ui: &mut egui_plot::PlotUi<'_>| {
-                let battle_context = BattleContext::get_instance();
-
-                let total_damage = battle_context.total_damage as f64;
-                if total_damage > 0.0 {
-                    let segments = create_pie_segments(
-                        &battle_context.real_time_damages,
-                        &battle_context.avatar_lineup,
-                    );
-                    for (avatar, segment, i) in segments {
-                        let color = helpers::get_character_color(i);
-                        // let percentage = segment.value / total_damage * 100.0;
-
-                        let plot_points = PlotPoints::new(segment.points);
-                        let polygon = Polygon::new("Damage Pie", plot_points)
-                            .stroke(Stroke::new(1.5, color))
-                            .fill_color(color.linear_multiply(self.config.pie_chart_opacity))
-                            .id(avatar.name.clone());
-                        // .name(format!(
-                        //     "{}: {:.0}% | {} DMG | {:.0} DPAV",
-                        //     avatar.name,
-                        //     percentage,
-                        //     helpers::format_damage(segment.value),
-                        //     segment.value / battle_context.action_value
-                        // ));
-
-                        plot_ui.polygon(polygon);
-                    }
-                }
-            });
-    }
-
     pub fn show_character_legend(&mut self, ui: &mut Ui) {
         let battle_context = &BattleContext::get_instance();
 
@@ -1000,24 +949,6 @@ fn get_damage_category_color(category: &RPG_GameCore_AttackType) -> Color32 {
         RPG_GameCore_AttackType::ElationDamage => Color32::from_rgb(255, 105, 180),
         _ => Color32::from_rgb(189, 195, 199),
     }
-}
-
-fn create_pie_segments(
-    real_time_damages: &Vec<f64>,
-    avatars: &Vec<Avatar>,
-) -> Vec<(Avatar, PieSegment, usize)> {
-    let generic_segments = create_pie_segments_from_values(real_time_damages);
-    let mut segments = Vec::new();
-
-    for (i, (avatar, segment)) in avatars.iter().zip(generic_segments.into_iter()).enumerate() {
-        segments.push((
-            avatar.clone(),
-            segment,
-            i,
-        ));
-    }
-
-    segments
 }
 
 fn create_pie_segments_from_values(values: &[f64]) -> Vec<PieSegment> {

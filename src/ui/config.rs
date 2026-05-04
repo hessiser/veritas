@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, fs::File, io::Write, path::PathBuf};
 use anyhow::{Context, Result, anyhow};
 use directories::ProjectDirs;
 use egui::{
-    FontFamily, FontId, TextStyle, Theme
+    FontId, Theme
 };
 use serde::{Deserialize, Serialize};
 

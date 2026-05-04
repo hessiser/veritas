@@ -70,9 +70,3 @@ pub struct OnUpdateTeamFormationEvent {
 pub struct OnInitializeEnemyEvent {
     pub enemy: Enemy
 }
-
-impl PartialEq for Entity {
-    fn eq(&self, other: &Self) -> bool {
-        self.uid == other.uid
-    }
-}

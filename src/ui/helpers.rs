@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex};
 use egui::{Color32, Stroke};
 use image::DynamicImage;
-use anyhow::Result;
 
 use crate::kreide::types::RPG_GameCore_AvatarPropertyType;
 
@@ -87,10 +86,6 @@ pub fn get_window_frame(ctx: &egui::Context, opacity: f32) -> egui::Frame {
         .stroke(Stroke::new(0.5, Color32::WHITE))
         .inner_margin(8.0)
         .corner_radius(10.0)
-}
-
-pub fn get_transparent_window_frame(ctx: &egui::Context, opacity: f32) -> egui::Frame {
-    egui::Frame::new().inner_margin(8.0).corner_radius(10.0)
 }
 
 /// Clear and populate the avatar buffer cache with the given avatar IDs

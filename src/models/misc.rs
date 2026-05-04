@@ -42,6 +42,12 @@ pub struct Entity {
     pub team: Team
 }
 
+impl PartialEq for Entity {
+    fn eq(&self, other: &Self) -> bool {
+        self.uid == other.uid
+    }
+}
+
 #[derive(PartialEq, Clone, Debug, Deserialize, Serialize)]
 pub enum Team {
     Player,

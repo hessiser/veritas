@@ -11,7 +11,6 @@ mod kreide;
 mod logging;
 mod models;
 mod overlay;
-mod prelude;
 mod server;
 mod subscribers;
 mod ui;
@@ -20,9 +19,8 @@ mod updater;
 use phf::phf_map;
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
-use widestring::u16str;
 use windows::{Win32::System::LibraryLoader::GetModuleHandleW, core::PCWSTR};
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Context, Result};
 
 fn get_module_handle(name: PCWSTR) -> Result<usize> {
     unsafe {

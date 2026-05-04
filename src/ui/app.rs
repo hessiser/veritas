@@ -1,8 +1,6 @@
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
-use std::sync::Once;
-
 use anyhow::Result;
 use anyhow::anyhow;
 use directories::ProjectDirs;
@@ -79,7 +77,7 @@ pub struct AppState {
     pub show_real_time_damage: bool,
     pub show_enemy_stats: bool,
     pub show_battle_metrics: bool,
-    pub should_hide: bool,
+    pub hide_ui: bool,
     pub graph_x_unit: GraphUnit,
     #[serde(default)]
     pub damage_breakdown_scope: DamageBreakdownScope,
@@ -149,17 +147,13 @@ impl Overlay for App {
                 });
         }
 
-        if !self.state.should_hide {
+        if !self.state.hide_ui {
             if self.state.show_menu {
                 self.show_menu(ctx);
             }
 
             if self.state.show_console {
                 self.show_console_window(ctx);
-            }
-
-            if self.state.show_damage_distribution {
-                self.show_damage_distribution_window(ctx);
             }
 
             if self.state.show_damage_type_breakdown {
@@ -188,11 +182,11 @@ impl Overlay for App {
         }
 
         if ctx.input_mut(|i| i.consume_shortcut(&HIDE_UI_SHORTCUT)) {
-            self.state.should_hide = !self.state.should_hide;
+            self.state.hide_ui = !self.state.hide_ui;
         }
 
         if ctx.input_mut(|i| i.consume_shortcut(&SHOW_MENU_SHORTCUT)) {
-            if self.state.should_hide {
+            if self.state.hide_ui {
                 self.notifs.info(t!(
                     "`Hide UI` is still active. Use the `Hide UI` shortcut to unhide the UI."
                 ));
@@ -247,12 +241,12 @@ impl Overlay for App {
             match state {
                 crate::battle::BattleState::Started => {
                     if self.config.auto_showhide_ui {
-                        self.state.should_hide = false;
+                        self.state.hide_ui = false;
                     }
                 }
                 crate::battle::BattleState::Ended => {
                     if self.config.auto_showhide_ui {
-                        self.state.should_hide = true;
+                        self.state.hide_ui = true;
                     }
 
                     if self.state.auto_save_battle_data {
@@ -369,7 +363,7 @@ impl Overlay for App {
             _ => {}
         };
 
-        if !self.state.should_hide && self.state.show_menu {
+        if !self.state.hide_ui && self.state.show_menu {
             Some(WindowProcessOptions {
                 should_capture_all_input: true,
                 ..Default::default()
@@ -415,7 +409,7 @@ impl Default for AppState {
             show_real_time_damage: false,
             show_enemy_stats: false,
             show_battle_metrics: false,
-            should_hide: false,
+            hide_ui: false,
             graph_x_unit: GraphUnit::default(),
             damage_breakdown_scope: DamageBreakdownScope::default(),
             damage_breakdown_chart: DamageBreakdownChart::default(),

@@ -6,7 +6,7 @@ use anyhow::anyhow;
 use crate::LOCALES;
 use crate::export::BattleDataExporter;
 use crate::ui::themes;
-use crate::{CHANGELOG, RUNTIME, ui::{app::App, helpers::{get_transparent_window_frame, get_window_frame}}, updater::{Status, Update, Updater}};
+use crate::{CHANGELOG, RUNTIME, ui::{app::App, helpers::{get_window_frame}}, updater::{Status, Update, Updater}};
 
 impl App {
     pub fn show_changelog_window(&mut self, ctx: &egui::Context) {
@@ -675,29 +675,6 @@ impl App {
                 ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
                     egui_logger::logger_ui().show(ui);
                 });
-            });
-    }
-
-    pub fn show_damage_distribution_window(&mut self, ctx: &egui::Context) {
-        let damage_distribution_window_title = if self.state.show_menu {
-            t!("Damage Distribution").into_owned()
-        } else {
-            String::new()
-        };
-
-        egui::containers::Window::new(damage_distribution_window_title)
-            .id("damage_distribution_window".into())
-            .frame(if self.state.show_menu {
-                get_window_frame(ctx, self.config.widget_opacity)
-            } else {
-                get_transparent_window_frame(ctx, self.config.widget_opacity)
-            })
-            .collapsible(false)
-            .resizable(true)
-            .min_width(200.0)
-            .min_height(200.0)
-            .show(ctx, |ui| {
-                self.show_damage_distribution_widget(ui);
             });
     }
 

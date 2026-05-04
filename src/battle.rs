@@ -7,7 +7,7 @@ use std::{
 use anyhow::{Context, Result};
 
 use crate::{
-    kreide::types::{RPG_GameCore_AbilityProperty, RPG_GameCore_AttackType},
+    kreide::types::{RPG_GameCore_AttackType},
     models::{events::*, misc::*, packets::Packet},
     server,
 };
@@ -520,9 +520,7 @@ impl BattleContext {
                 Event::OnDamage(e) => Self::handle_on_damage_event(e, battle_context),
                 Event::OnTurnBegin(e) => Self::handle_on_turn_begin_event(e, battle_context),
                 Event::OnTurnEnd => Self::handle_on_turn_end_event(battle_context),
-                Event::OnEntityDefeated(e) => {
-                    Self::handle_on_entity_defeated_event(e, battle_context)
-                }
+                Event::OnEntityDefeated(e) => Self::handle_on_entity_defeated_event(e, battle_context),
                 Event::OnBattleEnd => Self::handle_on_battle_end_event(battle_context),
                 Event::OnUseSkill(e) => Self::handle_on_use_skill_event(e, battle_context),
                 Event::OnUpdateWave(e) => Self::handle_on_update_wave_event(e, battle_context),
@@ -532,15 +530,9 @@ impl BattleContext {
                     }
                     Self::handle_on_update_cycle_event(e, battle_context)
                 }
-                Event::OnPropertyChange(e) => {
-                    Self::handle_on_property_change_event(e, battle_context)
-                }
-                Event::OnInitializeEnemy(e) => {
-                    Self::handle_on_initialize_enemy_event(e, battle_context)
-                }
-                Event::OnUpdateTeamFormation(e) => {
-                    Self::handle_on_update_team_formation_event(e, battle_context)
-                }
+                Event::OnPropertyChange(e) => Self::handle_on_property_change_event(e, battle_context),
+                Event::OnInitializeEnemy(e) => Self::handle_on_initialize_enemy_event(e, battle_context),
+                Event::OnUpdateTeamFormation(e) => Self::handle_on_update_team_formation_event(e, battle_context),
             },
             Err(e) => Ok({
                 log::error!("{}", e);
