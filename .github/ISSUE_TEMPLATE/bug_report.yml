@@ -67,7 +67,7 @@ body:
         - label: I attached `veritas.debug.log`
           required: true
         - label: |
-            I confirmed my game version matches the plugin’s supported version range (shown in-game in left-hand corner at startup vs. release notes)
+            I confirmed my game version matches the plugin’s supported version range (shown in-game in bottom-left corner at startup vs. release notes)
           required: true
         - label: I searched existing issues
           required: true
