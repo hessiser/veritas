@@ -5,7 +5,6 @@ labels:
   - bug
 
 body:
-  - type: markdown
   - type: input
     id: plugin_version
     attributes:
@@ -18,7 +17,7 @@ body:
     id: game_version
     attributes:
       label: Game version
-      description: "When you start the game, you'll see in the left hand corner a version string (e.g. OSPRODWin4.2.0_D38472915_A56184720_L92837461; Game: 4.2.0). In the release notes of the plugin, if the compatible game version range DOES NOT INCLUDE that version (e.g. Game Version: 4.2.50 - 4.3.0), then you are USING THE WRONG VERSION." 
+      description: "When you start the game, you'll see a version string in the bottom-left corner."
       placeholder: 4.1.0
     validations:
       required: true
@@ -27,7 +26,7 @@ body:
     id: bug_description
     attributes:
       label: Describe the bug
-      description: "This should be descriptive enough that somebody else can understand what's going on."
+      description: This should be descriptive enough that somebody else can understand what's going on.
       placeholder: Describe what happened...
     validations:
       required: true
@@ -36,7 +35,7 @@ body:
     id: repro_steps
     attributes:
       label: Steps to reproduce
-      description: "This should be descriptive enough that somebody else can replicate what you did as best as possible."
+      description: This should be descriptive enough that somebody else can replicate it.
       value: |
         1.
         2.
@@ -57,6 +56,8 @@ body:
     attributes:
       label: Debug log
       description: Drag and drop `veritas.debug.log` here.
+    validations:
+      required: true
 
   - type: checkboxes
     id: confirmations
@@ -67,8 +68,7 @@ body:
           required: true
         - label: I searched existing issues
           required: true
-        - label: I have added a title to the issue.
+        - label: I have added a title to the issue
           required: true
-        - label: "I was descriptive in describing the issue such that somebody else can read and understand what's going on"
+        - label: I was descriptive in describing the issue such that somebody else can read and understand what's going on
           required: true
-
