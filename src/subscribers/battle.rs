@@ -236,17 +236,16 @@ fn on_damage(
                     get_attack_type_offset(Il2CppClass(*(damage_info as *const *const c_void)))?;
 
                 let r#type = {
-                    let damage_type = *(damage_info.byte_offset(attack_type_offset as isize) as *const i32);
+                    let damage_type =
+                        *(damage_info.byte_offset(attack_type_offset as isize) as *const i32);
                     let boxed = RPG_GameCore_AttackType__Boxed(System_Enum::to_object_from_int(
                         get_type_handle("RPG.GameCore.AttackType")?,
                         damage_type,
                     )?);
-                    System_Enum::get_name(
-                        get_type_handle("RPG.GameCore.AttackType")?,
-                        boxed.0,
-                    )?.to_string()
+                    System_Enum::get_name(get_type_handle("RPG.GameCore.AttackType")?, boxed.0)?
+                        .to_string()
                 };
-                    
+
                 let attack_owner = {
                     let attack_owner = RPG_GameCore_AbilityStatic::get_actual_owner(attacker)?;
                     if !attack_owner.0.is_null() {
@@ -269,7 +268,7 @@ fn on_damage(
                                 },
                                 damage,
                                 overkill_damage,
-                                r#type
+                                r#type,
                             })),
                             Err(e) => {
                                 log::error!("Avatar Event Error: {}", e);
@@ -290,7 +289,7 @@ fn on_damage(
                                 },
                                 damage,
                                 overkill_damage,
-                                r#type
+                                r#type,
                             })),
                             Err(e) => {
                                 log::error!("Servant Event Error: {}", e);
@@ -312,7 +311,7 @@ fn on_damage(
                                 },
                                 damage,
                                 overkill_damage,
-                                r#type
+                                r#type,
                             })),
                             Err(e) => {
                                 log::error!("Snapshot Event Error: {}", e);
@@ -321,10 +320,17 @@ fn on_damage(
                         };
                         event = Some(e);
                     }
-                    _ => log::warn!(
-                        "Light entity type {} was not matched",
-                        *attacker._EntityType()? as usize
-                    ),
+                    _ => {
+                        let variant = System_Enum::get_name(
+                            get_type_handle("RPG.GameCore.EntityType")?,
+                            attacker._EntityType()?.0,
+                        )?.to_string();
+
+                        log::warn!(
+                            "Light entity type {} was not matched",
+                            variant
+                        )
+                    }
                 }
             }
             _ => {}
@@ -469,10 +475,17 @@ fn on_use_skill(
                             };
                             event = Some(e);
                         }
-                        _ => log::warn!(
+                    _ => {
+                        let variant = System_Enum::get_name(
+                            get_type_handle("RPG.GameCore.EntityType")?,
+                            skill_owner._EntityType()?.0,
+                        )?.to_string();
+
+                        log::warn!(
                             "Light entity type {} was not matched",
-                            *skill_owner._EntityType()? as usize
-                        ),
+                            variant
+                        )
+                    }
                     }
                 }
             }
@@ -673,10 +686,17 @@ fn on_combo(instance: *const c_void, game_mode: RPG_GameCore_TurnBasedGameMode) 
                             };
                             event = Some(e);
                         }
-                        _ => log::warn!(
+                    _ => {
+                        let variant = System_Enum::get_name(
+                            get_type_handle("RPG.GameCore.EntityType")?,
+                            skill_owner._EntityType()?.0,
+                        )?.to_string();
+
+                        log::warn!(
                             "Light entity type {} was not matched",
-                            *skill_owner._EntityType()? as usize
-                        ),
+                            variant
+                        )
+                    }
                     }
                 }
             }
@@ -722,9 +742,11 @@ fn on_set_lineup(
                 Err(e) => errors.push(e),
             }
         }
- 
+
         // Populate the global buffer cache
-        crate::ui::helpers::populate_avatar_buffers(&avatars.iter().map(|a| a.id).collect::<Vec<u32>>());
+        crate::ui::helpers::populate_avatar_buffers(
+            &avatars.iter().map(|a| a.id).collect::<Vec<u32>>(),
+        );
         crate::ui::helpers::clear_monster_buffers();
         let property_kind = RPG_GameCore_AvatarPropertyType::BaseHP;
         crate::ui::helpers::cache_property_buffer(property_kind);
@@ -861,7 +883,8 @@ fn handle_hp_change(turn_based_ability_component: RPG_GameCore_TurnBasedAbilityC
             Il2CppString::new(&property_kind)?,
         )?);
 
-        let property_value = fixpoint_to_raw(&turn_based_ability_component.get_property(*property)?);
+        let property_value =
+            fixpoint_to_raw(&turn_based_ability_component.get_property(*property)?);
 
         let entity = turn_based_ability_component.as_base()._OwnerRef()?;
         let entity_value: RPG_GameCore_EntityType = parse_il2cpp_enum(entity._EntityType()?)?;
@@ -953,8 +976,12 @@ pub fn on_stat_change(
         )?);
         let property_kind =
             System_Enum::get_name(get_type_handle("RPG.GameCore.AbilityProperty")?, boxed.0)?;
-        let property_value = fixpoint_to_raw(&new_stat);
+        let mut property_value = fixpoint_to_raw(&new_stat);
         let entity_value: RPG_GameCore_EntityType = parse_il2cpp_enum(entity._EntityType()?)?;
+
+        if boxed.unbox()? == RPG_GameCore_AbilityProperty::ActionDelay {
+            property_value *= 10.;
+        }
 
         match entity_value {
             RPG_GameCore_EntityType::Avatar => {
@@ -971,7 +998,6 @@ pub fn on_stat_change(
                     })),
                     Err(e) => {
                         log::error!("Avatar Event Error: {}", e);
-
                         Err(anyhow!("{} Avatar Event Error: {}", function_name!(), e))
                     }
                 };
@@ -1284,15 +1310,23 @@ pub fn on_initialize_enemy(
         let mut base_stats = BattleStats {
             properties: HashMap::new(),
         };
-        base_stats.set_value(RPG_GameCore_AbilityProperty::Level.to_string(), unsafe { row_data.get_Level()? } as f64);
-        base_stats.set_value(RPG_GameCore_AbilityProperty::MaxHP.to_string(), fixpoint_to_raw(&*instance._DefaultMaxHP()?));
-        base_stats.set_value(RPG_GameCore_AbilityProperty::CurrentHP.to_string(), fixpoint_to_raw(&*instance._DefaultMaxHP()?));
+        base_stats.set_value(RPG_GameCore_AbilityProperty::Level.to_string(), unsafe {
+            row_data.get_Level()?
+        }
+            as f64);
+        base_stats.set_value(
+            RPG_GameCore_AbilityProperty::MaxHP.to_string(),
+            fixpoint_to_raw(&*instance._DefaultMaxHP()?),
+        );
+        base_stats.set_value(
+            RPG_GameCore_AbilityProperty::CurrentHP.to_string(),
+            fixpoint_to_raw(&*instance._DefaultMaxHP()?),
+        );
 
         let name_id = row.MonsterName()?;
         let monster_name = get_textmap_content(&name_id)?;
         let entity = instance._OwnerRef()?;
 
-        
         BattleContext::handle_event(Ok(Event::OnInitializeEnemy(OnInitializeEnemyEvent {
             enemy: Enemy {
                 id: monster_id,
