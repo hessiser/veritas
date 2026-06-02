@@ -97,7 +97,6 @@ impl RPG_GameCore_TurnBasedAbilityComponent {
     #[il2cpp_method(name = "TryCheckLimboWaitHeal", args = ["RPG.GameCore.GameEntity"])]
     pub fn try_check_limbo_wait_heal(&self, attacker: RPG_GameCore_GameEntity) -> bool {}
 
-    // HJFKBBCMCCI[]
     #[il2cpp_field(name = "_AbilityProperties")]
     pub fn _AbilityProperties(&self) -> Il2CppArray {}
 
@@ -666,8 +665,8 @@ pub struct RPG_GameCore_FixPoint {
 }
 
 impl RPG_GameCore_FixPoint {
-	#[il2cpp_method(name = "op_explicit", args = [], ret_type = "double", value_type = true)]
-	pub fn to_double(self) -> f64 {}
+	#[il2cpp_method(name = "op_Explicit", args = ["RPG.GameCore.FixPoint"], ret_type = "double", value_type = true)]
+	pub fn to_double(fixpoint: RPG_GameCore_FixPoint) -> f64 {}
 }
 
 #[il2cpp_enum_type(i32)]

@@ -16,6 +16,7 @@ use anyhow::{Error, anyhow};
 use function_name::named;
 use il2cpp_runtime::Il2CppClass;
 use il2cpp_runtime::Il2CppObject;
+use il2cpp_runtime::System_RuntimeType;
 use il2cpp_runtime::api::il2cpp_class_get_fields;
 use il2cpp_runtime::api::il2cpp_field_get_name;
 use il2cpp_runtime::api::il2cpp_field_get_offset;
@@ -33,7 +34,10 @@ use std::sync::OnceLock;
 unsafe fn get_elapsed_av(game_mode: RPG_GameCore_TurnBasedGameMode) -> Result<f64> {
     log::debug!(function_name!());
     Ok(unsafe {
-        game_mode._ElapsedActionDelay_k__BackingField()?.to_double()?
+        RPG_GameCore_FixPoint::to_double(
+        *game_mode
+            ._ElapsedActionDelay_k__BackingField()?
+        )?
     })
 }
 
@@ -226,6 +230,10 @@ fn on_damage(
 
                 let hp_initial_raw = hp_initial.to_double()?;
                 let hp_final_raw = hp_final.to_double()?;
+                // let damage
+                let hp_initial_raw = RPG_GameCore_FixPoint::to_double(hp_initial)?;
+                let hp_final_raw = RPG_GameCore_FixPoint::to_double(hp_final)?;
+                let damage = RPG_GameCore_FixPoint::to_double(damage)?;
                 let overkill_damage = if hp_initial_raw <= 0.0 {
                     damage
                 } else if hp_final_raw <= 0.0 {
@@ -885,7 +893,8 @@ fn handle_hp_change(turn_based_ability_component: RPG_GameCore_TurnBasedAbilityC
             Il2CppString::new(&property_kind)?,
         )?);
 
-        let property_value = turn_based_ability_component.get_property(*property)?.to_double()?;
+        let property_value = RPG_GameCore_FixPoint::to_double(turn_based_ability_component.get_property(*property)?)?;
+            
         let entity = turn_based_ability_component.as_base()._OwnerRef()?;
         let entity_value: RPG_GameCore_EntityType = parse_il2cpp_enum(entity._EntityType()?)?;
 
@@ -976,7 +985,7 @@ pub fn on_stat_change(
         )?);
         let property_kind =
             System_Enum::get_name(get_type_handle("RPG.GameCore.AbilityProperty")?, boxed.0)?;
-        let mut property_value = new_stat.to_double()?;
+        let mut property_value = RPG_GameCore_FixPoint::to_double(new_stat)?;
         let entity_value: RPG_GameCore_EntityType = parse_il2cpp_enum(entity._EntityType()?)?;
 
         if boxed.unbox()? == RPG_GameCore_AbilityProperty::ActionDelay {
@@ -1196,7 +1205,7 @@ unsafe fn resolve_defeated_entity_offset() -> Result<EntityDefeatedOffsets> {
         return Err(anyhow!(
             "Failed to match defeated entity field offset {:#x} against {} fields",
             defeated_entity_offset,
-            class.name()
+            class.qualified_name()
         ));
     }
 
@@ -1314,13 +1323,12 @@ pub fn on_initialize_enemy(
             row_data.get_Level()?
         }
             as f64);
-        base_stats.set_value(
-            RPG_GameCore_AbilityProperty::MaxHP.to_string(),
-            unsafe { instance._DefaultMaxHP()?.to_double()? },
-        );
+        base_stats.set_value(RPG_GameCore_AbilityProperty::MaxHP.to_string(), unsafe {
+            RPG_GameCore_FixPoint::to_double(*instance._DefaultMaxHP()?)?
+        });
         base_stats.set_value(
             RPG_GameCore_AbilityProperty::CurrentHP.to_string(),
-            unsafe { instance._DefaultMaxHP()?.to_double()? },
+            unsafe { RPG_GameCore_FixPoint::to_double(*instance._DefaultMaxHP()?)? },
         );
 
         let name_id = row.MonsterName()?;
