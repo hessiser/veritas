@@ -193,7 +193,7 @@ impl App {
                             .open(&mut show_updater_window);
 
                             if self.state.center_updater_window {
-                                let center = ctx.input(|input| input.screen_rect.center());
+                                let center = ctx.input(|input| input.content_rect().center());
                                 if let Some(size) = self.updater_window_last_size {
                                     let top_left = center - size * 0.5;
                                     updater_window = updater_window.current_pos(top_left);
@@ -679,6 +679,20 @@ impl App {
                 ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
                     egui_logger::logger_ui().show(ui);
                 });
+            });
+    }
+
+    pub fn show_damage_type_breakdown_window(&mut self, ctx: &egui::Context) {
+        egui::containers::Window::new(t!("Damage Type Breakdown"))
+            .id("damage_type_breakdown_window".into())
+            .frame(get_window_frame(ctx, self.config.widget_opacity))
+            .resizable(true)
+            .default_width(420.0)
+            .default_height(360.0)
+            .min_width(280.0)
+            .min_height(180.0)
+            .show(ctx, |ui| {
+                self.show_damage_type_breakdown_widget(ui);
             });
     }
 
