@@ -423,7 +423,7 @@ impl App {
                                 ui.vertical(|ui| {
                                     ui.set_min_width(185.0);
                                     ui.label(
-                                        RichText::new(helpers::format_damage(display_value))
+                                        RichText::new(format!("{} ({:.1}%)", helpers::format_damage(display_value), row.percentage))
                                             .size(if dark_mode { 20.0 } else { 18.0 })
                                             .strong()
                                             .color(primary_text),
