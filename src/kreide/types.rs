@@ -147,15 +147,6 @@ impl RPG_GameCore_MonsterRowData {
     pub fn _Row(&self) -> RPG_GameCore_MonsterRow {}
 }
 
-#[il2cpp_ref_type("RPG.Client.AvatarData")]
-pub struct RPG_Client_AvatarData;
-impl RPG_Client_AvatarData {
-
-    #[il2cpp_getter_property(property = "AvatarName")]
-    pub fn AvatarName(&self) -> Il2CppString {}
-}
-
-
 #[il2cpp_ref_type("RPG.GameCore.MonsterRow")]
 pub struct RPG_GameCore_MonsterRow;
 impl RPG_GameCore_MonsterRow {
@@ -737,15 +728,6 @@ impl RPG_GameCore_GameEntity {
     pub fn _OwnerWorldRef(&self) -> RPG_GameCore_GameWorld {}
 }
 
-#[il2cpp_ref_type("RPG.Client.ModuleManager")]
-pub struct RPG_Client_ModuleManager;
-impl RPG_Client_ModuleManager {
-
-    #[il2cpp_field(name = "AvatarModule")]
-    pub fn AvatarModule(&self) -> RPG_Client_AvatarModule {}
-}
-
-
 #[il2cpp_ref_type("RPG.GameCore.ICharacterSkillRowData")]
 pub struct RPG_GameCore_ICharacterSkillRowData;
 impl RPG_GameCore_ICharacterSkillRowData {
@@ -754,13 +736,6 @@ impl RPG_GameCore_ICharacterSkillRowData {
 
     #[il2cpp_getter_property(property = "AttackType")]
     pub fn get_AttackType(&self) -> RPG_GameCore_AttackType {}
-}
-
-#[il2cpp_ref_type("RPG.Client.AvatarModule")]
-pub struct RPG_Client_AvatarModule;
-impl RPG_Client_AvatarModule {
-    #[il2cpp_method(name = "GetAvatar", args = ["uint"])]
-    pub fn get_avatar(&self, avatar_id: u32) -> RPG_Client_AvatarData {}
 }
 
 #[il2cpp_ref_type("RPG.GameCore.GameWorld")]
@@ -781,14 +756,6 @@ impl RPG_GameCore_EntityManager {
 
     #[il2cpp_method(name = "_GetEntitySummoner", args = ["RPG.GameCore.GameEntity"])]
     pub fn get_entity_summoner(&self, entity: RPG_GameCore_GameEntity) -> RPG_GameCore_GameEntity {}
-}
-
-
-#[il2cpp_ref_type("RPG.Client.GlobalVars")]
-pub struct RPG_Client_GlobalVars;
-impl RPG_Client_GlobalVars {
-    #[il2cpp_field(name = "s_ModuleManager")]
-    pub fn s_ModuleManager() -> RPG_Client_ModuleManager {}
 }
 
 #[il2cpp_ref_type("RPG.Client.TextmapStatic")]
@@ -966,8 +933,18 @@ impl RPG_GameCore_AvatarRow {
 	#[il2cpp_field(name = "AvatarSideIconPath")]
 	pub fn AvatarSideIconPath(&self) -> Il2CppString {}
 
-	#[il2cpp_field(name = "AvatarName")]
-	pub fn AvatarName(&self) -> RPG_Client_TextID__Boxed {}
+	// #[il2cpp_field(name = "AvatarName")]
+	// pub fn AvatarName(&self) -> RPG_Client_TextID__Boxed {}
+
+	// #[il2cpp_field(name = "AvatarFullName")]
+	// pub fn AvatarFullName(&self) -> RPG_Client_TextID__Boxed {}
+}
+
+#[il2cpp_ref_type("RPG.Client.AvatarHelper")]
+pub struct RPG_Client_AvatarHelper;
+impl RPG_Client_AvatarHelper {
+	#[il2cpp_method(name = "GetAvatarName", args = ["uint"])]
+	pub fn GetAvatarName(avatar_id: u32) -> Il2CppString {}
 }
 
 #[il2cpp_ref_type("RPG.GameCore.MonsterTemplateExcelTable")]

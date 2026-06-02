@@ -37,7 +37,7 @@ unsafe fn get_elapsed_av(game_mode: RPG_GameCore_TurnBasedGameMode) -> Result<f6
         RPG_GameCore_FixPoint::to_double(
         *game_mode
             ._ElapsedActionDelay_k__BackingField()?
-        )?
+        )? * 10.
     })
 }
 
@@ -1198,7 +1198,7 @@ pub fn on_initialize_enemy(
     safe_call!({
         let row_data = instance._MonsterRowData()?;
         let row = row_data._Row()?;
-        let monster_id = unsafe { instance.get_monster_id()? };
+        let monster_id = unsafe { instance.get_monster_template_id()? };
         crate::ui::helpers::cache_monster_buffer(monster_id);
         let mut base_stats = BattleStats {
             properties: HashMap::new(),

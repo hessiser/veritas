@@ -2,7 +2,7 @@ use std::{ptr::null, sync::LazyLock};
 
 use crate::{
     kreide::types::{
-        RPG_Client_AvatarData, RPG_Client_CachedAssetLoader, RPG_Client_GlobalVars, RPG_Client_ModuleManager, RPG_Client_UIGameEntityUtils, RPG_GameCore_AttackType__Boxed, RPG_GameCore_AvatarExcelTable, RPG_GameCore_AvatarPropertyExcelTable, RPG_GameCore_AvatarPropertyType__Boxed, RPG_GameCore_MonsterDataComponent, RPG_GameCore_MonsterTemplateExcelTable, RPG_GameCore_ServantDataComponent, UnityEngine_Graphics, UnityEngine_ImageConversion, UnityEngine_Rect, UnityEngine_RenderTexture, UnityEngine_Sprite, UnityEngine_Texture2D
+        RPG_Client_AvatarHelper, RPG_Client_CachedAssetLoader, RPG_Client_UIGameEntityUtils, RPG_GameCore_AttackType__Boxed, RPG_GameCore_AvatarExcelTable, RPG_GameCore_AvatarPropertyExcelTable, RPG_GameCore_AvatarPropertyType__Boxed, RPG_GameCore_AvatarRow, RPG_GameCore_MonsterDataComponent, RPG_GameCore_MonsterTemplateExcelTable, RPG_GameCore_ServantDataComponent, UnityEngine_Graphics, UnityEngine_ImageConversion, UnityEngine_Rect, UnityEngine_RenderTexture, UnityEngine_Sprite, UnityEngine_Texture2D
     },
     models::misc::{Avatar, Skill},
 };
@@ -15,7 +15,7 @@ use il2cpp_runtime::{
 
 use super::types::{
     RPG_Client_TextID, RPG_Client_TextmapStatic,
-    RPG_GameCore_BattleInstance, RPG_GameCore_FixPoint, RPG_GameCore_GameEntity,
+    RPG_GameCore_BattleInstance, RPG_GameCore_GameEntity,
     RPG_GameCore_SkillData,
 };
 
@@ -32,18 +32,11 @@ pub fn get_textmap_content(hash: &RPG_Client_TextID) -> Result<String> {
     Ok(unsafe { RPG_Client_TextmapStatic::get_text(hash, null()) }.map(|s| s.to_string())?)
 }
 
-#[named]
-pub fn get_module_manager() -> Result<RPG_Client_ModuleManager> {
-    log::debug!(function_name!());
-    Ok(RPG_Client_GlobalVars::s_ModuleManager()?)
-}
 
 #[named]
-pub fn get_avatar_data_from_id(avatar_id: u32) -> Result<RPG_Client_AvatarData> {
+pub fn get_avatar_data_from_id(avatar_id: u32) -> Result<RPG_GameCore_AvatarRow> {
     log::debug!(function_name!());
-    let s_module_manager = get_module_manager()?;
-    let avatar_module = s_module_manager.AvatarModule()?;
-    Ok(unsafe { avatar_module.get_avatar(avatar_id)? })
+    Ok(unsafe { RPG_GameCore_AvatarExcelTable::GetData(avatar_id)? })
 }
 
 #[named]
@@ -53,16 +46,7 @@ pub unsafe fn get_avatar_from_id(avatar_id: u32) -> Result<Avatar> {
     let avatar_data = get_avatar_data_from_id(avatar_id)
         .context(format!("AvatarData with id {avatar_id} was null"))?;
 
-    let avatar_name = unsafe { avatar_data.AvatarName() }
-        .map(|name| name.to_string())
-        .unwrap_or_default();
-
-    let avatar_name = if avatar_name.is_empty() {
-        let data = unsafe { RPG_GameCore_AvatarExcelTable::GetData(avatar_id)? };
-        get_textmap_content(&*data.AvatarName()?)?
-    } else {
-        avatar_name
-    };
+    let avatar_name = unsafe { RPG_Client_AvatarHelper::GetAvatarName(avatar_id)?.to_string() };
 
     Ok(Avatar {
         id: avatar_id,
@@ -111,9 +95,9 @@ pub unsafe fn get_avatar_from_entity(entity: RPG_GameCore_GameEntity) -> Result<
     let avatar_data =
         get_avatar_data_from_id(id).context(format!("AvatarData with id {id} was null"))?;
 
-    let name = unsafe { avatar_data.AvatarName() }
-        .map(|name| name.to_string())
-        .unwrap_or_default();
+    let name = unsafe {
+        RPG_Client_AvatarHelper::GetAvatarName(id)?.to_string()
+    };
 
     Ok(Avatar {
         id,
