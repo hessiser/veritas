@@ -2753,7 +2753,7 @@ dependencies = [
 [[package]]
 name = "il2cpp-macros"
 version = "0.1.0"
-source = "git+https://github.com/hessiser/il2cpp-rust.git?rev=a592c94#a592c94b85d11de57534078ed543c9f3117a285a"
+source = "git+https://github.com/hessiser/il2cpp-rust.git?rev=7b3c219#7b3c219613904b289ceda41646573c30d90fa6e4"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -2764,7 +2764,7 @@ dependencies = [
 [[package]]
 name = "il2cpp-runtime"
 version = "0.1.0"
-source = "git+https://github.com/hessiser/il2cpp-rust.git?rev=a592c94#a592c94b85d11de57534078ed543c9f3117a285a"
+source = "git+https://github.com/hessiser/il2cpp-rust.git?rev=7b3c219#7b3c219613904b289ceda41646573c30d90fa6e4"
 dependencies = [
  "il2cpp-macros",
  "log",

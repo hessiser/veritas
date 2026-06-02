@@ -112,6 +112,7 @@ fn setup_subscribers() -> anyhow::Result<()> {
             il2cpp_class_get_fields: 31,
             il2cpp_class_get_methods: 35,
             il2cpp_class_get_name: 37,
+            il2cpp_class_get_namespace: 39,
             il2cpp_class_get_parent: 40,
             il2cpp_class_from_type: 49,
             il2cpp_domain_get: 63,
