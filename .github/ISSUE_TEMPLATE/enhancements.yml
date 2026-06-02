@@ -1,0 +1,39 @@
+name: Enhancements
+description: Suggest an idea for this project
+title: "[ENHANCEMENTS]: "
+labels: enhancement
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Enhancements Request
+        <!-- Please do not make enhancement requests for game features. The only exception is for expanding/improving on what already exists. Enhancement requests are solely reserved for the development of the server, UI, config, etc. -->
+
+  - type: textarea
+    id: enhancements
+    attributes:
+      label: What enhancements do you want?
+      description: Provide a clear and concise summary of the enhancement you are requesting.
+      placeholder: Describe the enhancement idea here...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: Explain how you want it to work and why it is reasonable.
+      placeholder: Describe the proposed solution in detail...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context, screenshots, or examples that help explain the request.
+      placeholder: Any extra information, screenshots, or references...
+    validations:
+      required: false

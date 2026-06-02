@@ -1,0 +1,77 @@
+name: Bug report
+description: Create a report to help us improve
+title: "[BUG]: "
+labels:
+  - bug
+
+body:
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin version
+      placeholder: 0.2.32
+    validations:
+      required: true
+
+  - type: input
+    id: game_version
+    attributes:
+      label: Game version
+      description: "When you start the game, you'll see a version string in the bottom-left corner."
+      placeholder: 4.1.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug_description
+    attributes:
+      label: Describe the bug
+      description: "This should be descriptive enough that somebody else can understand what's going on."
+      placeholder: Describe what happened...
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro_steps
+    attributes:
+      label: Steps to reproduce
+      description: This should be descriptive enough that somebody else can replicate it.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      placeholder: Describe what you expected to happen.
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Debug log
+      description: Drag and drop `veritas.debug.log` here.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      options:
+        - label: I attached `veritas.debug.log`
+          required: true
+        - label: |
+            I confirmed my game version matches the plugin’s supported version range (shown in-game in bottom-left corner at startup vs. release notes)
+          required: true
+        - label: I searched existing issues
+          required: true
+        - label: I have added a title to the issue
+          required: true
+        - label: I was descriptive in describing the issue such that somebody else can read and understand what's going on
+          required: true
