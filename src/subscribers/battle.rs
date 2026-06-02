@@ -32,7 +32,9 @@ use std::sync::OnceLock;
 #[named]
 unsafe fn get_elapsed_av(game_mode: RPG_GameCore_TurnBasedGameMode) -> Result<f64> {
     log::debug!(function_name!());
-    Ok(fixpoint_to_raw(&*game_mode._ElapsedActionDelay_k__BackingField()?) * 10f64)
+    Ok(unsafe {
+        game_mode._ElapsedActionDelay_k__BackingField()?.to_double()?
+    })
 }
 
 #[derive(Clone, Copy)]
@@ -219,11 +221,11 @@ fn on_damage(
                 let damage = {
                     let damage_ptr = damage_info.byte_offset(damage_offset as isize)
                         as *const RPG_GameCore_FixPoint;
-                    fixpoint_to_raw(&*damage_ptr)
+                    (*damage_ptr).to_double()?
                 };
 
-                let hp_initial_raw = fixpoint_to_raw(&hp_initial);
-                let hp_final_raw = fixpoint_to_raw(&hp_final);
+                let hp_initial_raw = hp_initial.to_double()?;
+                let hp_final_raw = hp_final.to_double()?;
                 let overkill_damage = if hp_initial_raw <= 0.0 {
                     damage
                 } else if hp_final_raw <= 0.0 {
@@ -883,9 +885,7 @@ fn handle_hp_change(turn_based_ability_component: RPG_GameCore_TurnBasedAbilityC
             Il2CppString::new(&property_kind)?,
         )?);
 
-        let property_value =
-            fixpoint_to_raw(&turn_based_ability_component.get_property(*property)?);
-
+        let property_value = turn_based_ability_component.get_property(*property)?.to_double()?;
         let entity = turn_based_ability_component.as_base()._OwnerRef()?;
         let entity_value: RPG_GameCore_EntityType = parse_il2cpp_enum(entity._EntityType()?)?;
 
@@ -976,7 +976,7 @@ pub fn on_stat_change(
         )?);
         let property_kind =
             System_Enum::get_name(get_type_handle("RPG.GameCore.AbilityProperty")?, boxed.0)?;
-        let mut property_value = fixpoint_to_raw(&new_stat);
+        let mut property_value = new_stat.to_double()?;
         let entity_value: RPG_GameCore_EntityType = parse_il2cpp_enum(entity._EntityType()?)?;
 
         if boxed.unbox()? == RPG_GameCore_AbilityProperty::ActionDelay {
@@ -1316,11 +1316,11 @@ pub fn on_initialize_enemy(
             as f64);
         base_stats.set_value(
             RPG_GameCore_AbilityProperty::MaxHP.to_string(),
-            fixpoint_to_raw(&*instance._DefaultMaxHP()?),
+            unsafe { instance._DefaultMaxHP()?.to_double()? },
         );
         base_stats.set_value(
             RPG_GameCore_AbilityProperty::CurrentHP.to_string(),
-            fixpoint_to_raw(&*instance._DefaultMaxHP()?),
+            unsafe { instance._DefaultMaxHP()?.to_double()? },
         );
 
         let name_id = row.MonsterName()?;

@@ -270,16 +270,6 @@ pub unsafe fn get_monster_from_runtime_id(
     }
 }
 
-#[named]
-pub fn fixpoint_to_raw(fixpoint: &RPG_GameCore_FixPoint) -> f64 {
-    log::debug!(function_name!());
-    static FLOAT_CONVERSION_CONSTANT: LazyLock<f64> = LazyLock::new(|| 1f64 / 2f64.powf(32f64));
-    let raw_value = fixpoint.m_rawValue;
-    let hi = ((raw_value as u64 & 0xFFFFFFFF00000000) >> 32) as u32;
-    let lo = (raw_value as u64 & 0x00000000FFFFFFFF) as u32;
-    hi as f64 + lo as f64 * *FLOAT_CONVERSION_CONSTANT
-}
-
 pub fn is_obfuscated_name<S: AsRef<str>>(name: S) -> bool {
     let name = name.as_ref();
     name.len() == 11 && name.chars().all(|c| c.is_ascii_uppercase())

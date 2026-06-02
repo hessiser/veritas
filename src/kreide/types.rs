@@ -172,6 +172,9 @@ impl RPG_GameCore_MonsterDataComponent {
     #[il2cpp_field(name = "_OwnerRef")]
     pub fn _OwnerRef(&self) -> RPG_GameCore_GameEntity {}
 
+    #[il2cpp_method(name = "GetMonsterTemplateID", args = [])]
+    pub fn get_monster_template_id(&self) -> u32 {}
+
     #[il2cpp_field(name = "_MonsterRowData")]
     pub fn _MonsterRowData(&self) -> RPG_GameCore_MonsterRowData {}
 
@@ -660,6 +663,11 @@ impl RPG_GameCore_CharacterDataComponent {
 #[il2cpp_value_type("RPG.GameCore.FixPoint")]
 pub struct RPG_GameCore_FixPoint {
     pub m_rawValue: i64,
+}
+
+impl RPG_GameCore_FixPoint {
+	#[il2cpp_method(name = "op_explicit", args = [], ret_type = "double", value_type = true)]
+	pub fn to_double(self) -> f64 {}
 }
 
 #[il2cpp_enum_type(i32)]
