@@ -6,7 +6,7 @@ use egui_plot::{Bar, BarChart, Line, Plot, PlotPoints, Polygon};
 use crate::{
     battle::{display_damage_type, BattleContext, DamageTypeBreakdown},
     kreide::types::RPG_GameCore_AttackType,
-    models::misc::Avatar,
+    models::types::Avatar,
 };
 
 use super::{app::App, helpers};

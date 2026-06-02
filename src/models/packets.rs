@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use super::misc::{Avatar, Enemy, Entity, Skill, Property, Team, TurnInfo};
+use super::types::{Avatar, Enemy, Entity, Skill, Property, Team, TurnInfo};
 
 macro_rules! packet {
     ($(
@@ -87,7 +87,7 @@ packet!(
         cycle: u32
     }
 
-    OnPropertyChange {
+    OnStatChange {
         entity: Entity,
         property: Property
     }

@@ -57,12 +57,12 @@ pub enum Team {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Property {
     pub value: f64,
-    pub kind: String,
+    pub r#type: String,
 }
 
 impl BattleStats {
     pub fn set_property(&mut self, property: Property) {
-        self.properties.insert(property.kind, property.value);
+        self.properties.insert(property.r#type, property.value);
     }
 
     pub fn set_value<S: Into<String>>(&mut self, kind: S, value: f64) {
@@ -122,4 +122,3 @@ pub struct TurnInfo {
     pub avatars_turn_damage: Vec<f64>,
     pub total_damage: f64,
 }
-

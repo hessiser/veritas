@@ -27,6 +27,7 @@ This section describes events dispatched by the server.
 | OnTurnEnd         | Dispatched when any entity's turn ends.                     |
 | OnKill            | Dispatched when any avatar kills an enemy.                  |
 | OnUseSkill        | Dispatched when any avatar uses any skill.                  |
+| OnStatChange      | Dispatched when an entity's stat changes.                  |
 | OnBattleEnd       | Dispatched when battle ends.                                |
 
 ##  Heartbeat
@@ -116,6 +117,18 @@ Dispatched when any avatar uses any skill.
 
 ---
 
+## OnStatChange
+Dispatched when an entity's stat changes.
+
+### Structure
+
+| Field    | Type               | Description                         |
+| -------- | ------------------ | ----------------------------------- |
+| entity   | [Entity](#entity)  | The entity whose stat changed       |
+| property | [Property](#property) | The updated stat payload         |
+
+---
+
 ## OnBattleEnd
 Dispatched when battle ends. Final summary of the battle.
 
@@ -147,6 +160,20 @@ Dispatched when battle ends. Final summary of the battle.
 | ----- | ------ | ----------------- |
 | name  | string | Name of the skill |
 | type  | string | Type of skill     |
+
+## Entity
+
+| Field | Type    | Description     |
+| ----- | ------- | --------------- |
+| uid   | integer | Entity ID       |
+| team  | string  | Player or enemy |
+
+## Property
+
+| Field | Type   | Description              |
+| ----- | ------ | ------------------------ |
+| value | float  | The current stat value   |
+| type  | string | The stat identifier name |
 
 ## TurnInfo
 
