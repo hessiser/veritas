@@ -52,7 +52,7 @@ where
     TEnum: FromStr,
     <TEnum as FromStr>::Err: std::fmt::Display,
 {
-    let ty = helpers::get_type_handle(enum_obj.get_class().byval_arg().name())?;
+    let ty = helpers::get_type_handle(enum_obj.get_class().qualified_name())?;
     let name = unsafe { System_Enum::get_name(ty, enum_obj.as_ptr()) }?;
     let name = name.to_string();
 
