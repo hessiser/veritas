@@ -50,7 +50,6 @@ struct ComboFieldOffsets {
 }
 
 static COMBO_FIELD_OFFSETS: OnceLock<ComboFieldOffsets> = OnceLock::new();
-static ATTACK_TYPE_OFFSET: OnceLock<usize> = OnceLock::new();
 
 fn parse_il2cpp_enum<TObj, TEnum>(enum_obj: TObj) -> Result<TEnum>
 where
@@ -134,74 +133,46 @@ unsafe fn get_combo_field_offsets(class: Il2CppClass) -> Result<ComboFieldOffset
         .ok_or_else(|| anyhow!("Failed to cache on_combo field offsets"))
 }
 
-unsafe fn resolve_attack_type_offset(class: Il2CppClass) -> Result<usize> {
-    let field_iter: *const c_void = null();
-    loop {
-        log::debug!("{}", class.name());
-        let field = il2cpp_class_get_fields(get_cached_class(class.name())?, &field_iter);
-        if field.0.is_null() {
-            break;
-        }
-
-        let field_type = il2cpp_field_get_type(field);
-        if field_type.name() == "RPG.GameCore.AttackType" {
-            return Ok(il2cpp_field_get_offset(field) as usize);
-        }
-    }
-
-    Err(anyhow!(
-        "Failed to find RPG.GameCore.AttackType field offset in damage info"
-    ))
-}
-
-unsafe fn get_attack_type_offset(class: Il2CppClass) -> Result<usize> {
-    if let Some(offset) = ATTACK_TYPE_OFFSET.get() {
-        return Ok(*offset);
-    }
-
-    let offset = unsafe { resolve_attack_type_offset(class)? };
-    let _ = ATTACK_TYPE_OFFSET.set(offset);
-    ATTACK_TYPE_OFFSET
-        .get()
-        .copied()
-        .ok_or_else(|| anyhow!("Failed to cache attack type offset"))
-}
-
-// Called on any instance of damage
+// I think this breaks overkill dmg
 #[named]
 fn on_damage(
-    task_context: *const c_void,
-    damage_by_attack_property: *const c_void,
-    damage_info: *const c_void,
-    attacker_ability: RPG_GameCore_TurnBasedAbilityComponent,
-    defender_ability: RPG_GameCore_TurnBasedAbilityComponent,
-    attacker: RPG_GameCore_GameEntity,
-    defender: RPG_GameCore_GameEntity,
-    attacker_task_single_target: RPG_GameCore_GameEntity,
-    flag: bool,
-    a10: *const c_void,
+    defender_entity: RPG_GameCore_GameEntity,
+    attacker_entity: RPG_GameCore_GameEntity,
+    alive_state: RPG_GameCore_AliveState,
+    damage: RPG_GameCore_FixPoint,
+    hp_initial: RPG_GameCore_FixPoint,
 ) -> bool {
     log::debug!(function_name!());
 
-    let hp_initial =
-        match unsafe { defender_ability.get_property(RPG_GameCore_AbilityProperty::CurrentHP) } {
-            Ok(value) => value,
+    let defender_ability = match System_RuntimeType::from_name(
+       RPG_GameCore_TurnBasedAbilityComponent::ffi_name()
+    ) {
+        Ok(defender_ability_type) => match unsafe { attacker_entity.get_component(defender_ability_type) } {
+            Ok(defender_ability) => RPG_GameCore_TurnBasedAbilityComponent(defender_ability.0),
             Err(e) => {
-                log::error!("{} HP initial error: {}", function_name!(), e);
-                RPG_GameCore_FixPoint { m_rawValue: 0 }
+                log::error!("{} defender ability lookup error: {}", function_name!(), e);
+                RPG_GameCore_TurnBasedAbilityComponent(null())
             }
-        };
+        },
+        Err(e) => {
+            log::error!("{} defender ability type error: {}", function_name!(), e);
+            RPG_GameCore_TurnBasedAbilityComponent(null())
+        }
+    };
+    // let hp_initial =
+    //     match unsafe { defender_ability.get_property(RPG_GameCore_AbilityProperty::CurrentHP) } {
+    //         Ok(value) => value,
+    //         Err(e) => {
+    //             log::error!("{} HP initial error: {}", function_name!(), e);
+    //             RPG_GameCore_FixPoint { m_rawValue: 0 }
+    //         }
+    //     };
     let res = ON_DAMAGE_Detour.call(
-        task_context,
-        damage_by_attack_property,
-        damage_info,
-        attacker_ability,
-        defender_ability,
-        attacker,
-        defender,
-        attacker_task_single_target,
-        flag,
-        a10,
+        defender_entity,
+        attacker_entity,
+        alive_state,
+        damage,
+        hp_initial,
     );
     let hp_final =
         match unsafe { defender_ability.get_property(RPG_GameCore_AbilityProperty::CurrentHP) } {
@@ -213,23 +184,25 @@ fn on_damage(
         };
     safe_call!(unsafe {
         let mut event: Option<Result<Event>> = None;
-        let attacker_team_value: RPG_GameCore_TeamType = parse_il2cpp_enum(attacker._Team()?)?;
+        let attacker_ability = match System_RuntimeType::from_name(
+            RPG_GameCore_TurnBasedAbilityComponent::ffi_name()
+        ) {
+            Ok(attacker_ability_type) => match unsafe { attacker_entity.get_component(attacker_ability_type) } {
+                Ok(attacker_ability) => RPG_GameCore_TurnBasedAbilityComponent(attacker_ability.0),
+                Err(e) => {
+                    log::error!("{} attacker ability lookup error: {}", function_name!(), e);
+                    RPG_GameCore_TurnBasedAbilityComponent(null())
+                }
+            },
+            Err(e) => {
+                log::error!("{} attacker ability type error: {}", function_name!(), e);
+                RPG_GameCore_TurnBasedAbilityComponent(null())
+            }
+        };
+        let attacker_team_value: RPG_GameCore_TeamType = parse_il2cpp_enum(attacker_entity._Team()?)?;
 
         match attacker_team_value {
             RPG_GameCore_TeamType::TeamLight => {
-                // mov     rax, [rbx+??h]
-                // mov     [rsp+758h+var_6A0], rax
-                // 48 8B 83 ?? ?? ?? ?? 48 89 84 24
-                let damage_offset = get_damage_offset()?;
-
-                let damage = {
-                    let damage_ptr = damage_info.byte_offset(damage_offset as isize)
-                        as *const RPG_GameCore_FixPoint;
-                    (*damage_ptr).to_double()?
-                };
-
-                let hp_initial_raw = hp_initial.to_double()?;
-                let hp_final_raw = hp_final.to_double()?;
                 // let damage
                 let hp_initial_raw = RPG_GameCore_FixPoint::to_double(hp_initial)?;
                 let hp_final_raw = RPG_GameCore_FixPoint::to_double(hp_final)?;
@@ -242,26 +215,21 @@ fn on_damage(
                     0.0
                 };
 
-                let attack_type_offset =
-                    get_attack_type_offset(Il2CppClass(*(damage_info as *const *const c_void)))?;
-
                 let r#type = {
-                    let damage_type =
-                        *(damage_info.byte_offset(attack_type_offset as isize) as *const i32);
                     let boxed = RPG_GameCore_AttackType__Boxed(System_Enum::to_object_from_int(
                         get_type_handle("RPG.GameCore.AttackType")?,
-                        damage_type,
+                        attacker_ability.CurrentAttackType()? as i32,
                     )?);
                     System_Enum::get_name(get_type_handle("RPG.GameCore.AttackType")?, boxed.0)?
                         .to_string()
                 };
 
                 let attack_owner = {
-                    let attack_owner = RPG_GameCore_AbilityStatic::get_actual_owner(attacker)?;
+                    let attack_owner = RPG_GameCore_AbilityStatic::get_actual_owner(attacker_entity)?;
                     if !attack_owner.0.is_null() {
                         attack_owner
                     } else {
-                        attacker
+                        attacker_entity
                     }
                 };
 
@@ -333,13 +301,11 @@ fn on_damage(
                     _ => {
                         let variant = System_Enum::get_name(
                             get_type_handle("RPG.GameCore.EntityType")?,
-                            attacker._EntityType()?.0,
-                        )?.to_string();
+                            attacker_entity._EntityType()?.0,
+                        )?
+                        .to_string();
 
-                        log::warn!(
-                            "Light entity type {} was not matched",
-                            variant
-                        )
+                        log::warn!("Light entity type {} was not matched", variant)
                     }
                 }
             }
@@ -485,17 +451,15 @@ fn on_use_skill(
                             };
                             event = Some(e);
                         }
-                    _ => {
-                        let variant = System_Enum::get_name(
-                            get_type_handle("RPG.GameCore.EntityType")?,
-                            skill_owner._EntityType()?.0,
-                        )?.to_string();
+                        _ => {
+                            let variant = System_Enum::get_name(
+                                get_type_handle("RPG.GameCore.EntityType")?,
+                                skill_owner._EntityType()?.0,
+                            )?
+                            .to_string();
 
-                        log::warn!(
-                            "Light entity type {} was not matched",
-                            variant
-                        )
-                    }
+                            log::warn!("Light entity type {} was not matched", variant)
+                        }
                     }
                 }
             }
@@ -696,17 +660,15 @@ fn on_combo(instance: *const c_void, game_mode: RPG_GameCore_TurnBasedGameMode) 
                             };
                             event = Some(e);
                         }
-                    _ => {
-                        let variant = System_Enum::get_name(
-                            get_type_handle("RPG.GameCore.EntityType")?,
-                            skill_owner._EntityType()?.0,
-                        )?.to_string();
+                        _ => {
+                            let variant = System_Enum::get_name(
+                                get_type_handle("RPG.GameCore.EntityType")?,
+                                skill_owner._EntityType()?.0,
+                            )?
+                            .to_string();
 
-                        log::warn!(
-                            "Light entity type {} was not matched",
-                            variant
-                        )
-                    }
+                            log::warn!("Light entity type {} was not matched", variant)
+                        }
                     }
                 }
             }
@@ -942,11 +904,10 @@ pub fn on_direct_change_hp(
     instance: RPG_GameCore_TurnBasedAbilityComponent,
     a1: i32,
     a2: RPG_GameCore_FixPoint,
-    a3: RPG_GameCore_FixPoint,
-    a4: *const c_void,
+    a3: *const c_void,
 ) {
     log::debug!(function_name!());
-    let res = ON_DIRECT_CHANGE_HP_Detour.call(instance, a1, a2, a3, a4);
+    let res = ON_DIRECT_CHANGE_HP_Detour.call(instance, a1, a2, a3);
     handle_hp_change(instance);
     res
 }
@@ -955,11 +916,11 @@ pub fn on_direct_change_hp(
 pub fn on_direct_damage_hp(
     instance: RPG_GameCore_TurnBasedAbilityComponent,
     a1: RPG_GameCore_FixPoint,
-    a2: RPG_GameCore_FixPoint,
-    a3: i32,
-    a4: *const c_void,
-    a5: RPG_GameCore_FixPoint,
-    a6: *const c_void,
+    a2: i32,
+    a3: *const c_void,
+    a4: RPG_GameCore_FixPoint,
+    a5: *const c_void,
+    a6: i32
 ) {
     log::debug!(function_name!());
     let res = ON_DIRECT_DAMAGE_HP_Detour.call(instance, a1, a2, a3, a4, a5, a6);
@@ -1035,83 +996,6 @@ use anyhow::Context;
 use std::io::Cursor;
 use windows::Win32::System::Diagnostics::Debug::ReadProcessMemory;
 use windows::Win32::System::Threading::GetCurrentProcess;
-
-static DAMAGE_OFFSET: OnceLock<usize> = OnceLock::new();
-
-unsafe fn resolve_damage_offset() -> Result<usize> {
-    let mut on_damage_method = None;
-    for (key, class) in il2cpp_runtime::get_type_table()? {
-        if is_obfuscated_name(key) {
-            if let Ok(method) = class.find_method(
-                "*",
-                vec![
-                    "RPG.GameCore.TaskContext",
-                    "RPG.GameCore.DamageByAttackProperty",
-                    "*",
-                    "RPG.GameCore.TurnBasedAbilityComponent",
-                    "RPG.GameCore.TurnBasedAbilityComponent",
-                    "RPG.GameCore.GameEntity",
-                    "RPG.GameCore.GameEntity",
-                    "RPG.GameCore.GameEntity",
-                    "bool",
-                    "*",
-                ],
-            ) {
-                on_damage_method = Some(method);
-                break;
-            }
-        }
-    }
-
-    let target_fn = on_damage_method
-        .ok_or_else(|| anyhow!("Failed to find on_damage method for damage offset extraction"))?
-        .va();
-
-    let buffer = vec![0u8; 0x300];
-    let mut bytes_read = 0usize;
-    let process_handle = unsafe { GetCurrentProcess() };
-    unsafe {
-        ReadProcessMemory(
-            process_handle,
-            target_fn,
-            buffer.as_ptr() as _,
-            buffer.len(),
-            Some(&mut bytes_read),
-        )
-    }
-    .context("Failed to read on_damage method bytes")?;
-
-    static DAMAGE_PATTERN: &str = "48 8B 83 ? ? ? ? 48 89 84 24";
-    let pattern_tokens = DAMAGE_PATTERN.split_whitespace().collect::<Vec<_>>();
-    let disp_index = pattern_tokens
-        .windows(4)
-        .position(|w| w.iter().all(|token| *token == "?"))
-        .ok_or_else(|| anyhow!("Damage pattern does not contain a 4-byte wildcard displacement"))?;
-
-    let locs = patternscan::scan(Cursor::new(buffer), &DAMAGE_PATTERN)
-        .context("Failed to scan for damage offset pattern")?;
-    let addr = locs
-        .first()
-        .ok_or_else(|| anyhow!("Damage offset pattern not found in on_damage method"))?;
-
-    let disp_ptr = unsafe { target_fn.byte_offset((addr + disp_index) as isize) } as *const u32;
-    let damage_offset = u32::from_le(unsafe { disp_ptr.read_unaligned() }) as usize;
-    log::info!("Resolved damage offset: {:#x}", damage_offset);
-    Ok(damage_offset)
-}
-
-unsafe fn get_damage_offset() -> Result<usize> {
-    if let Some(offset) = DAMAGE_OFFSET.get() {
-        return Ok(*offset);
-    }
-
-    let offset = unsafe { resolve_damage_offset()? };
-    let _ = DAMAGE_OFFSET.set(offset);
-    DAMAGE_OFFSET
-        .get()
-        .copied()
-        .ok_or_else(|| anyhow!("Failed to cache damage offset"))
-}
 
 #[derive(Clone, Copy)]
 struct EntityDefeatedOffsets {
@@ -1349,7 +1233,7 @@ pub fn on_initialize_enemy(
 }
 
 retour::static_detour! {
-    static ON_DAMAGE_Detour: fn(*const c_void, *const c_void, *const c_void, RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, bool, *const c_void) -> bool;
+    static ON_DAMAGE_Detour: fn(RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, RPG_GameCore_AliveState, RPG_GameCore_FixPoint, RPG_GameCore_FixPoint) -> bool;
     static ON_COMBO_Detour: fn(*const c_void, RPG_GameCore_TurnBasedGameMode);
     static ON_USE_SKILL_Detour: fn(RPG_GameCore_SkillCharacterComponent, i32, *const c_void, bool, *const c_void, *const c_void, i32) -> bool;
     static ON_SET_LINEUP_Detour: fn(RPG_GameCore_BattleInstance, *const c_void, RPG_GameCore_BattleLineupData, i32, u32, bool);
@@ -1359,8 +1243,8 @@ retour::static_detour! {
     static ON_TURN_END_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, i32);
     static ON_UPDATE_WAVE_Detour: fn(RPG_GameCore_TurnBasedGameMode);
     static ON_UPDATE_CYCLE_Detour: fn(RPG_GameCore_TurnBasedGameMode) -> u32;
-    static ON_DIRECT_CHANGE_HP_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, i32, RPG_GameCore_FixPoint, RPG_GameCore_FixPoint, *const c_void);
-    static ON_DIRECT_DAMAGE_HP_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_FixPoint, RPG_GameCore_FixPoint, i32, *const c_void, RPG_GameCore_FixPoint, *const c_void);
+    static ON_DIRECT_CHANGE_HP_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, i32, RPG_GameCore_FixPoint, *const c_void);
+    static ON_DIRECT_DAMAGE_HP_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_FixPoint, i32, *const c_void, RPG_GameCore_FixPoint, *const c_void, i32);
     static ON_STAT_CHANGE_Detour: fn(RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_AbilityProperty, i32, RPG_GameCore_FixPoint, *const c_void) -> bool;
     static ON_ENTITY_DEFEATED_Detour: fn(RPG_GameCore_TurnBasedGameMode, *const c_void) -> bool;
     static ON_UPDATE_TEAM_FORMATION_Detour: fn(RPG_GameCore_TeamFormationComponent);
@@ -1369,41 +1253,22 @@ retour::static_detour! {
 
 pub fn subscribe() -> Result<()> {
     unsafe {
-        // Resolve on_damage
-        let mut on_damage_method = None;
-        for (key, class) in il2cpp_runtime::get_type_table()? {
-            if is_obfuscated_name(key) {
-                if let Ok(method) = class.find_method(
-                    "*",
+        subscribe_function!(
+            ON_DAMAGE_Detour,
+            get_cached_class("RPG.GameCore.AbilityStatic")?
+                .find_method(
+                    "CommonProcessForDamageFinish",
                     vec![
-                        "RPG.GameCore.TaskContext",
-                        "RPG.GameCore.DamageByAttackProperty",
-                        "*",
-                        "RPG.GameCore.TurnBasedAbilityComponent",
-                        "RPG.GameCore.TurnBasedAbilityComponent",
                         "RPG.GameCore.GameEntity",
                         "RPG.GameCore.GameEntity",
-                        "RPG.GameCore.GameEntity",
-                        "bool",
-                        "*",
-                    ],
-                ) {
-                    on_damage_method = Some(method);
-                    break;
-                }
-            }
-        }
-
-        if let Some(method) = on_damage_method {
-            subscribe_function!(ON_DAMAGE_Detour, method.va(), on_damage)?;
-
-            // Prewarm damage-related offsets from the discovered on_damage signature.
-            let damage_info_class = method.arg(2).class();
-            get_attack_type_offset(damage_info_class)?;
-            get_damage_offset()?;
-        } else {
-            return Err(anyhow!("Failed to find on_damage method"));
-        }
+                        "RPG.GameCore.AliveState",
+                        "RPG.GameCore.FixPoint",
+                        "RPG.GameCore.FixPoint",
+                    ]
+                )?
+                .va(),
+            on_damage
+        )?;
 
         // Resolve on_combo
         let mut combo_instance_class = None;
@@ -1523,7 +1388,6 @@ pub fn subscribe() -> Result<()> {
                     vec![
                         "RPG.GameCore.PropertyModifyFunction",
                         "RPG.GameCore.FixPoint",
-                        "RPG.GameCore.FixPoint",
                         "*"
                     ],
                 )?
@@ -1538,11 +1402,11 @@ pub fn subscribe() -> Result<()> {
                     "DirectDamageHP",
                     vec![
                         "RPG.GameCore.FixPoint",
-                        "RPG.GameCore.FixPoint",
                         "RPG.GameCore.AntiLockHPStrength",
                         "*",
                         "RPG.GameCore.FixPoint&",
-                        "System.Nullable<RPG.GameCore.FixPoint>"
+                        "System.Nullable<RPG.GameCore.FixPoint>",
+                        "RPG.GameCore.DamageIntegerizeCategory"
                     ],
                 )?
                 .va(),

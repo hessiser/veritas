@@ -100,6 +100,8 @@ impl RPG_GameCore_TurnBasedAbilityComponent {
     #[il2cpp_field(name = "_AbilityProperties")]
     pub fn _AbilityProperties(&self) -> Il2CppArray {}
 
+	#[il2cpp_getter_property(property = "CurrentAttackType")]
+	pub fn CurrentAttackType(&self) -> RPG_GameCore_AttackType {}
 
     #[il2cpp_field(name = "_KillerEntity")]
     pub fn _KillerEntity(&self) -> RPG_GameCore_GameEntity {}
