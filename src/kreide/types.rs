@@ -9,6 +9,7 @@ use std::ffi::c_void;
 
 use il2cpp_runtime::{il2cpp_enum_type, il2cpp_getter_property, il2cpp_value_type};
 use il2cpp_runtime::prelude::*;
+use anyhow::Result;
 
 
 #[il2cpp_value_type("RPG.Client.TextID")]
@@ -659,7 +660,11 @@ pub struct RPG_GameCore_FixPoint {
 
 impl RPG_GameCore_FixPoint {
 	#[il2cpp_method(name = "op_Explicit", args = ["RPG.GameCore.FixPoint"], ret_type = "double", value_type = true)]
-	pub fn to_double(fixpoint: RPG_GameCore_FixPoint) -> f64 {}
+	fn _to_double(fixpoint: RPG_GameCore_FixPoint) -> f64 {}
+
+	pub fn to_double(self) -> Result<f64> {
+		Ok(unsafe { Self::_to_double(self)? })
+	}
 }
 
 #[il2cpp_enum_type(i32)]
@@ -678,7 +683,8 @@ pub enum RPG_GameCore_AttackType {
     Level,
     Servant,
     TrueDamage,
-	ElationDamage
+	ElationDamage,
+	Assist
 }
 
 impl Ord for RPG_GameCore_AttackType {

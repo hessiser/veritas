@@ -7,7 +7,7 @@ use std::{
 use anyhow::{Context, Result};
 
 use crate::{
-    kreide::types::{RPG_GameCore_AbilityProperty, RPG_GameCore_AttackType},
+    kreide::types::{RPG_GameCore_AbilityProperty::{self, Attack}, RPG_GameCore_AttackType},
     models::{events::*, packets::Packet, types::*},
     server,
 };
@@ -39,6 +39,7 @@ pub(crate) fn display_damage_type(attack_type: &RPG_GameCore_AttackType) -> Stri
         RPG_GameCore_AttackType::Servant => "Servant",
         RPG_GameCore_AttackType::TrueDamage => "True",
         RPG_GameCore_AttackType::ElationDamage => "Elation",
+        RPG_GameCore_AttackType::Assist => "Assist",
         _ => other.as_str(),
     }
     .to_string()
