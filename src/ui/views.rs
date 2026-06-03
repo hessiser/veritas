@@ -733,6 +733,7 @@ impl App {
             .min_width(240.0)
             .min_height(48.0)
             .show(ctx, |ui| {
+                ui.style_mut().interaction.selectable_labels = false;
                 self.show_character_damage_widget(ui);
             });
     }

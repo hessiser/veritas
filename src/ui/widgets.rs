@@ -21,6 +21,7 @@ struct DamagePortraitRow {
     dpav: f64,
     effective_damage: f64,
     overkill_damage: f64,
+    overkill_dpav: f64,
     percentage: f64,
 }
 
@@ -291,6 +292,7 @@ impl App {
 
     pub fn show_character_damage_widget(&mut self, ui: &mut Ui) {
         ui.spacing_mut().item_spacing = Vec2::new(8.0, 6.0);
+        ui.set_min_height(ui.available_height().max(250.0));
 
         let mut rows = {
             let battle_context = BattleContext::get_instance();
@@ -433,6 +435,15 @@ impl App {
                                         ui,
                                         if max_value > 0.0 {
                                             display_value / max_value
+                                        } else {
+                                            0.0
+                                        },
+                                        if max_value > 0.0 {
+                                            let overkill_value = match self.state.damage_bar_value {
+                                                DamageBarValue::Damage => row.overkill_damage,
+                                                DamageBarValue::Dpav => row.overkill_dpav,
+                                            };
+                                            overkill_value / max_value
                                         } else {
                                             0.0
                                         },
@@ -938,22 +949,34 @@ fn create_bar_data(
     bar_data
 }
 
-fn draw_damage_meter(ui: &mut Ui, fill_ratio: f64, visuals: &egui::Visuals) {
-    let desired_size = Vec2::new(ui.available_width().clamp(110.0, 170.0), 12.0);
+fn draw_damage_meter(
+    ui: &mut Ui,
+    fill_ratio: f64,
+    overkill_ratio: f64,
+    visuals: &egui::Visuals,
+) {
+    let desired_size = Vec2::new(ui.available_width().max(110.0), 12.0);
     let (rect, _) = ui.allocate_exact_size(desired_size, Sense::hover());
     let painter = ui.painter_at(rect);
-    let track_fill = if visuals.dark_mode {
-        Color32::from_rgba_premultiplied(8, 10, 16, 220)
-    } else {
-        Color32::from_rgba_premultiplied(40, 42, 48, 80)
-    };
-    let track_stroke = if visuals.dark_mode {
-        Color32::from_rgba_premultiplied(255, 255, 255, 28)
-    } else {
-        Color32::from_rgba_premultiplied(0, 0, 0, 18)
-    };
+    let track_fill = visuals.widgets.noninteractive.bg_fill;
+    let track_stroke = visuals.widgets.inactive.bg_stroke.color;
     let fill = visuals.selection.bg_fill;
     let highlight = fill.gamma_multiply(if visuals.dark_mode { 1.15 } else { 0.92 });
+    let overkill_fill = if visuals.dark_mode {
+        Color32::from_rgba_premultiplied(
+            (fill.r() as f32 * 0.45) as u8,
+            (fill.g() as f32 * 0.45) as u8,
+            (fill.b() as f32 * 0.45) as u8,
+            245,
+        )
+    } else {
+        Color32::from_rgba_premultiplied(
+            (fill.r() as f32 * 0.62) as u8,
+            (fill.g() as f32 * 0.62) as u8,
+            (fill.b() as f32 * 0.62) as u8,
+            235,
+        )
+    };
 
     painter.rect_filled(rect, 5.0, track_fill);
     painter.rect_stroke(rect, 5.0, Stroke::new(1.0, track_stroke), StrokeKind::Inside);
@@ -968,6 +991,37 @@ fn draw_damage_meter(ui: &mut Ui, fill_ratio: f64, visuals: &egui::Visuals) {
         egui::pos2(rect.left() + rect.width() * clamped_ratio, rect.bottom()),
     );
     painter.rect_filled(fill_rect, 5.0, fill);
+
+    let clamped_overkill_ratio = overkill_ratio.clamp(0.0, fill_ratio).max(0.0) as f32;
+    if clamped_overkill_ratio > 0.0 {
+        let overkill_width = rect.width() * clamped_overkill_ratio;
+        let overkill_left = (fill_rect.right() - overkill_width).max(fill_rect.left());
+        let overkill_rect = egui::Rect::from_min_max(
+            egui::pos2(overkill_left, fill_rect.top()),
+            egui::pos2(fill_rect.right(), fill_rect.bottom()),
+        );
+        let overkill_rounding = if overkill_left <= fill_rect.left() {
+            CornerRadius::same(5)
+        } else {
+            CornerRadius {
+                nw: 0,
+                ne: 5,
+                sw: 0,
+                se: 5,
+            }
+        };
+        painter.rect_filled(overkill_rect, overkill_rounding, overkill_fill);
+
+        if overkill_left > fill_rect.left() {
+            painter.line_segment(
+                [
+                    egui::pos2(overkill_left, fill_rect.top() + 1.0),
+                    egui::pos2(overkill_left, fill_rect.bottom() - 1.0),
+                ],
+                Stroke::new(1.0, visuals.widgets.noninteractive.bg_stroke.color),
+            );
+        }
+    }
 
     let highlight_y = fill_rect.top() + 1.5;
     painter.line_segment(
@@ -1002,6 +1056,11 @@ fn create_damage_portrait_rows(
                 },
                 effective_damage: (damage - overkill_damage).max(0.0),
                 overkill_damage,
+                overkill_dpav: if action_value > 0.0 {
+                    overkill_damage / action_value
+                } else {
+                    overkill_damage
+                },
                 percentage: if total_damage > 0.0 {
                     damage / total_damage * 100.0
                 } else {
@@ -1070,7 +1129,7 @@ fn draw_damage_category_grid(
 fn show_damage_category_pie_chart(ui: &mut Ui, breakdown: &DamageTypeBreakdown) {
     let chart_data = collect_damage_category_points(breakdown);
     let available = ui.available_size();
-    let chart_height = 220.0;
+    let chart_height = 240.0;
     let total_damage: f64 = chart_data.iter().map(|(_, _, damage)| *damage).sum();
 
     Plot::new("damage_type_breakdown_pie")
