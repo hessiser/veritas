@@ -970,12 +970,11 @@ fn draw_damage_meter(
             245,
         )
     } else {
-        Color32::from_rgba_premultiplied(
-            (fill.r() as f32 * 0.62) as u8,
-            (fill.g() as f32 * 0.62) as u8,
-            (fill.b() as f32 * 0.62) as u8,
-            235,
-        )
+        // lighter, slightly desaturated overlay for light themes
+        let r = ((fill.r() as f32 * 0.9) + 255.0 * 0.1) as u8;
+        let g = ((fill.g() as f32 * 0.9) + 255.0 * 0.1) as u8;
+        let b = ((fill.b() as f32 * 0.9) + 255.0 * 0.1) as u8;
+        Color32::from_rgba_premultiplied(r, g, b, 200)
     };
 
     painter.rect_filled(rect, 5.0, track_fill);
