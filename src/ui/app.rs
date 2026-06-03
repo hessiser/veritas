@@ -167,6 +167,7 @@ impl Overlay for App {
                 self.show_console_window(ctx);
             }
 
+            // Show Damage Dist is removed
             if self.state.show_damage_type_breakdown {
                 self.show_damage_type_breakdown_window(ctx);
             }
@@ -175,17 +176,17 @@ impl Overlay for App {
                 self.show_character_legend_window(ctx);
             }
 
-            if self.state.show_damage_bars {
-                self.show_damage_bar_window(ctx);
-            }
+            // if self.state.show_damage_bars {
+            //     self.show_damage_bar_window(ctx);
+            // }
 
             if self.state.show_character_damage {
                 self.show_character_damage_window(ctx);
             }
 
-            if self.state.show_real_time_damage {
-                self.show_real_time_damage_window(ctx);
-            }
+            // if self.state.show_real_time_damage {
+            //     self.show_real_time_damage_window(ctx);
+            // }
 
             if self.state.show_battle_metrics {
                 self.show_battle_metrics_window(ctx);

@@ -223,26 +223,26 @@ impl App {
                                 &mut self.state.show_character_legend,
                                 t!("Show Character Legend"),
                             );
-                            ui.checkbox(
-                                &mut self.state.show_damage_distribution,
-                                t!("Show Damage Distribution"),
-                            );
+                            // ui.checkbox(
+                            //     &mut self.state.show_damage_distribution,
+                            //     t!("Show Damage Distribution"),
+                            // );
                             ui.checkbox(
                                 &mut self.state.show_damage_type_breakdown,
                                 t!("Show Damage Type Breakdown"),
                             );
-                            ui.checkbox(
-                                &mut self.state.show_damage_bars,
-                                t!("Show Damage Bars"),
-                            );
+                            // ui.checkbox(
+                            //     &mut self.state.show_damage_bars,
+                            //     t!("Show Damage Bars"),
+                            // );
                             ui.checkbox(
                                 &mut self.state.show_character_damage,
                                 t!("Show Character Damage"),
                             );
-                            ui.checkbox(
-                                &mut self.state.show_real_time_damage,
-                                t!("Show Real-Time Damage"),
-                            );
+                            // ui.checkbox(
+                            //     &mut self.state.show_real_time_damage,
+                            //     t!("Show Real-Time Damage"),
+                            // );
                             ui.checkbox(
                                 &mut self.state.show_enemy_stats,
                                 t!("Show Enemy Stats"),

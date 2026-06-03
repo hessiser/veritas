@@ -1071,7 +1071,7 @@ fn create_damage_portrait_rows(
         .collect::<Vec<_>>()
 }
 
-const ORDERED_DAMAGE_TYPES: [RPG_GameCore_AttackType; 12] = [
+const ORDERED_DAMAGE_TYPES: [RPG_GameCore_AttackType; 13] = [
     RPG_GameCore_AttackType::Normal,
     RPG_GameCore_AttackType::BPSkill,
     RPG_GameCore_AttackType::Ultra,
@@ -1084,6 +1084,7 @@ const ORDERED_DAMAGE_TYPES: [RPG_GameCore_AttackType; 12] = [
     RPG_GameCore_AttackType::Servant,
     RPG_GameCore_AttackType::TrueDamage,
     RPG_GameCore_AttackType::ElationDamage,
+    RPG_GameCore_AttackType::Assist,
 ];
 
 fn aggregate_damage_by_category(breakdowns: &[DamageTypeBreakdown]) -> DamageTypeBreakdown {
@@ -1284,6 +1285,7 @@ fn get_damage_category_color(category: &RPG_GameCore_AttackType) -> Color32 {
         RPG_GameCore_AttackType::Servant => Color32::from_rgb(149, 165, 166),
         RPG_GameCore_AttackType::TrueDamage => Color32::from_rgb(127, 140, 141),
         RPG_GameCore_AttackType::ElationDamage => Color32::from_rgb(255, 105, 180),
+        RPG_GameCore_AttackType::Assist => Color32::from_rgb(241, 148, 138),
         _ => Color32::from_rgb(189, 195, 199),
     }
 }
