@@ -48,8 +48,13 @@ pub enum Status {
 
 pub struct Update {
     pub new_version: Option<String>,
-    pub status: Option<Status>
+    pub status: Option<Status>,
+    pub prerelease_only: bool,
 }
+
+// Note: kept simple struct used to communicate update checks to UI.
+
+
 
 impl Updater {
     pub fn new(current_version: &str, allow_prereleases: bool) -> Self {
@@ -67,6 +72,8 @@ impl Updater {
         let Some(release) = self.fetch_latest_release().await? else {
             return Ok(None);
         };
+
+        log::debug!("fetch_latest_release returned tag='{}' prerelease={}", release.tag_name, release.prerelease);
 
         // unnecessary but good anyways
         let latest_tag = release.tag_name.trim_start_matches('v').trim();
@@ -110,8 +117,10 @@ impl Updater {
         };
 
         if update_needed {
+            log::debug!("update_needed=true for latest='{}' current='{}'", latest_tag, current_tag);
             Ok(Some(release.tag_name))
         } else {
+            log::debug!("update_needed=false for latest='{}' current='{}'", latest_tag, current_tag);
             Ok(None)
         }
     }
@@ -216,7 +225,8 @@ impl Updater {
         let repo_path = repository
             .strip_prefix("https://github.com/")
             .or_else(|| repository.strip_prefix("http://github.com/"))
-            .unwrap_or(repository);
+            .unwrap_or(repository)
+            .trim_end_matches('/');
         let endpoint = format!("https://api.github.com/repos/{}/releases", repo_path);
         
         let response = self
@@ -226,11 +236,19 @@ impl Updater {
             .send()
             .await?;
 
-        if response.status() == StatusCode::NOT_FOUND {
+        let status = response.status();
+        if status == StatusCode::NOT_FOUND {
+            log::warn!("GitHub releases endpoint returned 404 for {}", endpoint);
             return Ok(None);
         }
 
-        let response = response.error_for_status()?;
+        if !status.is_success() {
+            log::warn!("GitHub releases returned {} for {}. Treating as no update.", status, endpoint);
+            return Ok(None);
+        }
+
+        // Safe to proceed with successful response
+        let response = response;
         let releases = response.json::<Vec<GithubRelease>>().await?;
 
         let release = releases.into_iter().find(|release| {
@@ -238,10 +256,13 @@ impl Updater {
                 return false;
             }
 
-            release
+            let has_asset = release
                 .assets
                 .iter()
-                .any(|asset| asset.name == concat!(env!("CARGO_PKG_NAME"), ".dll"))
+                .any(|asset| asset.name == concat!(env!("CARGO_PKG_NAME"), ".dll"));
+
+            log::debug!("considering release '{}' prerelease={} has_asset={}", release.tag_name, release.prerelease, has_asset);
+            has_asset
         });
 
         Ok(release)

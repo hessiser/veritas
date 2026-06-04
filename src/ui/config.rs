@@ -8,7 +8,7 @@ use egui::{
 use serde::{Deserialize, Serialize};
 
 const CONFIG_FILENAME: &'static str = "config.json";
-const UPDATE_CONFIG_FILENAME: &'static str = "update.json";
+const UPDATE_CONFIG_FILENAME: &'static str = concat!(env!("CARGO_PKG_NAME"), ".update.json");
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Config {
@@ -43,6 +43,8 @@ pub struct UpdateConfig {
     pub version: String,
     #[serde(default)]
     pub beta: bool,
+    #[serde(default)]
+    pub prompt_beta: bool,
 }
 
 fn default_locale() -> String {
@@ -178,6 +180,7 @@ impl Default for UpdateConfig {
         Self {
             version: String::new(),
             beta: false,
+            prompt_beta: true,
         }
     }
 }

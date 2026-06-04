@@ -264,7 +264,7 @@ impl App {
             });
     }
 
-    fn show_updater_window(&mut self, ui: &mut Ui) {
+    pub fn show_updater_window(&mut self, ui: &mut Ui) {
         if let Some(hint) = self.updater_hint.as_deref() {
             Frame::group(ui.style())
                 .inner_margin(10.0)
@@ -281,52 +281,108 @@ impl App {
             ui.add_space(12.0);
         }
 
+        // One-time prompt shown on first run to ask about enabling beta updates.
+        if self.update_config.prompt_beta {
+            Frame::group(ui.style())
+                .inner_margin(10.0)
+                .show(ui, |ui| {
+                    ui.vertical_centered(|ui| {
+                        ui.label("Enable beta updates (pre-release)?");
+                        ui.add_space(6.0);
+                        ui.horizontal(|ui| {
+                            if ui.button("Enable Beta").clicked() {
+                                self.update_config.prompt_beta = false;
+                                self.update_config.beta = true;
+                                if let Err(e) = self.update_config.save() {
+                                    log::error!("{e}");
+                                }
+                                self.set_beta_flag(true);
+                            }
+
+                            if ui.button("No, thanks").clicked() {
+                                self.update_config.prompt_beta = false;
+                                self.update_config.beta = false;
+                                if let Err(e) = self.update_config.save() {
+                                    log::error!("{e}");
+                                }
+                            }
+                        });
+                    });
+                });
+
+            ui.add_space(12.0);
+        }
+
         ui.group(|ui| {
             ui.label(RichText::new(format!("{} Version Information", egui_phosphor::regular::INFO)).strong());
             
             let current_version = env!("CARGO_PKG_VERSION");
             if let Some(new_update) = &self.update {
-                if let Some(new_version) = &new_update.new_version {
-                    ui.colored_label(Color32::GREEN, t!("Version %{version} is available!", version = new_version));
-                    ui.horizontal(|ui| {
-                        ui.label(format!(
-                            "{} ➡ {}",
-                            current_version,
-                            new_version
-                        ));
-                    });
-                    
-                    ui.add_space(8.0);
-                    
-                    if ui
-                        .add_enabled(self.state.update_bttn_enabled, egui::Button::new(format!("{} Update Now", egui_phosphor::bold::DOWNLOAD)))
-                        .clicked()
-                    {
-                        self.updater_hint = None;
-                        let defender_exclusion = self.config.defender_exclusion;
-                        let new_version = new_version.clone();
-                        let sender = self.update_inbox.sender();
-                        let allow_prerelease = self.update_config.beta;
-                        self.state.update_bttn_enabled = false;
-                        self.notifs.success(t!("Update in progress"));
-                        RUNTIME.spawn(async move {
-                            let status = if let Err(e) = Updater::new(env!("CARGO_PKG_VERSION"), allow_prerelease)
-                                .download_update(defender_exclusion)
-                                .await
+                    if let Some(new_version) = &new_update.new_version {
+                        // If this update is prerelease-only and the user is on stable, show a hint to enable beta
+                        if new_update.prerelease_only && !self.update_config.beta {
+                            ui.colored_label(Color32::YELLOW, t!("Beta %{version} is available (enable beta to update)", version = new_version));
+                            ui.horizontal(|ui| {
+                                ui.label(format!("{} ➡ {}", current_version, new_version));
+                            });
+                            ui.add_space(8.0);
+                            ui.horizontal(|ui| {
+                                if ui.button("Enable Beta").clicked() {
+                                    self.update_config.beta = true;
+                                    self.update_config.prompt_beta = false;
+                                    if let Err(e) = self.update_config.save() {
+                                        log::error!("{e}");
+                                    }
+                                    self.set_beta_flag(true);
+                                }
+                                if ui.button("Ignore").clicked() {
+                                    self.update_config.prompt_beta = false;
+                                    if let Err(e) = self.update_config.save() {
+                                        log::error!("{e}");
+                                    }
+                                }
+                            });
+                        } else {
+                            ui.colored_label(Color32::GREEN, t!("Version %{version} is available!", version = new_version));
+                            ui.horizontal(|ui| {
+                                ui.label(format!(
+                                    "{} ➡ {}",
+                                    current_version,
+                                    new_version
+                                ));
+                            });
+                            ui.add_space(8.0);
+
+                            if ui
+                                .add_enabled(self.state.update_bttn_enabled, egui::Button::new(format!("{} Update Now", egui_phosphor::bold::DOWNLOAD)))
+                                .clicked()
                             {
-                                Some(Status::Failed(e))
-                            }
-                            else {
-                                Some(Status::Succeeded)
-                            };
+                                self.updater_hint = None;
+                                let defender_exclusion = self.config.defender_exclusion;
+                                let new_version = new_version.clone();
+                                let sender = self.update_inbox.sender();
+                                let allow_prerelease = self.update_config.beta;
+                                self.state.update_bttn_enabled = false;
+                                self.notifs.success(t!("Update in progress"));
+                                RUNTIME.spawn(async move {
+                                    let status = if let Err(e) = Updater::new(env!("CARGO_PKG_VERSION"), allow_prerelease)
+                                        .download_update(defender_exclusion)
+                                        .await
+                                    {
+                                        Some(Status::Failed(e))
+                                    }
+                                    else {
+                                        Some(Status::Succeeded)
+                                    };
 
-                            if sender.send(Some(Update { new_version: Some(new_version.to_string()), status})).is_err() {
-                                let e = anyhow!("Failed to send update to inbox");
-                                log::error!("{e}");
-                            }
+                                    if sender.send(Some(Update { new_version: Some(new_version.to_string()), status, prerelease_only: false})).is_err() {
+                                        let e = anyhow!("Failed to send update to inbox");
+                                        log::error!("{e}");
+                                    }
 
-                        });
-                    }
+                                });
+                            }
+                        }
                 } else {
                     ui.horizontal(|ui| {
                         ui.label("Current version:");
