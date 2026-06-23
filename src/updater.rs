@@ -91,7 +91,7 @@ impl Updater {
 
         let tags_differ = latest_tag != current_tag;
 
-        let update_needed = if !self.allow_prereleases {
+        let update_needed = if !self.allow_prereleases && release.prerelease {
             if tags_differ {
                 log::debug!(
                     "stable channel mismatch: latest_tag='{}', current_tag='{}'",

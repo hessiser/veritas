@@ -37,11 +37,17 @@ fn init() {
             toasts.push(Toast::success(msg));
         }
         Err(e) => {
-            let err = format!("Plugin version is incompatible with the game. Core has been disabled: {e}");
+            let err_tip = format!("Plugin is incompatible with this version of the game. Check {}/releases for updates.", env!("CARGO_PKG_REPOSITORY"));
+            let mut toast = Toast::error(err_tip);
+            toast.duration(None);
+            toasts.push(toast);
+
+            let err = format!("Core has been disabled: {}", e);
             log::error!("{}", err);
             let mut toast = Toast::error(err);
             toast.duration(None);
             toasts.push(toast);
+
         }
     };
 
