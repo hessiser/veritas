@@ -67,7 +67,7 @@ widestring = "1.2.0"
 ron = "0.10.1"
 strum = { version = "0.28", features = ["derive"] }
 parse-changelog = { version = "0.6.12", default-features = false }
-il2cpp-runtime = { git = "https://github.com/hessiser/il2cpp-rust.git", rev = "aa08cdd" , features = ["log"]}
+il2cpp-runtime = { git = "https://github.com/hessiser/il2cpp-rust.git", rev = "51f8c1f" , features = ["log"]}
 image = "0.25.10"
 
 [dev-dependencies]
