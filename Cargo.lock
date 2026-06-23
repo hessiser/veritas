@@ -5762,7 +5762,7 @@ checksum = "eab68b56840f69efb0fefbe3ab6661499217ffdc58e2eef7c3f6f69835386322"
 
 [[package]]
 name = "veritas"
-version = "0.2.51"
+version = "0.2.52"
 dependencies = [
  "anyhow",
  "axum",
