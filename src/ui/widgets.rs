@@ -1,10 +1,13 @@
 ﻿use crate::{kreide::types::RPG_GameCore_AvatarPropertyType, ui::app::{DamageBarValue, DamageBreakdownChart, DamageBreakdownScope, GraphUnit}};
-use egui::{Align, Align2, Color32, CornerRadius, FontId, Frame, Layout, Pos2, Rect, RichText, ScrollArea, Sense, Stroke, StrokeKind, TextStyle, Ui, Vec2};
+use egui::{
+    Align, Align2, Color32, CornerRadius, FontId, Frame, Layout, Pos2, Rect, RichText, ScrollArea,
+    Sense, Stroke, StrokeKind, TextStyle, Ui, UiBuilder, Vec2,
+};
 use egui_extras::Column;
 use egui_plot::{Bar, BarChart, Line, Plot, PlotPoints, Polygon};
 
 use crate::{
-    battle::{display_damage_type, BattleContext, DamageTypeBreakdown},
+    battle::{calculate_dpav, display_damage_type, BattleContext, DamageTypeBreakdown},
     kreide::types::RPG_GameCore_AttackType,
     models::types::Avatar,
 };
@@ -28,36 +31,6 @@ struct DamagePortraitRow {
 impl App {
     pub fn show_character_legend(&mut self, ui: &mut Ui) {
         let battle_context = &BattleContext::get_instance();
-
-        // // I need to make separate DPAV calcs in the battle context
-        // for (i, avatar) in battle_context.avatar_lineup.iter().enumerate() {
-        //     ui.horizontal(|ui| {
-        //         let style = ui.style_mut();
-        //         style.override_text_style = Some(self.config.legend_text_style.clone());
-        //         let (res, painter) = ui.allocate_painter(Vec2::splat(12.), Sense::empty());
-        //         let rect = res.rect;
-        //         let radius = rect.width() / 2.0 - 1.0;
-        //         painter.circle_filled(rect.center(), radius, helpers::get_character_color(i));
-
-        //         let dmg = battle_context.real_time_damages[i];
-
-        //         let percentage = dmg / battle_context.total_damage * 100.0;
-
-        //         let dpav = if battle_context.action_value > 0.0 {
-        //             dmg / battle_context.action_value
-        //         } else {
-        //             dmg
-        //         };
-
-        //         ui.label(format!(
-        //             "{}: {:.1}% | {} DMG | {} DPAV",
-        //             avatar.name,
-        //             percentage,
-        //             helpers::format_damage(dmg),
-        //             helpers::format_damage(dpav)
-        //         ));
-        //     });
-        // }
 
         let mut table_builder = egui_extras::TableBuilder::new(ui)
             .cell_layout(Layout::centered_and_justified(egui::Direction::LeftToRight));
@@ -174,12 +147,7 @@ impl App {
                         ui.with_layout(
                             Layout::centered_and_justified(egui::Direction::LeftToRight),
                             |ui| {
-                                let dpav = if battle_context.action_value > 0.0 {
-                                    dmg / battle_context.action_value
-                                } else {
-                                    dmg
-                                };
-
+                                let dpav = calculate_dpav(dmg, battle_context.action_value);
                                 ui.label(format! {"{}", helpers::format_damage(dpav)});
                             },
                         );
@@ -305,16 +273,9 @@ impl App {
         };
 
         rows.sort_by(|left, right| {
-            let left_value = match self.state.damage_bar_value {
-                DamageBarValue::Damage => left.damage,
-                DamageBarValue::Dpav => left.dpav,
-            };
-            let right_value = match self.state.damage_bar_value {
-                DamageBarValue::Damage => right.damage,
-                DamageBarValue::Dpav => right.dpav,
-            };
-            right_value
-                .partial_cmp(&left_value)
+            right
+                .damage
+                .partial_cmp(&left.damage)
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
 
@@ -322,10 +283,7 @@ impl App {
         let dark_mode = visuals.dark_mode;
         let max_value = rows
             .iter()
-            .map(|row| match self.state.damage_bar_value {
-                DamageBarValue::Damage => row.damage,
-                DamageBarValue::Dpav => row.dpav,
-            })
+            .map(|row| row.damage)
             .fold(0.0, f64::max);
 
         let primary_text = if dark_mode {
@@ -350,28 +308,28 @@ impl App {
         let (tabs_rect, _) = ui.allocate_exact_size(Vec2::new(ui.available_width(), tab_height), Sense::hover());
         let tab_painter = ui.painter_at(tabs_rect);
 
-        ui.allocate_ui_at_rect(tabs_rect, |ui| {
-        ui.horizontal(|ui| {
-            ui.spacing_mut().item_spacing.x = 0.0;
+        ui.scope_builder(UiBuilder::new().max_rect(tabs_rect), |ui| {
+            ui.horizontal(|ui| {
+                ui.spacing_mut().item_spacing.x = 0.0;
 
-            for (value, label) in tabs {
-                let (rect, response) = ui.allocate_exact_size(Vec2::new(tab_width, tab_height), Sense::click());
-                let selected = self.state.damage_bar_value == value;
+                for (value, label) in tabs {
+                    let (rect, response) =
+                        ui.allocate_exact_size(Vec2::new(tab_width, tab_height), Sense::click());
+                    let selected = self.state.damage_bar_value == value;
 
-                if response.clicked() {
-                    self.state.damage_bar_value = value;
+                    if response.clicked() {
+                        self.state.damage_bar_value = value;
+                    }
+
+                    tab_painter.text(
+                        rect.center_top() + egui::vec2(0.0, 2.0),
+                        Align2::CENTER_TOP,
+                        label.as_ref(),
+                        FontId::proportional(16.0),
+                        if selected { primary_text } else { secondary_text },
+                    );
                 }
-
-                tab_painter.text(
-                    rect.center_top() + egui::vec2(0.0, 2.0),
-                    Align2::CENTER_TOP,
-                    label.as_ref(),
-                    FontId::proportional(16.0),
-                    if selected { primary_text } else { secondary_text },
-                );
-
-            }
-        });
+            });
         });
 
         let separator_color = if dark_mode {
@@ -434,16 +392,12 @@ impl App {
                                     draw_damage_meter(
                                         ui,
                                         if max_value > 0.0 {
-                                            display_value / max_value
+                                            row.damage / max_value
                                         } else {
                                             0.0
                                         },
                                         if max_value > 0.0 {
-                                            let overkill_value = match self.state.damage_bar_value {
-                                                DamageBarValue::Damage => row.overkill_damage,
-                                                DamageBarValue::Dpav => row.overkill_dpav,
-                                            };
-                                            overkill_value / max_value
+                                            row.overkill_damage / max_value
                                         } else {
                                             0.0
                                         },
@@ -728,47 +682,58 @@ impl App {
             });
         });
 
-        let current_action_value =
-            battle_context.action_value - battle_context.last_wave_action_value;
+        let action_value = battle_context.action_value;
+        let reset_action_value = battle_context.reset_action_value;
+        let relative_action_value = action_value - reset_action_value;
 
-        egui::CollapsingHeader::new(format!("{}: {:.2}", t!("AV"), current_action_value))
+        let header_text = if reset_action_value > 0.0 {
+            format!(
+                "{}: {:.2} ({:.2})",
+                t!("AV"),
+                relative_action_value,
+                action_value
+            )
+        } else {
+            format!("{}: {:.2}", t!("AV"), action_value)
+        };
+        egui::CollapsingHeader::new(header_text)
             .id_salt("action_value_header")
             .show(ui, |ui| {
-                ui.label(format!(
-                    "{}: {:.2}",
-                    t!("Total Elapsed AV"),
-                    battle_context.action_value
-                ));
                 ui.vertical(|ui| {
                     for (i, avatar) in battle_context.avatar_lineup.iter().enumerate() {
                         ui.horizontal(|ui| {
                             ui.label(format!("{}", avatar.name,));
 
-                            ui.label(format!(
-                                "{:.2}",
-                                battle_context.battle_avatars[i].properties.av()
-                                    + current_action_value,
-                            ));
+                            if reset_action_value > 0.0 {
+                                ui.label(format!(
+                                    "{:.2} ({:.2})",
+                                    f64::max(relative_action_value, battle_context.battle_avatars[i].properties.av()
+                                        + relative_action_value),
+                                    f64::max(action_value, battle_context.battle_avatars[i].properties.av()
+                                        + action_value),
+                                ));
+                            } else {
+                                ui.label(format!(
+                                    "{:.2}",
+                                    f64::max(action_value, battle_context.battle_avatars[i].properties.av()
+                                        + action_value),
+                                ));
+                            }
                         });
                     }
                 });
             });
 
-        let dpav = if battle_context.action_value > 0.0 {
-            battle_context.total_damage / battle_context.action_value
-        } else {
-            battle_context.total_damage
-        };
+        let dpav = calculate_dpav(battle_context.total_damage, battle_context.action_value);
         egui::CollapsingHeader::new(format!("{}: {:.2}", t!("DPAV"), dpav))
             .id_salt("dpav_header")
             .show(ui, |ui| {
                 ui.vertical(|ui| {
                     for (i, avatar) in battle_context.avatar_lineup.iter().enumerate() {
-                        let dpav = if battle_context.action_value > 0.0 {
-                            battle_context.real_time_damages[i] / battle_context.action_value
-                        } else {
-                            battle_context.real_time_damages[i]
-                        };
+                        let dpav = calculate_dpav(
+                            battle_context.real_time_damages[i],
+                            battle_context.action_value,
+                        );
                         ui.horizontal(|ui| {
                             ui.label(format!("{}", avatar.name));
                             ui.label(format!("{:.2}", dpav));
@@ -978,35 +943,74 @@ fn draw_damage_meter(
     };
 
     painter.rect_filled(rect, 5.0, track_fill);
-    painter.rect_stroke(rect, 5.0, Stroke::new(1.0, track_stroke), StrokeKind::Inside);
+    let fill_area = rect.shrink(1.0);
 
     let clamped_ratio = fill_ratio.clamp(0.0, 1.0) as f32;
     if clamped_ratio <= 0.0 {
+        painter.rect_stroke(rect, 5.0, Stroke::new(1.0, track_stroke), StrokeKind::Inside);
         return;
     }
 
-    let fill_rect = egui::Rect::from_min_max(
-        rect.min,
-        egui::pos2(rect.left() + rect.width() * clamped_ratio, rect.bottom()),
-    );
-    painter.rect_filled(fill_rect, 5.0, fill);
-
     let clamped_overkill_ratio = overkill_ratio.clamp(0.0, fill_ratio).max(0.0) as f32;
+    let fill_rect = egui::Rect::from_min_max(
+        fill_area.min,
+        egui::pos2(
+            fill_area.left() + fill_area.width() * clamped_ratio,
+            fill_area.bottom(),
+        ),
+    );
+    let fill_radius = (fill_rect.width() * 0.5)
+        .min(fill_rect.height() * 0.5)
+        .min(5.0) as u8;
+    let fill_rounding = if clamped_overkill_ratio > 0.0 {
+        CornerRadius {
+            nw: fill_radius,
+            ne: 0,
+            sw: fill_radius,
+            se: 0,
+        }
+    } else {
+        CornerRadius::same(fill_radius)
+    };
+    painter.rect_filled(fill_rect, fill_rounding, fill);
+
+    let overkill_left = fill_rect.right() - fill_area.width() * clamped_overkill_ratio;
+    let highlight_y = fill_rect.top() + 1.5;
+
+    if clamped_overkill_ratio <= 0.0 && fill_rect.width() >= 4.0 {
+        painter.line_segment(
+            [
+                egui::pos2(fill_rect.left() + 2.0, highlight_y),
+                egui::pos2((fill_rect.right() - 2.0).max(fill_rect.left() + 2.0), highlight_y),
+            ],
+            Stroke::new(1.0, highlight),
+        );
+    } else if overkill_left - fill_rect.left() >= 4.0 {
+        painter.line_segment(
+            [
+                egui::pos2(fill_rect.left() + 2.0, highlight_y),
+                egui::pos2(overkill_left, highlight_y),
+            ],
+            Stroke::new(1.0, highlight),
+        );
+    }
+
     if clamped_overkill_ratio > 0.0 {
-        let overkill_width = rect.width() * clamped_overkill_ratio;
-        let overkill_left = (fill_rect.right() - overkill_width).max(fill_rect.left());
         let overkill_rect = egui::Rect::from_min_max(
             egui::pos2(overkill_left, fill_rect.top()),
             egui::pos2(fill_rect.right(), fill_rect.bottom()),
         );
+        let overkill_radius = (overkill_rect.width() * 0.5)
+            .min(overkill_rect.height() * 0.5)
+            .min(5.0) as u8;
         let overkill_rounding = if overkill_left <= fill_rect.left() {
-            CornerRadius::same(5)
+            CornerRadius::same(overkill_radius)
         } else {
             CornerRadius {
                 nw: 0,
-                ne: 5,
+                ne: overkill_radius,
                 sw: 0,
-                se: 5,
+                se: overkill_radius,
             }
         };
         painter.rect_filled(overkill_rect, overkill_rounding, overkill_fill);
@@ -1020,16 +1024,23 @@ fn draw_damage_meter(
                 Stroke::new(1.0, visuals.widgets.noninteractive.bg_stroke.color),
             );
         }
+
+        if fill_rect.right() - overkill_left >= 4.0 {
+            painter.line_segment(
+                [
+                    egui::pos2(overkill_left, highlight_y),
+                    egui::pos2((fill_rect.right() - 2.0).max(overkill_left), highlight_y),
+                ],
+                Stroke::new(1.0, overkill_fill.gamma_multiply(if visuals.dark_mode {
+                    1.15
+                } else {
+                    0.92
+                })),
+            );
+        }
     }
 
-    let highlight_y = fill_rect.top() + 1.5;
-    painter.line_segment(
-        [
-            egui::pos2(fill_rect.left() + 2.0, highlight_y),
-            egui::pos2((fill_rect.right() - 2.0).max(fill_rect.left() + 2.0), highlight_y),
-        ],
-        Stroke::new(1.0, highlight),
-    );
+    painter.rect_stroke(rect, 5.0, Stroke::new(1.0, track_stroke), StrokeKind::Inside);
 }
 
 fn create_damage_portrait_rows(
@@ -1048,18 +1059,10 @@ fn create_damage_portrait_rows(
             DamagePortraitRow {
                 avatar: avatar.clone(),
                 damage,
-                dpav: if action_value > 0.0 {
-                    damage / action_value
-                } else {
-                    damage
-                },
+                dpav: calculate_dpav(damage, action_value),
                 effective_damage: (damage - overkill_damage).max(0.0),
                 overkill_damage,
-                overkill_dpav: if action_value > 0.0 {
-                    overkill_damage / action_value
-                } else {
-                    overkill_damage
-                },
+                overkill_dpav: calculate_dpav(overkill_damage, action_value),
                 percentage: if total_damage > 0.0 {
                     damage / total_damage * 100.0
                 } else {
