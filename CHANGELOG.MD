@@ -1,3 +1,10 @@
+# 0.2.53 2026-10-05
+  - Improved the Character Damage window with clearer DMG/DPAV value switching.
+  - Fixed damage-meter rendering issues affecting overkill colors, borders, highlights, rounded corners, and very small damage ratios.
+  - Fixed overkill damage calculation
+  - Added more damage allocation (shield, high res, etc.) for accurate damage logging
+  - In Battle Metrics, when battle resets AV (i.e. in MoC), shows relative_AV (total_elapsed_AV)
+
 # 0.2.52 - 2026-06-23
   - Fixed for 4.2.54
 
