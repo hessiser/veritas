@@ -5,7 +5,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use directories::BaseDirs;
 use chrono::DateTime;
 
-use crate::battle::BattleContext;
+use crate::battle::{calculate_dpav, BattleContext};
 use crate::kreide::types::RPG_GameCore_AbilityProperty;
 
 #[derive(Clone, Debug, Serialize)]
@@ -225,14 +225,6 @@ impl BattleDataExporter {
         }
     }
 
-    fn calculate_damage_per_av(total_damage: f64, action_value: f64) -> f64 {
-        if action_value > 0.0 {
-            total_damage / action_value
-        } else {
-            0.0
-        }
-    }
-
     fn get_export_directory() -> Result<PathBuf, Box<dyn std::error::Error>> {
         Self::get_export_directory_with_custom_path(None, true)
     }
@@ -381,7 +373,10 @@ impl BattleDataExporter {
             data_avatar: Vec::new(),
             total_av: battle_context.action_value,
             total_damage: battle_context.total_damage,
-            damage_per_av: Self::calculate_damage_per_av(battle_context.total_damage, battle_context.action_value),
+            damage_per_av: calculate_dpav(
+                battle_context.total_damage,
+                battle_context.action_value,
+            ),
             cycle_index: battle_context.cycle,
             wave_index: battle_context.wave,
             max_wave: battle_context.max_waves,
@@ -470,11 +465,7 @@ impl BattleDataExporter {
                 0.0
             };
             
-            let dpav = if total_action_value > 0.0 {
-                character_damage / total_action_value
-            } else {
-                0.0
-            };
+            let dpav = calculate_dpav(character_damage, total_action_value);
 
             let primary_skill_usage = character_skills
                 .get(&avatar.id)

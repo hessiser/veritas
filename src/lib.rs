@@ -7,6 +7,7 @@ extern crate rust_i18n;
 mod battle;
 mod entry;
 mod export;
+mod memory_scanner;
 mod kreide;
 mod logging;
 mod models;

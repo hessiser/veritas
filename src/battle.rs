@@ -24,6 +24,14 @@ pub struct SkillHistoryEntry {
 
 pub type DamageTypeBreakdown = BTreeMap<RPG_GameCore_AttackType, f64>;
 
+pub(crate) fn calculate_dpav(damage: f64, action_value: f64) -> f64 {
+    if action_value > 0.0 {
+        damage / action_value
+    } else {
+        damage
+    }
+}
+
 pub(crate) fn display_damage_type(attack_type: &RPG_GameCore_AttackType) -> String {
     let other = attack_type.to_string();
     match attack_type {
@@ -71,8 +79,8 @@ pub struct BattleContext {
     pub skill_history: Vec<SkillHistoryEntry>,
     pub current_turn_battle_id: u32,
     // This is really only relevant for MOC and
-    // is the relative AV
-    pub last_wave_action_value: f64,
+    // is the reset AV
+    pub reset_action_value: f64,
     pub action_value: f64,
     pub current_turn_info: TurnInfo,
     pub turn_count: usize,
@@ -90,19 +98,6 @@ pub struct BattleContext {
     pub cycle: u32,
     pub max_cycle: u32,
     pub stage_id: u32,
-    pub battle_mode: BattleMode,
-    // TODO: Move everything not meant to be exposed in the API here
-    // pub internal: BattleContextInternal,
-}
-
-#[derive(Default, Clone, Copy, PartialEq)]
-pub enum BattleMode {
-    MOC,
-    PF,
-    AS,
-    AA,
-    #[default]
-    Other,
 }
 
 static BATTLE_CONTEXT: LazyLock<Mutex<BattleContext>> =
@@ -152,7 +147,7 @@ impl BattleContext {
 
         battle_context.turn_count = 0;
         battle_context.total_damage = 0.;
-        battle_context.last_wave_action_value = 0.;
+        battle_context.reset_action_value = 0.;
         battle_context.action_value = 0.;
         battle_context.damage_by_category = Vec::new();
         battle_context.max_waves = 0;
@@ -162,42 +157,27 @@ impl BattleContext {
         battle_context.stage_id = 0;
     }
 
-    fn get_battle_mode(stage_id: u32) -> BattleMode {
-        match stage_id {
-            30010000..30500000 => match stage_id % 100 {
-                21 | 22 => BattleMode::MOC,
-                41 | 42 => BattleMode::PF,
-                _ => BattleMode::Other,
-            },
-            30500000..=31000000 => BattleMode::Other,
-            420101..=420999 => BattleMode::AS,
-            _ => BattleMode::Other,
-        }
-    }
-
     // A word of caution:
     // The lineup is setup first
     fn handle_on_battle_begin_event(
         e: OnBattleBeginEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         log::info!("Battle has started");
         log::info!("Max Waves: {}", e.max_waves);
         battle_context.max_waves = e.max_waves;
 
-        battle_context.battle_mode = BattleContext::get_battle_mode(e.stage_id);
-
-        Ok(Packet::OnBattleBegin {
+        Ok(Some(Packet::OnBattleBegin {
             max_waves: e.max_waves,
             max_cycles: e.max_cycles,
             stage_id: e.stage_id,
-        })
+        }))
     }
 
     fn handle_on_set_lineup_event(
         e: OnSetLineupEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         battle_context.state = Some(BattleState::Started);
         Self::initialize_battle_context(&mut battle_context);
         battle_context.current_turn_info.avatars_turn_damage = vec![0f64; e.avatars.len()];
@@ -222,15 +202,15 @@ impl BattleContext {
             log::info!("{} was loaded in lineup", avatar);
         }
 
-        Ok(Packet::OnSetBattleLineup {
+        Ok(Some(Packet::OnSetBattleLineup {
             avatars: battle_context.avatar_lineup.clone(),
-        })
+        }))
     }
 
     fn handle_on_damage_event(
         e: OnDamageEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         let lineup_index = Self::find_lineup_index_by_avatar_id(&battle_context, e.attacker.uid)
             .with_context(|| format!("Could not find avatar {} in lineup", e.attacker.uid))?;
         let turn = &mut battle_context.current_turn_info;
@@ -259,18 +239,18 @@ impl BattleContext {
             last_skill.total_damage += e.damage as f64;
         }
 
-        Ok(Packet::OnDamage {
+        Ok(Some(Packet::OnDamage {
             attacker: e.attacker,
             damage: e.damage,
             overkill_damage: e.overkill_damage,
             r#type: mapped_type,
-        })
+        }))
     }
 
     fn handle_on_turn_begin_event(
         e: OnTurnBeginEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         battle_context.action_value = e.action_value;
         battle_context.current_turn_info.action_value = e.action_value;
 
@@ -289,15 +269,16 @@ impl BattleContext {
 
         log::info!("AV: {:.2}", e.action_value);
 
-        Ok(Packet::OnTurnBegin {
+
+        Ok(Some(Packet::OnTurnBegin {
             action_value: e.action_value,
             turn_owner: e.turn_owner,
-        })
+        }))
     }
 
     fn handle_on_turn_end_event(
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         battle_context.current_turn_info.wave = battle_context.wave;
         battle_context.current_turn_info.cycle = battle_context.cycle;
 
@@ -348,24 +329,24 @@ impl BattleContext {
             vec![0f64; battle_context.avatar_lineup.len()];
         battle_context.turn_count += 1;
 
-        Ok(Packet::OnTurnEnd { turn_info })
+        Ok(Some(Packet::OnTurnEnd { turn_info }))
     }
 
     fn handle_on_entity_defeated_event(
         e: OnEntityDefeatedEvent,
         mut _battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         // log::info!("{} has defeated {}", e.attacker);
 
-        Ok(Packet::OnEntityDefeated {
+        Ok(Some(Packet::OnEntityDefeated {
             killer: e.killer,
             entity_defeated: e.entity_defeated,
-        })
+        }))
     }
 
     fn handle_on_battle_end_event(
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         battle_context.state = Some(BattleState::Ended);
 
         let exporter = crate::export::BattleDataExporter::new();
@@ -389,7 +370,7 @@ impl BattleContext {
             }
         }
 
-        Ok(Packet::OnBattleEnd {
+        Ok(Some(Packet::OnBattleEnd {
             avatars: battle_context.avatar_lineup.clone(),
             turn_history: battle_context.turn_history.clone(),
             av_history: battle_context.av_history.clone(),
@@ -399,13 +380,13 @@ impl BattleContext {
             cycle: battle_context.cycle,
             wave: battle_context.wave,
             stage_id: battle_context.stage_id,
-        })
+        }))
     }
 
     fn handle_on_use_skill_event(
         e: OnUseSkillEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         let turn_battle_id = battle_context.entity_turn_history.len() as u32;
 
         battle_context.skill_history.push(SkillHistoryEntry {
@@ -417,43 +398,39 @@ impl BattleContext {
             turn_battle_id,
         });
 
-        Ok(Packet::OnUseSkill {
+        Ok(Some(Packet::OnUseSkill {
             avatar: e.avatar,
             skill: e.skill,
-        })
+        }))
     }
 
     fn handle_on_update_wave_event(
         e: OnUpdateWaveEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         log::info!("Wave: {}", e.wave);
 
-        if battle_context.battle_mode == BattleMode::MOC {
-            battle_context.last_wave_action_value = battle_context.action_value;
-        }
-
         battle_context.wave = e.wave;
-        Ok(Packet::OnUpdateWave { wave: e.wave })
+        Ok(Some(Packet::OnUpdateWave { wave: e.wave }))
     }
 
     fn handle_on_update_cycle_event(
         e: OnUpdateCycleEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         log::info!("Cycle: {}", e.cycle);
 
         battle_context.cycle = e.cycle;
         if e.cycle > battle_context.max_cycle {
             battle_context.max_cycle = e.cycle;
         }
-        Ok(Packet::OnUpdateCycle { cycle: e.cycle })
+        Ok(Some(Packet::OnUpdateCycle { cycle: e.cycle }))
     }
 
     fn handle_on_stat_change_event(
         e: OnStatChangeEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         match e.entity.team {
             Team::Player => {
                 if let Some(avatar) = battle_context
@@ -475,16 +452,16 @@ impl BattleContext {
             }
         }
 
-        Ok(Packet::OnStatChange {
+        Ok(Some(Packet::OnStatChange {
             entity: e.entity,
             property: e.property,
-        })
+        }))
     }
 
     fn handle_on_initialize_enemy_event(
         e: OnInitializeEnemyEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         battle_context.enemies.push(e.enemy.clone());
         battle_context.battle_enemies.push(BattleEntity {
             entity: Entity {
@@ -493,24 +470,30 @@ impl BattleContext {
             },
             properties: e.enemy.base_stats.clone(),
         });
-        Ok(Packet::OnInitializeEnemy { enemy: e.enemy })
+        Ok(Some(Packet::OnInitializeEnemy { enemy: e.enemy }))
     }
 
     fn handle_on_update_team_formation_event(
         e: OnUpdateTeamFormationEvent,
         mut battle_context: MutexGuard<'static, BattleContext>,
-    ) -> Result<Packet> {
+    ) -> Result<Option<Packet>> {
         match e.team {
             Team::Player => {}
             Team::Enemy => {
                 battle_context.enemy_lineup = e.entities.clone();
             }
         }
-        Ok(Packet::OnUpdateTeamFormation {
+        Ok(Some(Packet::OnUpdateTeamFormation {
             entities: e.entities,
             team: e.team,
-        })
+        }))
     }
+
+    fn handle_on_reset_action_value_event(e: OnResetActionValueEvent, mut battle_context: MutexGuard<'_, BattleContext>) -> Result<Option<Packet>> {
+        battle_context.reset_action_value = e.action_value;
+        Ok(None)
+    }
+
 
     pub fn handle_event(event: Result<Event>) {
         let battle_context = Self::get_instance();
@@ -531,27 +514,25 @@ impl BattleContext {
                     }
                     Self::handle_on_update_cycle_event(e, battle_context)
                 }
-                Event::OnStatChange(e) => {
-                    Self::handle_on_stat_change_event(e, battle_context)
-                }
-                Event::OnInitializeEnemy(e) => {
-                    Self::handle_on_initialize_enemy_event(e, battle_context)
-                }
-                Event::OnUpdateTeamFormation(e) => {
-                    Self::handle_on_update_team_formation_event(e, battle_context)
-                }
+                Event::OnStatChange(e) => Self::handle_on_stat_change_event(e, battle_context),
+                Event::OnInitializeEnemy(e) => Self::handle_on_initialize_enemy_event(e, battle_context),
+                Event::OnUpdateTeamFormation(e) => Self::handle_on_update_team_formation_event(e, battle_context),
+                Event::OnResetActionValue(e) => Self::handle_on_reset_action_value_event(e, battle_context),
             },
             Err(e) => Ok({
                 log::error!("{}", e);
-                Packet::Error { msg: e.to_string() }
+                Some(Packet::Error { msg: e.to_string() })
             }),
         };
 
         match packet {
             Result::Ok(packet) => {
-                server::broadcast(packet);
+                if let Some(packet) = packet {
+                    server::broadcast(packet);
+                }
             }
             Err(e) => log::error!("Packet Error: {}", e),
         };
     }
+    
 }

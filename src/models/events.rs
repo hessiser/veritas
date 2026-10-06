@@ -14,7 +14,8 @@ pub enum Event {
     OnStatChange(OnStatChangeEvent),
     OnEntityDefeated(OnEntityDefeatedEvent),
     OnUpdateTeamFormation(OnUpdateTeamFormationEvent),
-    OnInitializeEnemy(OnInitializeEnemyEvent)
+    OnInitializeEnemy(OnInitializeEnemyEvent),
+    OnResetActionValue(OnResetActionValueEvent),
 }
 
 pub struct OnBattleBeginEvent {
@@ -69,4 +70,8 @@ pub struct OnUpdateTeamFormationEvent {
 
 pub struct OnInitializeEnemyEvent {
     pub enemy: Enemy
+}
+
+pub struct OnResetActionValueEvent {
+    pub action_value: f64
 }
