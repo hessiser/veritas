@@ -1,7 +1,8 @@
+use crate::kreide::types::RPG_Client_GlobalVars;
 use crate::{get_module_handle, logging, overlay, server, subscribers};
 use ctor::ctor;
 use egui_notify::Toast;
-use il2cpp_runtime::api::ApiIndexTable;
+use il2cpp_runtime::api::{ApiIndexTable, il2cpp_domain_get, il2cpp_thread_attach};
 use windows::Win32::System::Diagnostics::Debug::ReadProcessMemory;
 use windows::Win32::System::ProcessStatus::{GetModuleInformation, MODULEINFO};
 use windows::Win32::System::Threading::GetCurrentProcess;
@@ -51,12 +52,23 @@ fn init() {
         }
     };
 
+
     thread::spawn(|| server::start_server());
 
     match overlay::initialize(toasts) {
         Ok(_) => log::info!("Overlay initialized successfully"),
         Err(e) => log::error!("Overlay failed to initialize: {}", e),
     }
+
+    thread::spawn(|| -> Result<()> { unsafe {
+        thread::sleep(Duration::from_secs(3));
+        let domain = il2cpp_domain_get();
+        il2cpp_thread_attach(domain);
+        let version_data = RPG_Client_GlobalVars::s_VersionData()?;
+        log::info!("Game Version: {}.{}.{}", version_data.get_MajorVersion()?, version_data.get_MinorVersion()?, version_data.get_PatchVersion()?);
+
+        Ok(())
+    }});
 }
 
 

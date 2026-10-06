@@ -996,3 +996,24 @@ impl UnityEngine_Graphics {
 	#[il2cpp_method(name = "Blit", args = ["UnityEngine.Texture", "UnityEngine.RenderTexture"])]
 	pub fn Blit(source: UnityEngine_Texture2D, dest: UnityEngine_RenderTexture) {}
 }
+
+#[il2cpp_ref_type("RPG.GameCore.VersionData")]
+pub struct RPG_GameCore_VersionData;
+impl RPG_GameCore_VersionData {
+	#[il2cpp_getter_property(property = "MajorVersion")]
+	pub fn get_MajorVersion(&self) -> u32 {}
+
+	#[il2cpp_getter_property(property = "MinorVersion")]
+	pub fn get_MinorVersion(&self) -> u32 {}
+
+	#[il2cpp_getter_property(property = "PatchVersion")]
+	pub fn get_PatchVersion(&self) -> u32 {}
+}
+
+#[il2cpp_ref_type("RPG.Client.GlobalVars")]
+pub struct RPG_Client_GlobalVars;
+impl RPG_Client_GlobalVars {
+	// RPG.GameCore.VersionData s_VersionData
+	#[il2cpp_field(name = "s_VersionData")]
+	pub fn s_VersionData() -> RPG_GameCore_VersionData {}
+}
