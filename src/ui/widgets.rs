@@ -926,7 +926,7 @@ fn draw_damage_meter(
     let track_fill = visuals.widgets.noninteractive.bg_fill;
     let track_stroke = visuals.widgets.inactive.bg_stroke.color;
     let fill = visuals.selection.bg_fill;
-    let highlight = fill.gamma_multiply(if visuals.dark_mode { 1.15 } else { 0.92 });
+    // let highlight = fill.gamma_multiply(if visuals.dark_mode { 1.15 } else { 0.92 });
     let overkill_fill = if visuals.dark_mode {
         Color32::from_rgba_premultiplied(
             (fill.r() as f32 * 0.45) as u8,
@@ -942,105 +942,40 @@ fn draw_damage_meter(
         Color32::from_rgba_premultiplied(r, g, b, 200)
     };
 
-    painter.rect_filled(rect, 5.0, track_fill);
-    let fill_area = rect.shrink(1.0);
+    // Unfilled damage bar track
+    let stroke_width = 1.0;
+    painter.rect_filled(rect, 0, track_fill);
+    painter.rect_stroke(rect, 0, Stroke::new(stroke_width, track_stroke), StrokeKind::Inside);
 
     let clamped_ratio = fill_ratio.clamp(0.0, 1.0) as f32;
-    if clamped_ratio <= 0.0 {
-        painter.rect_stroke(rect, 5.0, Stroke::new(1.0, track_stroke), StrokeKind::Inside);
+    let clamped_overkill_ratio = overkill_ratio.clamp(0.0, fill_ratio).max(0.0) as f32;
+    let effective_ratio = (clamped_ratio - clamped_overkill_ratio).max(0.0);
+    if effective_ratio <= 0.0 {
         return;
     }
 
-    let clamped_overkill_ratio = overkill_ratio.clamp(0.0, fill_ratio).max(0.0) as f32;
     let fill_rect = egui::Rect::from_min_max(
-        fill_area.min,
+        rect.min,
         egui::pos2(
-            fill_area.left() + fill_area.width() * clamped_ratio,
-            fill_area.bottom(),
+            rect.left() + rect.width() * effective_ratio,
+            rect.bottom(),
         ),
     );
-    let fill_radius = (fill_rect.width() * 0.5)
-        .min(fill_rect.height() * 0.5)
-        .min(5.0) as u8;
-    let fill_rounding = if clamped_overkill_ratio > 0.0 {
-        CornerRadius {
-            nw: fill_radius,
-            ne: 0,
-            sw: fill_radius,
-            se: 0,
-        }
-    } else {
-        CornerRadius::same(fill_radius)
-    };
-    painter.rect_filled(fill_rect, fill_rounding, fill);
 
-    let overkill_left = fill_rect.right() - fill_area.width() * clamped_overkill_ratio;
-    let highlight_y = fill_rect.top() + 1.5;
-
-    if clamped_overkill_ratio <= 0.0 && fill_rect.width() >= 4.0 {
-        painter.line_segment(
-            [
-                egui::pos2(fill_rect.left() + 2.0, highlight_y),
-                egui::pos2((fill_rect.right() - 2.0).max(fill_rect.left() + 2.0), highlight_y),
-            ],
-            Stroke::new(1.0, highlight),
-        );
-    } else if overkill_left - fill_rect.left() >= 4.0 {
-        painter.line_segment(
-            [
-                egui::pos2(fill_rect.left() + 2.0, highlight_y),
-                egui::pos2(overkill_left, highlight_y),
-            ],
-            Stroke::new(1.0, highlight),
-        );
-    }
+    painter.rect_filled(fill_rect, 0, fill);
+    painter.rect_stroke(fill_rect, 0, Stroke::new(stroke_width, fill), StrokeKind::Inside);
 
     if clamped_overkill_ratio > 0.0 {
+        let overkill_width = rect.width() * clamped_overkill_ratio;
+        let overkill_left = fill_rect.right();
+        let overkill_right = (overkill_left + overkill_width).min(rect.right());
         let overkill_rect = egui::Rect::from_min_max(
             egui::pos2(overkill_left, fill_rect.top()),
-            egui::pos2(fill_rect.right(), fill_rect.bottom()),
+            egui::pos2(overkill_right, fill_rect.bottom()),
         );
-        let overkill_radius = (overkill_rect.width() * 0.5)
-            .min(overkill_rect.height() * 0.5)
-            .min(5.0) as u8;
-        let overkill_rounding = if overkill_left <= fill_rect.left() {
-            CornerRadius::same(overkill_radius)
-        } else {
-            CornerRadius {
-                nw: 0,
-                ne: overkill_radius,
-                sw: 0,
-                se: overkill_radius,
-            }
-        };
-        painter.rect_filled(overkill_rect, overkill_rounding, overkill_fill);
-
-        if overkill_left > fill_rect.left() {
-            painter.line_segment(
-                [
-                    egui::pos2(overkill_left, fill_rect.top() + 1.0),
-                    egui::pos2(overkill_left, fill_rect.bottom() - 1.0),
-                ],
-                Stroke::new(1.0, visuals.widgets.noninteractive.bg_stroke.color),
-            );
-        }
-
-        if fill_rect.right() - overkill_left >= 4.0 {
-            painter.line_segment(
-                [
-                    egui::pos2(overkill_left, highlight_y),
-                    egui::pos2((fill_rect.right() - 2.0).max(overkill_left), highlight_y),
-                ],
-                Stroke::new(1.0, overkill_fill.gamma_multiply(if visuals.dark_mode {
-                    1.15
-                } else {
-                    0.92
-                })),
-            );
-        }
+        painter.rect_filled(overkill_rect, 0, overkill_fill);
+        painter.rect_stroke(overkill_rect, 0, Stroke::new(stroke_width, overkill_fill), StrokeKind::Inside);
     }
-
-    painter.rect_stroke(rect, 5.0, Stroke::new(1.0, track_stroke), StrokeKind::Inside);
 }
 
 fn create_damage_portrait_rows(
