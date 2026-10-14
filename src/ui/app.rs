@@ -5,7 +5,6 @@ use edio11::{Overlay, WindowMessage, WindowProcessOptions, input::InputResult};
 use egui::Key;
 use egui::KeyboardShortcut;
 use egui::Label;
-use egui::Memory;
 use egui::Modifiers;
 use egui::RichText;
 use egui::Ui;
@@ -427,8 +426,6 @@ impl Overlay for App {
     }
 
     fn save(&mut self, _storage: &mut egui::Memory) {
-        self.save_persist(_storage)
-            .unwrap_or_else(|e| log::error!("{e}"));
         self.state.save().unwrap_or_else(|e| log::error!("{e}"));
 
         self.config.theme = *self.colorix.theme();
@@ -445,7 +442,6 @@ impl Overlay for App {
     }
 }
 
-const PERSISTENCE_FILENAME: &'static str = "persistence";
 const STATE_FILENAME: &'static str = "state";
 
 impl Default for AppState {
@@ -485,91 +481,46 @@ impl Default for AppState {
 }
 
 impl AppState {
-    fn load() -> Result<Self> {
+    fn state_path() -> Result<std::path::PathBuf> {
         match ProjectDirs::from("", "", env!("CARGO_PKG_NAME")) {
             Some(proj_dirs) => {
                 let data_local_dir = proj_dirs.data_local_dir();
                 let state_path = data_local_dir.join(STATE_FILENAME);
-
-                if state_path.exists() {
-                    let mut file = File::open(&state_path)?;
-                    let mut buffer = String::new();
-                    file.read_to_string(&mut buffer)?;
-                    Ok(ron::from_str(&buffer)?)
-                } else {
-                    Ok(Self::default())
-                }
+                Ok(state_path)
             }
             None => Err(anyhow!("Failed to load/create data project dirs.")),
         }
     }
 
-    fn save(&mut self) -> Result<()> {
-        match ProjectDirs::from("", "", env!("CARGO_PKG_NAME")) {
-            Some(proj_dirs) => {
-                let data_local_dir = proj_dirs.data_local_dir();
-                let state_path = data_local_dir.join(STATE_FILENAME);
+    fn load() -> Result<Self> {
+        let state_path = Self::state_path()?;
 
-                if !state_path.exists() {
-                    std::fs::create_dir_all(data_local_dir)?;
-                }
-                let mut file = File::create(state_path)?;
-                file.write(ron::to_string(&self)?.as_bytes())?;
-                file.flush()?;
-                Ok(())
-            }
-            None => Err(anyhow!("Failed to load/create data project dirs.")),
+        if state_path.exists() {
+            let mut file = File::open(&state_path)?;
+            let mut buffer = String::new();
+            file.read_to_string(&mut buffer)?;
+            Ok(ron::from_str(&buffer)?)
+        } else {
+            Ok(Self::default())
         }
+    }
+
+    fn save(&self) -> Result<()> {
+        let state_path = Self::state_path()?;
+
+        if !state_path.exists() {
+            std::fs::create_dir_all(state_path.parent().unwrap())?;
+        }
+
+        let mut file = File::create(&state_path)?;
+        file.write(ron::to_string(self)?.as_bytes())?;
+        file.flush()?;
+        Ok(())
     }
 }
 
 impl App {
-    fn load_persist(ctx: &Context) -> Result<()> {
-        match ProjectDirs::from("", "", env!("CARGO_PKG_NAME")) {
-            Some(proj_dirs) => {
-                let data_local_dir = proj_dirs.data_local_dir();
-                let persist_path = data_local_dir.join(PERSISTENCE_FILENAME);
-
-                if persist_path.exists() {
-                    let mut file = File::open(&persist_path)?;
-                    let mut buffer = String::new();
-                    file.read_to_string(&mut buffer)?;
-                    let memory: Memory = ron::from_str(&buffer)?;
-                    ctx.memory_mut(|writer| {
-                        *writer = memory;
-                    });
-                }
-
-                Ok(())
-            }
-            None => Err(anyhow!("Failed to load/create data project dirs.")),
-        }
-    }
-
-    fn save_persist(&mut self, storage: &mut egui::Memory) -> Result<()> {
-        match ProjectDirs::from("", "", env!("CARGO_PKG_NAME")) {
-            Some(proj_dirs) => {
-                let data_local_dir = proj_dirs.data_local_dir();
-                let persist_path = data_local_dir.join(PERSISTENCE_FILENAME);
-
-                if !persist_path.exists() {
-                    std::fs::create_dir_all(data_local_dir)?;
-                }
-                let mut file = File::create(persist_path)?;
-                file.write(ron::to_string(storage)?.as_bytes())?;
-                file.flush()?;
-                Ok(())
-            }
-            None => Err(anyhow!("Failed to load/create data project dirs.")),
-        }
-    }
-
     pub fn new(ctx: Context) -> Self {
-        // This should be called first
-        if App::load_persist(&ctx).is_err() {
-            log::error!("Failed to load persistence.");
-        }
-
         let fonts = vec![("zh-cn.ttf", "game_font"), ("ja-jp.ttf", "game_font_jp")];
 
         for font in fonts {

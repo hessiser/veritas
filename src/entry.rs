@@ -57,6 +57,7 @@ fn init() {
     thread::spawn(|| server::start_server());
 
         match edio11::set_overlay(
+            env!("CARGO_PKG_NAME"),
             Box::new(|ctx| {
                 let mut app = Box::new(App::new(ctx.clone()));
                 for mut toast in toasts {
@@ -166,4 +167,3 @@ fn setup_subscribers() -> anyhow::Result<()> {
         Ok(())
     }
 }
-

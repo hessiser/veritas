@@ -1408,14 +1408,16 @@ dependencies = [
 [[package]]
 name = "edio11"
 version = "0.1.1"
-source = "git+https://github.com/hessiser/edio11-rs.git?rev=922d17b#922d17b5c51de7fba52495085cd149b523df2ac1"
+source = "git+https://github.com/hessiser/edio11-rs.git?rev=8ca1b9b#8ca1b9b638b64ba13eb2e6a123d2502d0c9f185c"
 dependencies = [
  "arboard",
  "dark-light",
  "detour",
+ "directories",
  "egui",
  "egui-directx11",
  "log",
+ "ron 0.10.1",
  "thiserror 2.0.18",
  "webbrowser",
  "widestring",
@@ -1484,7 +1486,7 @@ dependencies = [
 [[package]]
 name = "egui-directx11"
 version = "0.11.0"
-source = "git+https://github.com/hessiser/edio11-rs.git?rev=922d17b#922d17b5c51de7fba52495085cd149b523df2ac1"
+source = "git+https://github.com/hessiser/edio11-rs.git?rev=8ca1b9b#8ca1b9b638b64ba13eb2e6a123d2502d0c9f185c"
 dependencies = [
  "egui",
  "log",
