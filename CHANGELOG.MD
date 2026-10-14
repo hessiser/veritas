@@ -1,3 +1,9 @@
+# 0.2.54 2026-10-14
+  - Fixes issue with game no longer responding to input
+  - Fix damage meter visual
+  - Limit debug log size
+  - Zoom factor now persists
+
 # 0.2.53 2026-10-05
   - Improved the Character Damage window with clearer DMG/DPAV value switching.
   - Fixed damage-meter rendering issues affecting overkill colors, borders, highlights, rounded corners, and very small damage ratios.
