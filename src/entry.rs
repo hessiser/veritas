@@ -1,5 +1,6 @@
 use crate::kreide::types::RPG_Client_GlobalVars;
-use crate::{get_module_handle, logging, overlay, server, subscribers};
+use crate::ui::app::App;
+use crate::{get_module_handle, logging, server, subscribers};
 use ctor::ctor;
 use egui_notify::Toast;
 use il2cpp_runtime::api::{ApiIndexTable, il2cpp_domain_get, il2cpp_thread_attach};
@@ -55,7 +56,16 @@ fn init() {
 
     thread::spawn(|| server::start_server());
 
-    match overlay::initialize(toasts) {
+        match edio11::set_overlay(
+            Box::new(|ctx| {
+                let mut app = Box::new(App::new(ctx.clone()));
+                for mut toast in toasts {
+                    toast.duration(Some(Duration::from_secs(5)));
+                    app.notifs.add(toast);
+                }
+                app
+            }),
+        ) {
         Ok(_) => log::info!("Overlay initialized successfully"),
         Err(e) => log::error!("Overlay failed to initialize: {}", e),
     }

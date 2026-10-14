@@ -80,7 +80,7 @@ pub fn wrap_character_name(name: &str, max_line_length: usize) -> String {
 
 pub fn get_window_frame(ctx: &egui::Context, opacity: f32) -> egui::Frame {
     let opacity = opacity.clamp(0.0, 1.0);
-    let color = ctx.style().visuals.extreme_bg_color.gamma_multiply(opacity);
+    let color = ctx.global_style().visuals.extreme_bg_color.gamma_multiply(opacity);
     egui::Frame::new()
         .fill(color)
         .stroke(Stroke::new(0.5, Color32::WHITE))

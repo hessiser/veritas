@@ -11,7 +11,6 @@ mod memory_scanner;
 mod kreide;
 mod logging;
 mod models;
-mod overlay;
 mod server;
 mod subscribers;
 mod ui;
@@ -81,12 +80,12 @@ mod tests {
             };
 
             let mut app = ui::app::App::new(egui::Context::default());
-            eframe::run_simple_native(env!("CARGO_PKG_NAME"), native_options, move |ctx, _| {
-                if ctx.input_mut(|i| i.consume_shortcut(&SHOW_MENU_SHORTCUT)) {
+            eframe::run_ui_native(env!("CARGO_PKG_NAME"), native_options, move |ui, _| {
+                if ui.input_mut(|i| i.consume_shortcut(&SHOW_MENU_SHORTCUT)) {
                     app.state.show_menu = !app.state.show_menu;
                 }
 
-                app.update(ctx);
+                app.ui(ui);
             }).expect("failed to run app");
         });
         handle.join().unwrap();

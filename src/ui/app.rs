@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::Read;
-use std::io::Write;
 use anyhow::Result;
 use anyhow::anyhow;
 use directories::ProjectDirs;
@@ -22,6 +19,9 @@ use egui_inbox::UiInbox;
 use egui_notify::Toasts;
 use serde::Deserialize;
 use serde::Serialize;
+use std::fs::File;
+use std::io::Read;
+use std::io::Write;
 use windows::Win32::{
     Foundation::{LPARAM, WPARAM},
     UI::{Input::KeyboardAndMouse::VK_MENU, WindowsAndMessaging::WM_KEYDOWN},
@@ -136,20 +136,20 @@ pub const SHOW_MENU_SHORTCUT: KeyboardShortcut = KeyboardShortcut::new(Modifiers
 
 impl Overlay for App {
     // This is where the main logic of the app lives. This is called every frame and is responsible for rendering the UI and handling input.
-    fn update(&mut self, ctx: &egui::Context) {
+    fn ui(&mut self, ui: &mut Ui) {
         // Get rid of this and just switch to egui-toast
         if self.state.show_changelog {
-            self.show_changelog_window(ctx);
+            self.show_changelog_window(ui);
         }
 
         if self.state.show_help {
-            self.show_help_window(ctx);
+            self.show_help_window(ui);
         }
 
         if self.config.streamer_mode {
-            egui::TopBottomPanel::bottom("statusbar")
+            egui::Panel::bottom("statusbar")
                 .resizable(true)
-                .show(ctx, |ui| {
+                .show(ui, |ui| {
                     ui.style_mut().override_text_style = Some(egui::TextStyle::Body);
                     let label = Label::new(RichText::new(&self.config.streamer_msg).strong())
                         .selectable(false);
@@ -160,67 +160,70 @@ impl Overlay for App {
 
         if !self.state.hide_ui {
             if self.state.show_menu {
-                self.show_menu(ctx);
+                self.show_menu(ui);
             }
 
             if self.state.show_console {
-                self.show_console_window(ctx);
+                self.show_console_window(ui);
             }
 
             // Show Damage Dist is removed
             if self.state.show_damage_type_breakdown {
-                self.show_damage_type_breakdown_window(ctx);
+                self.show_damage_type_breakdown_window(ui);
             }
 
             if self.state.show_character_legend {
-                self.show_character_legend_window(ctx);
+                self.show_character_legend_window(ui);
             }
 
             // if self.state.show_damage_bars {
-            //     self.show_damage_bar_window(ctx);
+            //     self.show_damage_bar_window(ui);
             // }
 
             if self.state.show_character_damage {
-                self.show_character_damage_window(ctx);
+                self.show_character_damage_window(ui);
             }
 
             // if self.state.show_real_time_damage {
-            //     self.show_real_time_damage_window(ctx);
+            //     self.show_real_time_damage_window(ui);
             // }
 
             if self.state.show_battle_metrics {
-                self.show_battle_metrics_window(ctx);
+                self.show_battle_metrics_window(ui);
             }
 
             if self.state.show_enemy_stats {
-                self.show_enemy_stats_window(ctx);
+                self.show_enemy_stats_window(ui);
             }
         }
 
         // Render updater window independently when requested (doesn't require menu)
         if self.state.show_updater_window && !self.state.show_menu {
             let mut show_updater_window = self.state.show_updater_window;
-            let mut updater_window = egui::Window::new(format!(
-                "{} Updates",
-                egui_phosphor::bold::DOWNLOAD
-            ))
-            .id("updater_window_outside".into())
-            .open(&mut show_updater_window);
+            let mut updater_window =
+                egui::Window::new(format!("{} Updates", egui_phosphor::bold::DOWNLOAD))
+                    .id("updater_window_outside".into())
+                    .open(&mut show_updater_window);
 
             if self.state.center_updater_window {
-                let center = ctx.input(|input| input.screen_rect.center());
-                if let Some(size) = self.updater_window_last_size {
-                    let top_left = center - size * 0.5;
-                    updater_window = updater_window.current_pos(top_left);
-                    self.state.center_updater_window = false;
+                if let Some(center) = ui.input(|input| input.raw.screen_rect).map(|r| r.center()) {
+                    if let Some(size) = self.updater_window_last_size {
+                        let top_left = center - size * 0.5;
+                        updater_window = updater_window.current_pos(top_left);
+                        self.state.center_updater_window = false;
+                    } else {
+                        updater_window = updater_window
+                            .pivot(egui::Align2::CENTER_CENTER)
+                            .current_pos(center);
+                    }
+                    // Is this right?
                 } else {
                     updater_window = updater_window
-                        .pivot(egui::Align2::CENTER_CENTER)
-                        .current_pos(center);
+                        .pivot(egui::Align2::CENTER_CENTER);
                 }
             }
 
-            if let Some(response) = updater_window.show(ctx, |ui| {
+            if let Some(response) = updater_window.show(ui, |ui| {
                 self.show_updater_window(ui);
             }) {
                 self.updater_window_last_size = Some(response.response.rect.size());
@@ -231,11 +234,11 @@ impl Overlay for App {
             }
         }
 
-        if ctx.input_mut(|i| i.consume_shortcut(&HIDE_UI_SHORTCUT)) {
+        if ui.input_mut(|i| i.consume_shortcut(&HIDE_UI_SHORTCUT)) {
             self.state.hide_ui = !self.state.hide_ui;
         }
 
-        if ctx.input_mut(|i| i.consume_shortcut(&SHOW_MENU_SHORTCUT)) {
+        if ui.input_mut(|i| i.consume_shortcut(&SHOW_MENU_SHORTCUT)) {
             if self.state.hide_ui {
                 self.notifs.info(t!(
                     "`Hide UI` is still active. Use the `Hide UI` shortcut to unhide the UI."
@@ -243,7 +246,7 @@ impl Overlay for App {
             }
         }
 
-        if let Some(Some(update)) = self.update_inbox.read(ctx).last() {
+        if let Some(Some(update)) = self.update_inbox.read(ui).last() {
             if let Some(new_version) = &update.new_version {
                 match &update.status {
                     Some(status) => {
@@ -270,7 +273,7 @@ impl Overlay for App {
             self.update = Some(update);
         }
 
-        if let Some(export_notification) = self.export_inbox.read(ctx).last() {
+        if let Some(export_notification) = self.export_inbox.read(ui).last() {
             match export_notification {
                 ExportNotification::Success => {
                     self.notifs
@@ -369,7 +372,7 @@ impl Overlay for App {
             }
         }
 
-        self.notifs.show(ctx);
+        self.notifs.show(ui);
     }
 
     fn window_process(
@@ -543,7 +546,7 @@ impl App {
         }
     }
 
-    fn save_persist(&mut self, _storage: &mut egui::Memory) -> Result<()> {
+    fn save_persist(&mut self, storage: &mut egui::Memory) -> Result<()> {
         match ProjectDirs::from("", "", env!("CARGO_PKG_NAME")) {
             Some(proj_dirs) => {
                 let data_local_dir = proj_dirs.data_local_dir();
@@ -553,7 +556,7 @@ impl App {
                     std::fs::create_dir_all(data_local_dir)?;
                 }
                 let mut file = File::create(persist_path)?;
-                file.write(ron::to_string(_storage)?.as_bytes())?;
+                file.write(ron::to_string(storage)?.as_bytes())?;
                 file.flush()?;
                 Ok(())
             }
@@ -700,7 +703,10 @@ impl App {
         if !allow_prerelease {
             let sender = self.update_inbox.sender();
             RUNTIME.spawn(async move {
-                match Updater::new(env!("CARGO_PKG_VERSION"), true).check_update().await {
+                match Updater::new(env!("CARGO_PKG_VERSION"), true)
+                    .check_update()
+                    .await
+                {
                     Ok(Some(beta_ver)) => {
                         if sender
                             .send(Some(Update {

@@ -73,7 +73,7 @@ fn default_theme_mode() -> egui::Theme {
 
 fn default_font_sizes() -> BTreeMap<egui::TextStyle, FontId> {
     let ctx = egui::Context::default();
-    ctx.style().text_styles.clone()
+    ctx.global_style().text_styles.clone()
 }
 
 fn default_legend_text_style() -> egui::TextStyle {
