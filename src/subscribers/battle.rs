@@ -1338,7 +1338,7 @@ fn on_reset_all_entity_action_delay(instance: RPG_GameCore_TurnBasedGameMode) {
     });
 }
 
-retour::static_detour! {
+detour::static_detour! {
     static ON_DAMAGE_Detour: fn(*const c_void, *const c_void, *const c_void, RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_TurnBasedAbilityComponent, RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, RPG_GameCore_GameEntity, bool, *const c_void) -> bool;
     static ON_COMBO_Detour: fn(*const c_void, RPG_GameCore_TurnBasedGameMode);
     static ON_USE_SKILL_Detour: fn(RPG_GameCore_SkillCharacterComponent, i32, *const c_void, bool, *const c_void, *const c_void, i32) -> bool;

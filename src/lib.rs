@@ -1,6 +1,5 @@
 #![recursion_limit = "256"]
 #![allow(static_mut_refs)]
-#![feature(windows_process_extensions_show_window)]
 #[macro_use]
 extern crate rust_i18n;
 

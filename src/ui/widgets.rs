@@ -1094,7 +1094,7 @@ fn aggregate_damage_by_category(breakdowns: &[DamageTypeBreakdown]) -> DamageTyp
 
     for breakdown in breakdowns {
         for (damage_type, damage) in breakdown {
-            *aggregate.entry(damage_type.clone()).or_insert(0.0) += *damage;
+            *aggregate.entry(*damage_type).or_insert(0.0) += *damage;
         }
     }
 
