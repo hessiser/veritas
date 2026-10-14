@@ -16,6 +16,14 @@ minify-key-thresh = 8
 [lib]
 crate-type = ["cdylib"]
 
+[profile.release]
+# Optimize the published DLL for size rather than maximum throughput.
+opt-level = "z"
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+
 [dependencies]
 # UI
 egui = { version = "0.36.0", features = ["serde", "persistence"] }
