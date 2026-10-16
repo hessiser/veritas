@@ -1,3 +1,9 @@
+# 0.2.55 2026-10-16
+  - Fixed for 4.6.53: `TurnBasedAbilityComponent::DirectChangeHP` gained a 4th
+    parameter (`RPG.GameCore.AntiLockHPStrength`), which broke the HP-change hook
+    and disabled the core on startup ("No overload of ... matched signature").
+    Updated the detour signature and the method lookup to match.
+
 # 0.2.53 2026-10-05
   - Improved the Character Damage window with clearer DMG/DPAV value switching.
   - Fixed damage-meter rendering issues affecting overkill colors, borders, highlights, rounded corners, and very small damage ratios.
