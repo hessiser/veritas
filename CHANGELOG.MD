@@ -1,3 +1,6 @@
+# 0.2.55 2026-10-16
+  - Fixed for 4.6.53
+
 # 0.2.54 2026-10-14
   - Fixes issue with game no longer responding to input
   - Fix damage meter visual
