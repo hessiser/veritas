@@ -15,9 +15,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly-2025-05-17
+      - uses: dtolnay/rust-toolchain@1.99.0
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "shared"
