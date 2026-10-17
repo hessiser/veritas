@@ -5989,7 +5989,7 @@ dependencies = [
 
 [[package]]
 name = "veritas"
-version = "0.2.56"
+version = "0.2.55"
 dependencies = [
  "anyhow",
  "axum",
