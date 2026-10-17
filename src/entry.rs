@@ -156,7 +156,6 @@ fn setup_subscribers() -> anyhow::Result<()> {
             il2cpp_method_get_param_count: 123,
             il2cpp_method_get_param: 124,
             il2cpp_object_new: 130,
-            il2cpp_string_new_utf16: 149,
             il2cpp_thread_attach: 154,
             il2cpp_type_get_name: 161,
             il2cpp_image_get_class_count: 169,
