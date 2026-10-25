@@ -1,6 +1,6 @@
 
 name: Bug report
-description: Report a bug with Veritas
+description: Report a bug
 title: "[BUG] "
 labels:
   - bug
@@ -62,9 +62,9 @@ body:
     id: debug_log
     attributes:
       label: Debug log
-      description: Attach veritas.debug.log or paste its relevant contents. Avoid restarting the game before collecting the log.
+      description: Attach veritas.debug.log. Avoid restarting the game before collecting the log. If bug is not related to plugin crashing/not working, then this can be ignored and filled with "N/A".
       placeholder: |
-        Attach veritas.debug.log to the issue, or paste the relevant log contents here.
+        veritas.debug.log or N/A.
       render: text
     validations:
       required: true
@@ -75,8 +75,6 @@ body:
       label: Before submitting
       description: Please confirm the following before submitting your report.
       options:
-        - label: I attached veritas.debug.log.
-          required: true
         - label: I confirmed my game version matches the plugin's supported version range (shown in-game in the bottom-left corner at startup and in the plugin release notes).
           required: true
         - label: I searched existing issues to make sure this has not already been reported.
