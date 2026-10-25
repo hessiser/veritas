@@ -1,0 +1,87 @@
+
+name: Bug report
+description: Report a bug with Veritas
+title: "[BUG] "
+labels:
+  - bug
+assignees: []
+
+body:
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin version
+      description: "Plugin version. Can be found in veritas.log"
+      placeholder: "0.2.52"
+    validations:
+      required: true
+
+  - type: input
+    id: game_version
+    attributes:
+      label: Game version
+      description: "Game version. Can be found in the veritas.log"
+      placeholder: "4.4.55"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug_description
+    attributes:
+      label: Describe the bug
+      description: Provide a clear and detailed description of the issue.
+      placeholder: |
+        Describe what happened, how often it occurs, and any relevant error messages.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide clear, numbered steps to reproduce the issue.
+      placeholder: |
+        1. Start the game via the launcher.
+        2. Enter a scenario where the issue occurs.
+        3. Play normally until the issue occurs.
+        4. Observe the error or crash.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      description: Describe what you expected to happen instead.
+      placeholder: |
+        Explain what the plugin should do and how it should behave.
+    validations:
+      required: true
+
+  - type: textarea
+    id: debug_log
+    attributes:
+      label: Debug log
+      description: Attach veritas.debug.log or paste its relevant contents. Avoid restarting the game before collecting the log.
+      placeholder: |
+        Attach veritas.debug.log to the issue, or paste the relevant log contents here.
+      render: text
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: pre_submission_checklist
+    attributes:
+      label: Before submitting
+      description: Please confirm the following before submitting your report.
+      options:
+        - label: I attached veritas.debug.log.
+          required: true
+        - label: I confirmed my game version matches the plugin's supported version range (shown in-game in the bottom-left corner at startup and in the plugin release notes).
+          required: true
+        - label: I searched existing issues to make sure this has not already been reported.
+          required: true
+        - label: I added a descriptive title to the issue.
+          required: true
+        - label: I described the issue clearly enough for somebody else to understand and investigate it.
+          required: true
