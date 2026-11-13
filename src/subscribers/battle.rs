@@ -256,7 +256,13 @@ fn on_damage(
                         )?
                         .methods()
                         .iter()
-                        .find(|x| x.name() == "_MortallyWondedProcess")
+                        .find(|x| {
+                            // Newer builds resolve `MethodInfo+0x30` lazily;
+                            // touch the return type first so the name lookup
+                            // reads initialized metadata instead of garbage.
+                            let _ = x.ret_type();
+                            x.name() == "_MortallyWondedProcess"
+                        })
                         .context("Failed to find _MortallyWondedProcess")?
                         .va();
                         let fn_bytes = get_fn_bytes(fn_ptr, 3000)?;
@@ -1157,6 +1163,8 @@ unsafe fn resolve_defeated_entity_offset() -> Result<EntityDefeatedOffsets> {
     // Field offset is at ?? in the pattern, which is the address of the defeated entity.
     let defeated_entity_offset = unsafe { *((addr.wrapping_add(3)) as *const u8) as usize };
 
+    // Materialize the lazy method definition before reading its name.
+    let _ = target_fn.ret_type();
     let class = get_cached_class(target_fn.arg(0).name())?;
     let mut has_matching_offset = false;
     let mut alternate_entity_type_offset = None;

@@ -1,3 +1,7 @@
+# 0.2.58 2026-11-12
+  - Updated IL2CPP API table for the current game build
+  - Fixed method name lookups on lazily initialized metadata
+
 # 0.2.55 2026-10-16
   - Fixed for 4.6.53
 
