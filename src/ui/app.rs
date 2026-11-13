@@ -247,26 +247,28 @@ impl Overlay for App {
 
         if let Some(Some(update)) = self.update_inbox.read(ui).last() {
             if let Some(new_version) = &update.new_version {
-                match &update.status {
-                    Some(status) => {
-                        match status {
-                            Status::Failed(e) => {
-                                self.notifs.error(t!("Update failed: %{error}", error = e))
-                            }
-                            Status::Succeeded => self.notifs.success(t!("Update succeeded")),
-                        };
+                    match &update.status {
+                        Some(status) => {
+                            match status {
+                                Status::Failed(e) => {
+                                    self.notifs.error(t!("Update failed: %{error}", error = e))
+                                }
+                                Status::Succeeded => self.notifs.success(t!("Update succeeded")),
+                            };
+                        }
+                        None => {
+                            let update_message = if update.prerelease_only {
+                                format!("Beta version {} is available!", new_version)
+                            } else {
+                                t!("Version %{version} is available!", version = new_version).to_string()
+                            };
+                            self.notifs
+                                .info(update_message)
+                                .closable(true)
+                                .show_progress_bar(true)
+                                .duration(Some(std::time::Duration::from_secs_f32(10.0)));
+                        }
                     }
-                    None => {
-                        self.notifs
-                            .info(t!(
-                                "Version %{version} is available!",
-                                version = new_version
-                            ))
-                            .closable(true)
-                            .show_progress_bar(true)
-                            .duration(Some(std::time::Duration::from_secs_f32(10.0)));
-                    }
-                }
             }
             self.state.update_bttn_enabled = true;
             self.update = Some(update);
@@ -623,11 +625,14 @@ impl App {
                 .await
             {
                 Ok(new_ver) => {
+                    let (new_version, prerelease_only) = new_ver
+                        .map(|(version, prerelease)| (Some(version), prerelease))
+                        .unwrap_or((None, false));
                     if sender
                         .send(Some(Update {
-                            new_version: new_ver,
+                            new_version,
                             status: None,
-                            prerelease_only: false,
+                            prerelease_only,
                         }))
                         .is_err()
                     {
@@ -650,31 +655,6 @@ impl App {
             }
         });
 
-        // Additionally detect a prerelease newer than current and notify as "prerelease only"
-        if !allow_prerelease {
-            let sender = self.update_inbox.sender();
-            RUNTIME.spawn(async move {
-                match Updater::new(env!("CARGO_PKG_VERSION"), true)
-                    .check_update()
-                    .await
-                {
-                    Ok(Some(beta_ver)) => {
-                        if sender
-                            .send(Some(Update {
-                                new_version: Some(beta_ver),
-                                status: None,
-                                prerelease_only: true,
-                            }))
-                            .is_err()
-                        {
-                            log::error!("Failed to send prerelease hint to inbox");
-                        }
-                    }
-                    Ok(None) => {}
-                    Err(e) => log::error!("Prerelease detection failed: {e}"),
-                }
-            });
-        }
     }
 
     pub fn export_battle_data(&self, format: &str) -> Result<String, Box<dyn std::error::Error>> {

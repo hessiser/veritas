@@ -325,9 +325,10 @@ impl App {
             let current_version = env!("CARGO_PKG_VERSION");
             if let Some(new_update) = &self.update {
                     if let Some(new_version) = &new_update.new_version {
+                        let new_version = new_version.clone();
                         // If this update is prerelease-only and the user is on stable, show a hint to enable beta
                         if new_update.prerelease_only && !self.update_config.beta {
-                            ui.colored_label(Color32::YELLOW, t!("Beta %{version} is available (enable beta to update)", version = new_version));
+                            ui.colored_label(Color32::YELLOW, t!("Beta %{version} is available (enable beta to update)", version = &new_version));
                             ui.horizontal(|ui| {
                                 ui.label(format!("{} ➡ {}", current_version, new_version));
                             });
@@ -342,14 +343,21 @@ impl App {
                                     self.set_beta_flag(true);
                                 }
                                 if ui.button("Ignore").clicked() {
+                                    self.update_config.beta = false;
                                     self.update_config.prompt_beta = false;
+                                    self.update = None;
                                     if let Err(e) = self.update_config.save() {
                                         log::error!("{e}");
                                     }
                                 }
                             });
                         } else {
-                            ui.colored_label(Color32::GREEN, t!("Version %{version} is available!", version = new_version));
+                            let update_label = if new_update.prerelease_only {
+                                format!("Beta version {} is available!", new_version)
+                            } else {
+                                t!("Version %{version} is available!", version = new_version).to_string()
+                            };
+                            ui.colored_label(Color32::GREEN, update_label);
                             ui.horizontal(|ui| {
                                 ui.label(format!(
                                     "{} ➡ {}",

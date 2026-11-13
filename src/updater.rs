@@ -66,12 +66,16 @@ impl Updater {
         }
     }
 
-    pub async fn check_update(&self) -> Result<Option<String>> {
+    pub async fn check_update(&self) -> Result<Option<(String, bool)>> {
         let Some(release) = self.fetch_latest_release().await? else {
             return Ok(None);
         };
 
-        log::debug!("fetch_latest_release returned tag='{}' prerelease={}", release.tag_name, release.prerelease);
+        log::debug!(
+            "fetch_latest_release returned tag='{}' prerelease={}",
+            release.tag_name,
+            release.prerelease
+        );
 
         // unnecessary but good anyways
         let latest_tag = release.tag_name.trim_start_matches('v').trim();
@@ -116,7 +120,7 @@ impl Updater {
 
         if update_needed {
             log::debug!("update_needed=true for latest='{}' current='{}'", latest_tag, current_tag);
-            Ok(Some(release.tag_name))
+            Ok(Some((release.tag_name, release.prerelease)))
         } else {
             log::debug!("update_needed=false for latest='{}' current='{}'", latest_tag, current_tag);
             Ok(None)
@@ -259,7 +263,12 @@ impl Updater {
                 .iter()
                 .any(|asset| asset.name == concat!(env!("CARGO_PKG_NAME"), ".dll"));
 
-            log::debug!("considering release '{}' prerelease={} has_asset={}", release.tag_name, release.prerelease, has_asset);
+            log::debug!(
+                "considering release '{}' prerelease={} has_asset={}",
+                release.tag_name,
+                release.prerelease,
+                has_asset
+            );
             has_asset
         });
 
