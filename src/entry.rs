@@ -136,6 +136,8 @@ fn setup_subscribers() -> anyhow::Result<()> {
             thread::sleep(Duration::from_secs(3));
         }
 
+        // IL2CPP API table layout for the current game build (208 callable
+        // slots; the method block starts at 127 instead of 116).
         let table = ApiIndexTable {
             il2cpp_assembly_get_image: 22,
             il2cpp_class_get_fields: 31,
@@ -151,15 +153,15 @@ fn setup_subscribers() -> anyhow::Result<()> {
             il2cpp_field_get_offset: 75,
             il2cpp_field_get_type: 76,
             il2cpp_field_get_value_object: 77,
-            il2cpp_method_get_return_type: 116,
-            il2cpp_method_get_name: 117,
-            il2cpp_method_get_param_count: 123,
-            il2cpp_method_get_param: 124,
-            il2cpp_object_new: 130,
-            il2cpp_thread_attach: 154,
-            il2cpp_type_get_name: 161,
-            il2cpp_image_get_class_count: 169,
-            il2cpp_image_get_class: 170,
+            il2cpp_method_get_return_type: 127,
+            il2cpp_method_get_name: 128,
+            il2cpp_method_get_param_count: 134,
+            il2cpp_method_get_param: 135,
+            il2cpp_object_new: 141,
+            il2cpp_thread_attach: 165,
+            il2cpp_type_get_name: 172,
+            il2cpp_image_get_class_count: 180,
+            il2cpp_image_get_class: 181,
         };
         il2cpp_runtime::init(get_il2cpp_table_offset()?, table)?;
         subscribers::battle::subscribe()?;
