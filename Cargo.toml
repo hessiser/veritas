@@ -18,17 +18,17 @@ crate-type = ["cdylib"]
 
 [dependencies]
 # UI
-egui = { version = "0.36.0", features = ["serde", "persistence"] }
-egui_plot = { version = "0.37.0", features = ["serde"] }
-edio11 = { git = "https://github.com/hessiser/edio11-rs.git", rev = "cbc1270" }
-egui-phosphor = { version = "0.14.0", features = ["bold"]}
-egui_colors = { version = "0.13.0", features = ["serde"] }
-egui-notify = "0.23.0"
-egui_logger = "0.12.0"
-egui_inbox = "0.13.0"
-egui_commonmark = "0.25.0"
-egui_extras = "0.36.0"
-egui_table = "0.10.0"
+egui = { version = "0.37.0", features = ["serde", "persistence"] }
+egui_plot = { version = "0.38.0", features = ["serde"] }
+edio11 = { git = "https://github.com/hessiser/edio11-rs.git", rev = "42bf1fc" }
+egui_phosphor = { package = "egui-pop-phosphor", version = "0.15.0", features = ["bold"]}
+egui_colors = { version = "0.14.0", features = ["serde"] }
+egui-notify = "0.24.0"
+egui_logger = "0.13.1"
+egui_inbox = "0.14.0"
+egui_commonmark = "0.26.0"
+egui_extras = "0.37.0"
+egui_table = "0.11.0"
 
 # Logging
 log = "0.4.29"
@@ -72,7 +72,7 @@ image = "0.25.10"
 iced-x86 = "1.21.0"
 
 [dev-dependencies]
-eframe = { version = "0.36.0", features = ["serde", "persistence"] }
+eframe = { version = "0.37.0", features = ["serde", "persistence"] }
 winit = { version = "0.30.12", default-features = false, features = ["wayland"] }
 
 [dependencies.windows]

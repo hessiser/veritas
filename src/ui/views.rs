@@ -14,7 +14,7 @@ impl App {
 
         if let Some(release) = changelog.get(env!("CARGO_PKG_VERSION")) {
             Window::new(t!("Changelog"))
-                .id("changelog_window".into())
+                .id(egui::Id::new("changelog_window"))
                 .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
                 .collapsible(false)
                 .resizable(true)
@@ -41,7 +41,7 @@ impl App {
 
     pub fn show_help_window(&mut self, ui: &mut egui::Ui) {
         Window::new(format!("{} {}", egui_phosphor::bold::QUESTION, t!("Help")))
-            .id("help_window".into())
+            .id(egui::Id::new("help_window"))
             .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
             .collapsible(false)
             .resizable(true)
@@ -92,7 +92,7 @@ impl App {
             })
             .show(ui, |ui: &mut egui::Ui| {
                 Window::new(t!("Menu"))
-                    .id("menu_window".into())
+                    .id(egui::Id::new("menu_window"))
                     .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
                     .collapsible(false)
                     .show(ui, |ui| {
@@ -164,7 +164,7 @@ impl App {
                         let mut show_settings = self.state.show_settings;
                         if show_settings {
                             egui::Window::new(format!("{} {}", egui_phosphor::bold::GEAR, t!("Settings")))
-                                .id("settings_window".into())
+                                .id(egui::Id::new("settings_window"))
                                 .open(&mut show_settings)
                                 .show(ui, |ui| {
                                     self.show_settings(ui);
@@ -175,7 +175,7 @@ impl App {
                         let mut show_export_window = self.state.show_export_window;
                         if show_export_window {
                             Window::new(format!("{} Export Battle Data", egui_phosphor::bold::DOWNLOAD_SIMPLE))
-                                .id("export_window".into())
+                                .id(egui::Id::new("export_window"))
                                 .open(&mut show_export_window)
                                 .show(ui, |ui| {
                                     self.show_export_window(ui);
@@ -189,7 +189,7 @@ impl App {
                                 "{} Updates",
                                 egui_phosphor::bold::DOWNLOAD
                             ))
-                            .id("updater_window".into())
+                            .id(egui::Id::new("updater_window"))
                             .open(&mut show_updater_window);
 
                             if self.state.center_updater_window {
@@ -729,7 +729,7 @@ impl App {
     // Should I just create a macro?
     pub fn show_console_window(&mut self, ui: &mut egui::Ui) {
         egui::Window::new(t!("Log"))
-            .id("log_window".into())
+            .id(egui::Id::new("log_window"))
             .resizable(true)
             .default_height(300.0)
             .default_width(400.0)
@@ -746,7 +746,7 @@ impl App {
 
     pub fn show_damage_type_breakdown_window(&mut self, ui: &mut egui::Ui) {
         egui::containers::Window::new(t!("Damage Type Breakdown"))
-            .id("damage_type_breakdown_window".into())
+            .id(egui::Id::new("damage_type_breakdown_window"))
             .frame(get_window_frame(ui, self.config.widget_opacity))
             .resizable(true)
             .default_width(420.0)
@@ -760,7 +760,7 @@ impl App {
 
     pub fn show_character_legend_window(&mut self, ui: &mut egui::Ui) {
         egui::containers::Window::new(t!("Character Legend"))
-            .id("character_legend_window".into())
+            .id(egui::Id::new("character_legend_window"))
             .title_bar(false)
             .frame(get_window_frame(ui, self.config.widget_opacity))
             .resizable(true)
@@ -774,7 +774,7 @@ impl App {
 
     pub fn show_damage_bar_window(&mut self, ui: &mut egui::Ui) {
         egui::containers::Window::new(t!("Damage Bars"))
-            .id("damage_by_character_window".into())
+            .id(egui::Id::new("damage_by_character_window"))
             .frame(get_window_frame(ui, self.config.widget_opacity))
             .resizable(true)
             .min_width(200.0)
@@ -786,7 +786,7 @@ impl App {
 
     pub fn show_character_damage_window(&mut self, ui: &mut egui::Ui) {
         egui::containers::Window::new(t!("Character Damage"))
-            .id("character_damage_window".into())
+            .id(egui::Id::new("character_damage_window"))
             .title_bar(false)
             .frame(get_window_frame(ui, self.config.widget_opacity))
             .resizable(true)
@@ -802,7 +802,7 @@ impl App {
 
     pub fn show_real_time_damage_window(&mut self, ui: &mut egui::Ui) {
         egui::containers::Window::new(t!("Real-Time Damage"))
-            .id("real_time_damage_window".into())
+            .id(egui::Id::new("real_time_damage_window"))
             .frame(get_window_frame(ui, self.config.widget_opacity))
             .resizable(true)
             .min_width(200.0)
@@ -814,7 +814,7 @@ impl App {
 
     pub fn show_battle_metrics_window(&mut self, ui: &mut egui::Ui) {
         egui::containers::Window::new(t!("Battle Metrics"))
-            .id("battle_metrics_window".into())
+            .id(egui::Id::new("battle_metrics_window"))
             .frame(get_window_frame(ui, self.config.widget_opacity))
             .resizable(true)
             .min_width(200.0)
@@ -826,7 +826,7 @@ impl App {
 
     pub fn show_enemy_stats_window(&mut self, ui: &mut egui::Ui) {
         egui::containers::Window::new(t!("Enemy Stats"))
-            .id("enemy_stats_window".into())
+            .id(egui::Id::new("enemy_stats_window"))
             .title_bar(false)
             .frame(get_window_frame(ui, self.config.widget_opacity))
             .resizable(true)
