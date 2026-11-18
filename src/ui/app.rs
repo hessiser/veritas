@@ -201,7 +201,7 @@ impl Overlay for App {
             let mut show_updater_window = self.state.show_updater_window;
             let mut updater_window =
                 egui::Window::new(format!("{} Updates", egui_phosphor::bold::DOWNLOAD))
-                    .id("updater_window_outside".into())
+                    .id(egui::Id::new("updater_window_outside"))
                     .open(&mut show_updater_window);
 
             if self.state.center_updater_window {
@@ -591,11 +591,11 @@ impl App {
         match app.config.theme_mode {
             egui::Theme::Dark => {
                 app.colorix
-                    .set_dark(&mut Ui::new(ctx.clone(), "".into(), UiBuilder::new()))
+                    .set_dark(&mut Ui::new(ctx.clone(), egui::Id::new("dark_theme"), UiBuilder::new()))
             }
             egui::Theme::Light => {
                 app.colorix
-                    .set_light(&mut Ui::new(ctx.clone(), "".into(), UiBuilder::new()))
+                    .set_light(&mut Ui::new(ctx.clone(), egui::Id::new("light_theme"), UiBuilder::new()))
             }
         }
 
